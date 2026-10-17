@@ -1,0 +1,51 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Archi3D",
+  "scopeName": "source.arch",
+  "patterns": [
+    { "include": "#comment" },
+    { "include": "#edge" },
+    { "include": "#node" },
+    { "match": "[{}]", "name": "punctuation.section.block.arch" }
+  ],
+  "repository": {
+    "comment": {
+      "patterns": [
+        { "match": "#.*$", "name": "comment.line.number-sign.arch" },
+        { "match": "//.*$", "name": "comment.line.double-slash.arch" }
+      ]
+    },
+    "ref": {
+      "match": "([A-Za-z_][A-Za-z0-9_]*(?:-(?!->|>)[A-Za-z0-9_]+)*)(?:(\\.)([A-Za-z_][A-Za-z0-9_-]*))?",
+      "captures": {
+        "1": { "name": "variable.other.arch" },
+        "2": { "name": "punctuation.accessor.arch" },
+        "3": { "name": "variable.other.property.arch" }
+      }
+    },
+    "edge": {
+      "begin": "^\\s*(?=[A-Za-z_][A-Za-z0-9_-]*(?:\\.[A-Za-z_][A-Za-z0-9_-]*)?\\s*(?:-->|->|=>|<-))",
+      "end": "$",
+      "patterns": [
+        { "include": "#comment" },
+        { "match": "-->|->|=>|<-", "name": "keyword.operator.arrow.arch" },
+        { "match": "(:)\\s*([^#]*)", "captures": { "1": { "name": "punctuation.separator.arch" }, "2": { "name": "string.unquoted.label.arch" } } },
+        { "include": "#ref" }
+      ]
+    },
+    "node": {
+      "begin": "^\\s*([A-Za-z_][A-Za-z0-9_-]*)\\s+([A-Za-z_][A-Za-z0-9_-]*)",
+      "beginCaptures": {
+        "1": { "name": "storage.type.kind.arch" },
+        "2": { "name": "entity.name.type.arch" }
+      },
+      "end": "$",
+      "patterns": [
+        { "include": "#comment" },
+        { "match": "\\b(in|out)(:)", "captures": { "1": { "name": "keyword.other.direction.arch" }, "2": { "name": "punctuation.separator.arch" } } },
+        { "match": "([A-Za-z_][A-Za-z0-9_-]*)(?:(:)([A-Za-z_][A-Za-z0-9_-]*))?", "captures": { "1": { "name": "variable.other.property.arch" }, "2": { "name": "punctuation.separator.arch" }, "3": { "name": "entity.name.type.interface.arch" } } },
+        { "match": "\\{", "name": "punctuation.section.block.arch" }
+      ]
+    }
+  }
+}
