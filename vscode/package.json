@@ -13,6 +13,7 @@
   "bugs": {
     "url": "https://github.com/Heydarchi/Archi3D/issues"
   },
+  "icon": "icon.png",
   "galleryBanner": {
     "color": "#1f3a56",
     "theme": "dark"

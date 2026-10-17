@@ -1,6 +1,7 @@
 // Draws Archi3D icon candidates as SVG (isometric, the app's colours) and renders them to PNG.
 //   node scripts/icons.mjs [outDir]          → <outDir>/icon-<n>.svg/.png and sheet.png
-import { mkdirSync, writeFileSync } from 'node:fs';
+//   node scripts/icons.mjs --extension       → vscode/icon.png + vscode/icon.svg (EXTENSION_ICON)
+import { copyFileSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { chromium } from '@playwright/test';
 
@@ -230,7 +231,20 @@ export async function renderIcons(outDir) {
   await browser.close();
 }
 
+/** The extension's icon. */
+export const EXTENSION_ICON = 'bridge';
+
 if (process.argv[1] && import.meta.url.endsWith(process.argv[1].split('/').pop())) {
-  await renderIcons(resolve(process.argv[2] ?? 'artifacts/icons'));
-  console.log('icons written');
+  if (process.argv.includes('--extension')) {
+    // vscode/icon.png (+ icon.svg, the source) from the chosen design.
+    const tmp = resolve('test-results', 'icon-build');
+    process.env.ICONS = EXTENSION_ICON;
+    await renderIcons(tmp);
+    const n = Object.keys(icons).indexOf(EXTENSION_ICON) + 1;
+    for (const ext of ['png', 'svg']) copyFileSync(join(tmp, `icon-${n}-${EXTENSION_ICON}.${ext}`), resolve('vscode', `icon.${ext}`));
+    console.log(`vscode/icon.png and vscode/icon.svg from "${EXTENSION_ICON}"`);
+  } else {
+    await renderIcons(resolve(process.argv[2] ?? 'artifacts/icons'));
+    console.log('icons written');
+  }
 }
