@@ -122,27 +122,82 @@ export const icons = {
       dot(P, 2.75, 2.75, 3.2, 6, C.red), dot(P, 8.1, 1.5, 1.6, 6, C.teal),
     ].join(''));
   },
+
+  // Combinations of 1 (stack), 2 (bridge) and 5 (layers).
+  // 7. Floating levels on navy; two components on top joined by an arc.
+  'float-arc': () => {
+    const P = iso(13, 128, 70);
+    return tile(C.navy, [
+      box(P, 0, 0, 0, 8, 8, 0.6, ['#7f97ad', '#667f96', '#556d83']),
+      box(P, 0, 0, 2.8, 8, 8, 0.6, ['#a9bccd', '#8aa0b4', '#748ba0']),
+      box(P, 0, 0, 5.6, 8, 8, 0.6, ['#d3dee8', '#aebfce', '#97aabc']),
+      box(P, 0.9, 5.0, 6.2, 2.1, 2.1, 1.7, blockColors),
+      box(P, 5.0, 0.9, 6.2, 2.1, 2.1, 1.7, [C.orange, '#c9701a', '#a85d16']),
+      arc(P, [1.95, 6.05, 7.9], [6.05, 1.95, 7.9], 2.8, '#ffffff', 6),
+      dot(P, 1.95, 6.05, 7.9, 5.5, C.red), dot(P, 6.05, 1.95, 7.9, 5.5, C.teal),
+    ].join(''));
+  },
+  // 8. Same, on the light tile of 2.
+  'float-arc-light': () => {
+    const P = iso(13, 128, 70);
+    return tile('#eef1f5', [
+      box(P, 0, 0, 0, 8, 8, 0.6, ['#9fb3c4', '#7f97ad', '#6a8399']),
+      box(P, 0, 0, 2.8, 8, 8, 0.6, ['#c3d1dd', '#9fb3c4', '#8aa0b4']),
+      box(P, 0, 0, 5.6, 8, 8, 0.6, [C.navy, '#18304a', '#10233a']),
+      box(P, 0.9, 5.0, 6.2, 2.1, 2.1, 1.7, blockColors),
+      box(P, 5.0, 0.9, 6.2, 2.1, 2.1, 1.7, [C.orange, '#c9701a', '#a85d16']),
+      arc(P, [1.95, 6.05, 7.9], [6.05, 1.95, 7.9], 2.8, C.navy, 6),
+      dot(P, 1.95, 6.05, 7.9, 5.5, C.red), dot(P, 6.05, 1.95, 7.9, 5.5, C.teal),
+    ].join(''));
+  },
+  // 9. A link that crosses levels: from a component on the top level down to one below.
+  'cross-level': () => {
+    const P = iso(13, 128, 66);
+    const pipe = (a, b) => `<line x1="${P(...a)[0].toFixed(1)}" y1="${P(...a)[1].toFixed(1)}" x2="${P(...b)[0].toFixed(1)}" y2="${P(...b)[1].toFixed(1)}" stroke="${C.orange}" stroke-width="6" stroke-linecap="round"/>`;
+    return tile(C.navy, [
+      box(P, 0, 0, 0, 8, 8, 0.6, ['#a9bccd', '#8aa0b4', '#748ba0']),
+      box(P, 5.0, 0.9, 0.6, 2.1, 2.1, 1.7, [C.orange, '#c9701a', '#a85d16']),
+      pipe([6.05, 1.95, 2.3], [6.05, 1.95, 4.2]),
+      box(P, 0, 0, 4.2, 8, 8, 0.6, ['#d3dee8', '#aebfce', '#97aabc']),
+      box(P, 0.9, 5.0, 4.8, 2.1, 2.1, 1.7, blockColors),
+      arc(P, [1.95, 6.05, 6.5], [6.05, 1.95, 4.8], 2.6, '#ffffff', 6),
+      dot(P, 1.95, 6.05, 6.5, 5.5, C.red), dot(P, 6.05, 1.95, 4.8, 5.5, C.teal),
+    ].join(''));
+  },
+  // 10. Shrinking floating levels (stack + layers) with the arc on top.
+  'pyramid-arc': () => {
+    const P = iso(13.5, 128, 70);
+    return tile(C.navy, [
+      box(P, 0, 0, 0, 9, 9, 0.6, ['#7f97ad', '#667f96', '#556d83']),
+      box(P, 1, 1, 2.6, 7, 7, 0.6, ['#a9bccd', '#8aa0b4', '#748ba0']),
+      box(P, 2, 2, 5.2, 5, 5, 0.6, ['#d3dee8', '#aebfce', '#97aabc']),
+      box(P, 2.4, 5.2, 5.8, 1.5, 1.5, 1.4, blockColors),
+      box(P, 5.2, 2.4, 5.8, 1.5, 1.5, 1.4, [C.orange, '#c9701a', '#a85d16']),
+      arc(P, [3.15, 5.95, 7.2], [5.95, 3.15, 7.2], 2.4, '#ffffff', 5.5),
+      dot(P, 3.15, 5.95, 7.2, 5, C.red), dot(P, 5.95, 3.15, 7.2, 5, C.teal),
+    ].join(''));
+  },
 };
 
 export async function renderIcons(outDir) {
   mkdirSync(outDir, { recursive: true });
   const browser = await chromium.launch({ channel: process.env.PW_CHANNEL || undefined });
   const page = await browser.newPage({ viewport: { width: 256, height: 256 }, deviceScaleFactor: 1 });
-  const names = Object.keys(icons);
+  const names = process.env.ICONS ? process.env.ICONS.split(',') : Object.keys(icons);
   const fitted = {};
   for (const [i, name] of names.entries()) {
-    const base = join(outDir, `icon-${i + 1}-${name}`);
+    const base = join(outDir, `icon-${Object.keys(icons).indexOf(name) + 1}-${name}`);
     await page.setContent(`<html><body style="margin:0;background:transparent">${icons[name]()}</body></html>`);
     fitted[name] = await page.evaluate(FIT);
     writeFileSync(`${base}.svg`, fitted[name]);
     await page.screenshot({ path: `${base}.png`, omitBackground: true, clip: { x: 0, y: 0, width: 256, height: 256 } });
   }
   // Contact sheet: each icon large, and small on light and dark (as in the Extensions list).
-  const cells = names.map((n, i) => {
+  const cells = names.map((n) => {
     const svg = fitted[n];
-    return `<figure><div class="big">${svg}</div><div class="small"><span class="light">${svg}</span><span class="dark">${svg}</span></div><figcaption>${i + 1} · ${n}</figcaption></figure>`;
+    return `<figure><div class="big">${svg}</div><div class="small"><span class="light">${svg}</span><span class="dark">${svg}</span></div><figcaption>${Object.keys(icons).indexOf(n) + 1} · ${n}</figcaption></figure>`;
   }).join('');
-  await page.setViewportSize({ width: 1000, height: 640 });
+  await page.setViewportSize({ width: 1000, height: Math.ceil(names.length / 3) * 308 + 24 });
   await page.setContent(`<html><head><style>
     body{margin:0;padding:20px;font:600 16px system-ui;background:#fff;display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
     figure{margin:0;text-align:center} .big svg{width:200px;height:200px}
