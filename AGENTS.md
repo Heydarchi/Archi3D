@@ -15,8 +15,9 @@ These git rules apply to every agent and every person committing to this reposit
   go together. Prefer several small commits over one large one.
 - **Branches.** Never commit straight to `main`. Branch from `main`:
   `step/<n>-<topic>` for plan steps, `feat/<topic>`, `fix/<topic>`, `docs/<topic>`, `chore/<topic>`.
-  Merge back into `main` (`git merge --no-ff`, merge message `Merge <branch>`) only when `npm test`
-  and `npm run lint` pass (and `npm run test:visual` when the view changed). Push the branch and `main`.
+- **`main` is protected; the owner merges.** Push your branch only (never `main`), and open a pull
+  request when the work is ready: `npm test` and `npm run lint` pass (and `npm run test:visual` when
+  the view changed). The repository owner reviews and merges it.
 - **Don't commit generated or local files:** `node_modules/`, `dist/`, `offline/`, `artifacts/`,
   `test-results/`, `vscode/dist/`, `*.vsix`, `.DS_Store` (all in `.gitignore`).
-- Never rewrite or force-push `main`.
+- Never rewrite or force-push `main`, and don't force-push a branch someone else may have pulled.
