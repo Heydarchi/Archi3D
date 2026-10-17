@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Archi3D</title>
+    <style>
+      html, body { margin: 0; height: 100%; background: #eef1f5; font-family: system-ui, sans-serif; color: #1f2933; }
+      .app { position: fixed; inset: 0; display: grid; grid-template-columns: minmax(300px, 400px) 1fr; }
+      #editor { position: relative; min-width: 0; border-right: 1px solid #d9e2ec; background: #fff; overflow: hidden; display: flex; flex-direction: column; }
+      #editor header { font: 600 12px system-ui, sans-serif; color: #52606d; padding: 8px 12px; border-bottom: 1px solid #e4e7eb; display: flex; justify-content: space-between; }
+      #editor .cm-host { flex: 1; min-height: 0; }
+      #view { position: relative; min-width: 0; overflow: hidden; }
+      .bar { position: absolute; top: 12px; right: 12px; display: flex; gap: 8px; z-index: 2; }
+      .bar button { font: 12px system-ui, sans-serif; padding: 6px 10px; border-radius: 6px; border: 1px solid #bcccdc; background: #fff; cursor: pointer; }
+      #status, #import-note { font-weight: 400; color: #7b8794; }
+      button.link { all: unset; cursor: pointer; color: #486581; font-weight: 400; margin-left: 6px; }
+      button.link:hover { text-decoration: underline; }
+      .busy { position: absolute; left: 50%; top: 14px; transform: translateX(-50%); z-index: 2; display: flex; align-items: center; gap: 8px;
+        font: 12px system-ui, sans-serif; color: #334e68; background: rgba(255,255,255,.92); border: 1px solid #d9e2ec; border-radius: 999px; padding: 5px 12px; }
+      .busy::before { content: ''; width: 10px; height: 10px; border-radius: 50%; border: 2px solid #9fb3c8; border-top-color: #334e68; animation: spin .8s linear infinite; }
+      .busy[hidden] { display: none; }
+      @keyframes spin { to { transform: rotate(360deg); } }
+      @media (max-width: 760px) {
+        .app { grid-template-columns: 1fr; grid-template-rows: 1fr 42vh; }
+        #view { grid-row: 1; }
+        #editor { grid-row: 2; border-right: 0; border-top: 1px solid #d9e2ec; border-radius: 12px 12px 0 0; box-shadow: 0 -4px 16px rgba(31,41,51,.08); }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <section id="editor" aria-label="Model source">
+        <header>
+          <span><span id="file-name">northwind.arch</span> <button id="import" type="button" class="link">Import…</button><input id="import-file" type="file" accept=".arch,.mmd,.mermaid,.d2,.txt" hidden /></span>
+          <span><span id="import-note"></span> <span id="status"></span></span>
+        </header>
+        <div class="cm-host"></div>
+      </section>
+      <main id="view">
+        <div id="busy" class="busy" role="status" hidden>Laying out…</div>
+        <div class="bar">
+          <button id="bundling" type="button">Bundling: off</button>
+          <button id="semantic-zoom" type="button">Semantic zoom: on</button>
+          <button id="edge-mode" type="button">Edges: ortho</button>
+        </div>
+      </main>
+    </div>
+    <script type="module" src="/src/app/main.ts"></script>
+  </body>
+</html>
