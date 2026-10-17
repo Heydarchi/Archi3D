@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.2.0 (2026-10-17)
+
+- Six link kinds: `->` call, `=>` message, `~>` event, `<=>` session, `>>` stream, `<>` shared.
+  Each one has its own line style. Words work too: `A event B`.
+- Several targets in one line: `A ~> B, C : label`.
+- Element keywords with their own 3D shape: user, ui, app, service, library, driver, kernel, device,
+  database, cache, storage, queue, topic, external.
+- Optional title after the name, shown as the label: `driver V4L2 "V4L2 camera driver"`.
+- Syntax colors for the new arrows, link words and titles.
+- Mermaid `[Title]` is kept as the title, `<-->` is a session.
+
 ## 0.1.0 (2026-10-17)
 
 First version.

@@ -59,12 +59,12 @@ npm run dev -- my-system.arch3d      # open your own file, Save writes it back
 
 ## VS Code extension
 
-The extension (version 0.1.0) shows the 3D preview next to your `.arch3d` file, shows the errors
+The extension (version 0.2.0) shows the 3D preview next to your `.arch3d` file, shows the errors
 while you type and can save the view as PNG or as an offline HTML file. Install it from the
 [Marketplace](https://marketplace.visualstudio.com/items?itemName=M-H-H.archi3d) (or search for
 "Archi3D" in VS Code), or take the `.vsix` from
 [Releases](https://github.com/Heydarchi/Archi3D/releases):
-`code --install-extension archi3d-0.1.0.vsix`. More in [vscode/README.md](vscode/README.md).
+`code --install-extension archi3d-0.2.0.vsix`. More in [vscode/README.md](vscode/README.md).
 
 ## Docs
 

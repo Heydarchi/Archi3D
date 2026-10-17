@@ -539,8 +539,8 @@ A 3D preview inside VS Code, next to the file you are editing.
 Install:
 
 ```sh
-npm run vscode:package                       # makes vscode/archi3d-0.1.0.vsix
-code --install-extension vscode/archi3d-0.1.0.vsix
+npm run vscode:package                       # makes vscode/archi3d-0.2.0.vsix
+code --install-extension vscode/archi3d-0.2.0.vsix
 ```
 
 Or in VS Code: Extensions view, `…` menu, Install from VSIX. On WSL, run VS Code on Windows with
