@@ -6,6 +6,11 @@
 
 <p align="center">See your software architecture in 3D.</p>
 
+<p align="center">
+  <a href="https://marketplace.visualstudio.com/items?itemName=M-H-H.archi3d"><img src="https://img.shields.io/badge/VS%20Code%20Marketplace-Archi3D-1f3a56" alt="Archi3D on the VS Code Marketplace"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT license"></a>
+</p>
+
 You describe your system in a small text file: components, their ports and the links between
 them. Archi3D shows it in 3D. Containers are drawn as levels on top of each other, so you can see
 the nesting. You can rotate, zoom in and click on things.
@@ -34,7 +39,7 @@ Orders.pay -> Payments.charge : HTTPS
 - Import Mermaid `architecture-beta` and D2 files.
 - Export one HTML file that works offline (`npm run export`).
 - Render a PNG from the command line (`npm run render -- model.arch3d`).
-- VS Code extension with a live preview, in [`vscode/`](vscode).
+- [VS Code extension](https://marketplace.visualstudio.com/items?itemName=M-H-H.archi3d) with a live preview.
 
 ## Getting started
 
@@ -48,12 +53,18 @@ npm run dev -- my-system.arch3d      # open your own file, Save writes it back
 
 ## VS Code extension
 
-The extension (version 0.1.0) shows the 3D preview next to your `.arch3d` file, shows the errors
-while you type and can save the view as PNG or as an offline HTML file. Install it from the
-[Marketplace](https://marketplace.visualstudio.com/items?itemName=M-H-H.archi3d) (or search for
-"Archi3D" in VS Code), or take the `.vsix` from
-[Releases](https://github.com/Heydarchi/Archi3D/releases):
-`code --install-extension archi3d-0.1.0.vsix`. More in [vscode/README.md](vscode/README.md).
+The extension is on the Marketplace:
+**[Archi3D for VS Code](https://marketplace.visualstudio.com/items?itemName=M-H-H.archi3d)**.
+
+It shows the 3D preview next to your `.arch3d` file, shows the errors while you type and can save
+the view as PNG or as an offline HTML file. To install, search for "Archi3D" in the Extensions view
+of VS Code, or run:
+
+```sh
+code --install-extension M-H-H.archi3d
+```
+
+More in [vscode/README.md](vscode/README.md).
 
 ## Docs
 
