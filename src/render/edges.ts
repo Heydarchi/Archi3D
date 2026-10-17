@@ -22,7 +22,7 @@ interface LineStyle { width: number; dash?: [number, number]; opacity: number }
 export const LINE_STYLE: Record<LinkKind, LineStyle> = {
   call: { width: EDGE_WIDTH_PX, opacity: 0.95 },
   message: { width: EDGE_WIDTH_PX, dash: [8, 6], opacity: 0.95 },
-  event: { width: EDGE_WIDTH_PX, dash: [2.5, 5], opacity: 0.95 },
+  event: { width: EDGE_WIDTH_PX, dash: [1.2, 4], opacity: 0.95 },
   session: { width: 1.5, opacity: 0.95 },
   stream: { width: 3.5, opacity: 0.95 },
   shared: { width: 6, opacity: 0.45 },

@@ -80,8 +80,8 @@ export function blockParts(b: BlockSpec): BlockPart[] {
   const baseH = h * frac, figH = h - baseH;
   const fig = { x: b.center.x, y: bottom + baseH + figH / 2, z: b.center.z };
   const size = body === 'person' ? { x: Math.min(w, d) * 0.8, y: figH, z: Math.min(w, d) * 0.8 }
-    : body === 'screen' ? { x: Math.min(w * 0.8, figH * 1.9), y: figH, z: Math.min(d * 0.25, 8) }
-      : { x: Math.min(w * 0.4, figH * 0.62), y: figH, z: Math.min(d * 0.25, 7) };
+    : body === 'screen' ? { x: Math.min(w * 0.8, figH * 1.6), y: figH, z: Math.min(d * 0.25, 8) }
+      : { x: Math.min(w * 0.4, figH * 0.55), y: figH, z: Math.min(d * 0.25, 7) };
   return [
     { id: `${b.id}${BASE_SUFFIX}`, body: 'box', matrix: boxMatrix({ x: b.center.x, y: bottom + baseH / 2, z: b.center.z }, { x: w, y: baseH, z: d }) },
     { id: b.id, body, matrix: boxMatrix(fig, size) },

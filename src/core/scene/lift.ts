@@ -10,10 +10,10 @@ export const DEFAULT_SCENE_OPTIONS: SceneOptions = { levelGap: 60, blockHeight: 
 export const PLATE_THICKNESS = 6;
 export const QUEUE_HEIGHT_FACTOR = 0.6;
 /** Shapes drawn as a figure on a flat base; the value is the base height as a part of the block height. Links attach to the base. */
-export const PEDESTAL: Partial<Record<Shape, number>> = { person: 0.3, screen: 0.3, phone: 0.3 };
+export const PEDESTAL: Partial<Record<Shape, number>> = { person: 0.16, screen: 0.16, phone: 0.16 };
 /** Block height for each shape, as a factor of blockHeight. Flat things are low, a person is tall. */
 export const HEIGHT_FACTOR: Record<Shape, number> = {
-  box: 1, ext: 1, db: 1, screen: 1, person: 1.3, phone: 1.2, cache: 0.8, device: 0.8,
+  box: 1, ext: 1, db: 1, screen: 2, person: 2.4, phone: 2.2, cache: 0.8, device: 0.8,
   library: 0.7, storage: 0.7, kernel: 0.6, queue: QUEUE_HEIGHT_FACTOR, topic: QUEUE_HEIGHT_FACTOR, chip: 0.5,
 };
 
