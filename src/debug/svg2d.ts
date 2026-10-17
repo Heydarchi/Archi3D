@@ -1,5 +1,6 @@
 // view=svg2d: the 2D layout as SVG with containers, components (with shape hints), ports and routes.
 import type { ArchModel, Layout2D, ModelNode, Pt, Rect } from '../core/types';
+import { LINK_SVG } from './linkStyle';
 import { fitSvg, s } from './svg';
 
 const DEPTH_FILL = ['#f3f6fa', '#e9eff6', '#dfe8f2', '#d5e1ee'];
@@ -20,14 +21,14 @@ function component(n: ModelNode, b: Rect): SVGGElement {
   } else {
     g.append(s('rect', { ...common, x: b.x, y: b.y, width: b.w, height: b.h, rx: 4, ...(n.shape === 'ext' ? { 'stroke-dasharray': '5 3', fill: '#f8f4ec' } : {}) }));
   }
-  g.append(s('text', { x: b.x + b.w / 2, y: b.y + b.h / 2 + 4, 'text-anchor': 'middle', 'font-size': 13, 'font-weight': 600, fill: '#1f2933' }, n.id));
+  g.append(s('text', { x: b.x + b.w / 2, y: b.y + b.h / 2 + 4, 'text-anchor': 'middle', 'font-size': 13, 'font-weight': 600, fill: '#1f2933' }, n.title ?? n.id));
   return g;
 }
 
 function container(n: ModelNode, b: Rect): SVGGElement {
   return s('g', { 'data-id': n.id },
     s('rect', { x: b.x, y: b.y, width: b.w, height: b.h, rx: 6, fill: DEPTH_FILL[Math.min(n.depth, 3)], stroke: '#9fb3c8', 'stroke-width': 1.2 }),
-    s('text', { x: b.x + 10, y: b.y + 20, 'font-size': 13, 'font-weight': 700, fill: COLORS.title }, n.id),
+    s('text', { x: b.x + 10, y: b.y + 20, 'font-size': 13, 'font-weight': 700, fill: COLORS.title }, n.title ?? n.id),
     s('text', { x: b.x + 10, y: b.y + 34, 'font-size': 10.5, fill: '#829ab1' }, n.kind));
 }
 
@@ -53,9 +54,11 @@ export function renderSvg2d(root: HTMLElement, model: ArchModel, layout: Layout2
   for (const e of model.edges) {
     const r = layout.routes[e.id];
     if (!r) continue;
+    const st = LINK_SVG[e.kind];
     svg.append(s('polyline', {
-      'data-edge': e.id, points: r.map((p) => `${p.x},${p.y}`).join(' '), fill: 'none', stroke: COLORS.edge, 'stroke-width': 1.5,
-      'marker-end': 'url(#arrow)', ...(e.async ? { 'stroke-dasharray': '6 4' } : {}),
+      'data-edge': e.id, 'data-kind': e.kind, points: r.map((p) => `${p.x},${p.y}`).join(' '), fill: 'none', stroke: COLORS.edge, 'stroke-width': st.width,
+      ...(st.end ? { 'marker-end': 'url(#arrow)' } : {}), ...(st.start ? { 'marker-start': 'url(#arrow)' } : {}),
+      ...(st.dash ? { 'stroke-dasharray': st.dash } : {}), ...(st.opacity ? { 'stroke-opacity': st.opacity } : {}),
     }));
     if (e.label) {
       const at = labelPoint(r);

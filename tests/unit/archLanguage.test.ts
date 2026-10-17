@@ -36,4 +36,22 @@ describe('arch stream language', () => {
   it('dashed names do not swallow arrows', () => {
     expect(tokens('order-api->db')).toEqual([['order-api', 'variableName'], ['->', 'operator'], ['db', 'variableName']]);
   });
+  it('every arrow is an operator', () => {
+    for (const a of ['->', '-->', '<-', '=>', '~>', '<=>', '>>', '<>']) expect(tokens(`A ${a} B`)[1], a).toEqual([a, 'operator']);
+  });
+  it('link words, several targets', () => {
+    expect(tokens('System.boot event Mail, Sync : BOOT')).toEqual([
+      ['System', 'variableName'], ['.', 'punctuation'], ['boot', 'propertyName'], ['event', 'operator'], ['Mail', 'variableName'],
+      [',', 'punctuation'], ['Sync', 'variableName'], [':', 'punctuation'], ['BOOT', 'string'],
+    ]);
+  });
+  it('a node may be called like a link word', () => {
+    expect(tokens('service event in: x').slice(0, 2)).toEqual([['service', 'typeName'], ['event', 'variableName.definition']]);
+  });
+  it('a title is a string, # inside it is not a comment', () => {
+    expect(tokens('driver Cam "Camera #1 \\"x\\"" in: a # c')).toEqual([
+      ['driver', 'typeName'], ['Cam', 'variableName.definition'], ['"Camera #1 \\"x\\""', 'string'], ['in:', 'keyword'],
+      ['a', 'propertyName'], ['# c', 'comment'],
+    ]);
+  });
 });

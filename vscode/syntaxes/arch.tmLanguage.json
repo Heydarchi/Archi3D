@@ -3,49 +3,134 @@
   "name": "Archi3D",
   "scopeName": "source.arch3d",
   "patterns": [
-    { "include": "#comment" },
-    { "include": "#edge" },
-    { "include": "#node" },
-    { "match": "[{}]", "name": "punctuation.section.block.arch3d" }
+    {
+      "include": "#comment"
+    },
+    {
+      "include": "#edge"
+    },
+    {
+      "include": "#node"
+    },
+    {
+      "match": "[{}]",
+      "name": "punctuation.section.block.arch3d"
+    }
   ],
   "repository": {
     "comment": {
       "patterns": [
-        { "match": "#.*$", "name": "comment.line.number-sign.arch3d" },
-        { "match": "//.*$", "name": "comment.line.double-slash.arch3d" }
+        {
+          "match": "#.*$",
+          "name": "comment.line.number-sign.arch3d"
+        },
+        {
+          "match": "//.*$",
+          "name": "comment.line.double-slash.arch3d"
+        }
       ]
     },
     "ref": {
       "match": "([A-Za-z_][A-Za-z0-9_]*(?:-(?!->|>)[A-Za-z0-9_]+)*)(?:(\\.)([A-Za-z_][A-Za-z0-9_-]*))?",
       "captures": {
-        "1": { "name": "variable.other.arch3d" },
-        "2": { "name": "punctuation.accessor.arch3d" },
-        "3": { "name": "variable.other.property.arch3d" }
+        "1": {
+          "name": "variable.other.arch3d"
+        },
+        "2": {
+          "name": "punctuation.accessor.arch3d"
+        },
+        "3": {
+          "name": "variable.other.property.arch3d"
+        }
       }
     },
     "edge": {
-      "begin": "^\\s*(?=[A-Za-z_][A-Za-z0-9_-]*(?:\\.[A-Za-z_][A-Za-z0-9_-]*)?\\s*(?:-->|->|=>|<-))",
+      "begin": "^\\s*(?=[A-Za-z_][A-Za-z0-9_-]*(?:\\.[A-Za-z_][A-Za-z0-9_-]*)?\\s*(?:<=>|-->|->|=>|~>|>>|<>|<-|(?:call|message|event|session|stream|shared)\\s+(?!(?:in|out)\\s*:)[A-Za-z_]))",
       "end": "$",
       "patterns": [
-        { "include": "#comment" },
-        { "match": "-->|->|=>|<-", "name": "keyword.operator.arrow.arch3d" },
-        { "match": "(:)\\s*([^#]*)", "captures": { "1": { "name": "punctuation.separator.arch3d" }, "2": { "name": "string.unquoted.label.arch3d" } } },
-        { "include": "#ref" }
+        {
+          "include": "#comment"
+        },
+        {
+          "match": "<=>|-->|->|=>|~>|>>|<>|<-",
+          "name": "keyword.operator.arrow.arch3d"
+        },
+        {
+          "match": "(:)\\s*([^#]*)",
+          "captures": {
+            "1": {
+              "name": "punctuation.separator.arch3d"
+            },
+            "2": {
+              "name": "string.unquoted.label.arch3d"
+            }
+          }
+        },
+        {
+          "match": "(,)",
+          "name": "punctuation.separator.arch3d"
+        },
+        {
+          "match": "(?<=\\s)(call|message|event|session|stream|shared)(?=\\s)",
+          "name": "keyword.operator.word.arch3d"
+        },
+        {
+          "include": "#ref"
+        }
       ]
     },
     "node": {
       "begin": "^\\s*([A-Za-z_][A-Za-z0-9_-]*)\\s+([A-Za-z_][A-Za-z0-9_-]*)",
       "beginCaptures": {
-        "1": { "name": "storage.type.kind.arch3d" },
-        "2": { "name": "entity.name.type.arch3d" }
+        "1": {
+          "name": "storage.type.kind.arch3d"
+        },
+        "2": {
+          "name": "entity.name.type.arch3d"
+        }
       },
       "end": "$",
       "patterns": [
-        { "include": "#comment" },
-        { "match": "\\b(in|out)(:)", "captures": { "1": { "name": "keyword.other.direction.arch3d" }, "2": { "name": "punctuation.separator.arch3d" } } },
-        { "match": "([A-Za-z_][A-Za-z0-9_-]*)(?:(:)([A-Za-z_][A-Za-z0-9_-]*))?", "captures": { "1": { "name": "variable.other.property.arch3d" }, "2": { "name": "punctuation.separator.arch3d" }, "3": { "name": "entity.name.type.interface.arch3d" } } },
-        { "match": "\\{", "name": "punctuation.section.block.arch3d" }
+        {
+          "include": "#string"
+        },
+        {
+          "include": "#comment"
+        },
+        {
+          "match": "\\b(in|out)(:)",
+          "captures": {
+            "1": {
+              "name": "keyword.other.direction.arch3d"
+            },
+            "2": {
+              "name": "punctuation.separator.arch3d"
+            }
+          }
+        },
+        {
+          "match": "([A-Za-z_][A-Za-z0-9_-]*)(?:(:)([A-Za-z_][A-Za-z0-9_-]*))?",
+          "captures": {
+            "1": {
+              "name": "variable.other.property.arch3d"
+            },
+            "2": {
+              "name": "punctuation.separator.arch3d"
+            },
+            "3": {
+              "name": "entity.name.type.interface.arch3d"
+            }
+          }
+        },
+        {
+          "match": "\\{",
+          "name": "punctuation.section.block.arch3d"
+        }
       ]
+    },
+    "string": {
+      "match": "\"(?:[^\"\\\\]|\\\\.)*\"?",
+      "name": "string.quoted.double.title.arch3d"
     }
   }
 }
