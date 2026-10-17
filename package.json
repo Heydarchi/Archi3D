@@ -18,7 +18,8 @@
     "render": "node scripts/render.mjs",
     "vscode:build": "node scripts/build-vscode.mjs",
     "vscode:package": "node scripts/build-vscode.mjs --package",
-    "test:vscode": "node scripts/build-vscode.mjs && node scripts/test-vscode.mjs"
+    "test:vscode": "node scripts/build-vscode.mjs && node scripts/test-vscode.mjs",
+    "notices": "node scripts/notices.mjs"
   },
   "dependencies": {
     "@codemirror/commands": "6.11.1",
