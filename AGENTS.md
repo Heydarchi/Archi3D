@@ -18,6 +18,10 @@ The git rules below are for every agent and every person who commits to this rep
 - `main` is protected and I merge. Push only your branch (never `main`) and open a pull request
   when it is ready: `npm test` and `npm run lint` pass (and `npm run test:visual` if the view
   changed). I review it and merge it.
+- Every pull request runs CI (`.github/workflows/ci.yml`): `check` (lint and unit tests on Linux)
+  and `visual` (screenshot tests on macOS). `main` takes changes only through a pull request with
+  both green. Nobody can push to it directly, force push it or delete it, me included.
+  If `visual` fails, the diffs are in the `visual-diffs` artifact of the run.
 - Don't commit generated or local files: `node_modules/`, `dist/`, `offline/`, `artifacts/`,
   `test-results/`, `vscode/dist/`, `*.vsix`, `.DS_Store` (they are in `.gitignore`).
 - Never rewrite or force push `main`. Don't force push a branch that someone else may have pulled.
