@@ -1,50 +1,57 @@
-# An Android app in the recommended layered architecture (UI → domain → data),
-# with the platform services and backends it talks to.
+# An Android app in the recommended layered architecture (UI, domain, data),
+# with the platform services and the backend it talks to.
+# Link kinds: -> call, => message, ~> event, <=> session, >> stream, <> shared.
 
-actor User                      out: touch
+user User "Phone user"          out: touch
 
-system NotesApp {
-  container UiLayer {
+app NotesApp "Notes app" {
+  container UiLayer "UI layer" {
     ui MainActivity             in: touch          out: nav
-    ui NoteListFragment         in: show           out: state
-    ui EditorFragment           in: show           out: state
-    component NotesViewModel    in: state          out: list, save
+    ui NoteListFragment "Note list"  in: show, state   out: action
+    ui EditorFragment   "Editor"     in: show, state   out: action
+    component NotesViewModel "ViewModel"  in: action  out: list, save, state
   }
-  container DomainLayer {
+  container DomainLayer "Domain layer" {
     component GetNotesUseCase   in: run            out: notes
     component SaveNoteUseCase   in: run            out: notes, sync
   }
-  container DataLayer {
-    component NotesRepository   in: notes          out: local, remote
-    database RoomDatabase       in: dao:SQL
-    service RetrofitClient      in: call           out: https:REST
-    service SyncWorker          in: enqueue        out: push
+  container DataLayer "Data layer" {
+    component NotesRepository "Repository"  in: notes, refresh  out: local, cache, remote, prefs
+    database RoomDatabase "Room"     in: dao:SQL
+    cache    NotesCache   "Memory cache"  in: get
+    storage  DataStore    "DataStore prefs" in: prefs
+    library  RetrofitClient "Retrofit"    in: call   out: https:REST
+    service  SyncWorker   "Sync worker"   in: work   out: push
   }
-  service PushService           in: message        out: refresh
+  service PushService "FCM service"     in: message    out: refresh
 }
 
-system AndroidPlatform {
+system AndroidPlatform "Android platform" {
   service WorkManager           in: schedule       out: run
-  service FirebaseMessaging     in: register       out: deliver
+  service FirebaseMessaging "Firebase Messaging"  in: register  out: deliver
+  topic   Connectivity "Network broadcasts"       out: changed
 }
 
-external NotesBackend           in: api:REST
+external NotesBackend "Notes backend"  in: api:REST   out: fcm
 
-User.touch                    -> MainActivity.touch
-MainActivity.nav              -> NoteListFragment.show
-MainActivity.nav              -> EditorFragment.show
-NoteListFragment.state        -> NotesViewModel.state : StateFlow
-EditorFragment.state          -> NotesViewModel.state
-NotesViewModel.list           -> GetNotesUseCase.run
-NotesViewModel.save           -> SaveNoteUseCase.run
-GetNotesUseCase.notes         -> NotesRepository.notes
-SaveNoteUseCase.notes         -> NotesRepository.notes
-SaveNoteUseCase.sync          => WorkManager.schedule : OneTimeWorkRequest
-WorkManager.run               => SyncWorker.enqueue
-SyncWorker.push               -> RetrofitClient.call
-NotesRepository.local         -> RoomDatabase.dao
-NotesRepository.remote        -> RetrofitClient.call
-RetrofitClient.https          -> NotesBackend.api
-NotesBackend                  => FirebaseMessaging.register : FCM push
-FirebaseMessaging.deliver     => PushService.message
-PushService.refresh           => NotesRepository.notes : refresh
+User.touch                 -> MainActivity.touch : tap
+MainActivity.nav           -> NoteListFragment.show, EditorFragment.show
+NoteListFragment.action    -> NotesViewModel.action
+EditorFragment.action      -> NotesViewModel.action
+NotesViewModel.state       ~> NoteListFragment.state, EditorFragment.state : StateFlow
+NotesViewModel.list        -> GetNotesUseCase.run
+NotesViewModel.save        -> SaveNoteUseCase.run
+GetNotesUseCase.notes      -> NotesRepository.notes
+SaveNoteUseCase.notes      -> NotesRepository.notes
+SaveNoteUseCase.sync       => WorkManager.schedule : OneTimeWorkRequest
+WorkManager.run            => SyncWorker.work
+Connectivity.changed       ~> WorkManager.schedule : CONNECTIVITY_CHANGE
+SyncWorker.push            -> RetrofitClient.call
+NotesRepository.local      -> RoomDatabase.dao
+NotesRepository.cache      -> NotesCache.get
+NotesRepository.prefs      -> DataStore.prefs
+NotesRepository.remote     -> RetrofitClient.call
+RetrofitClient.https       -> NotesBackend.api
+NotesBackend.fcm           => FirebaseMessaging.register : push
+FirebaseMessaging.deliver  => PushService.message
+PushService.refresh        => NotesRepository.refresh : refresh

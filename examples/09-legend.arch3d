@@ -1,0 +1,31 @@
+# Every element keyword and every link kind once. Use it as a legend.
+user     Person   "Phone user"
+system   Device   "Device" {
+  ui       Screen   "Camera screen"
+  app      Camera   "Camera app"
+  service  Server   "CameraService"
+  library  Hal      "Camera HAL"
+  database Media    "Media DB"
+  cache    Thumbs   "Thumbnails"
+  storage  Disk     "/sdcard"
+  queue    Jobs     "Job queue"
+  topic    Bus      "Broadcasts"
+  kernel   Linux    "Linux kernel"
+  driver   V4l2     "V4L2 driver"
+  device   Sensor   "Image sensor"
+}
+external Cloud    "Photo cloud"
+
+Person  -> Screen  : tap
+Screen  -> Camera
+Camera <=> Server  : AIDL session
+Server  => Jobs    : save job
+Server  ~> Bus     : NEW_PICTURE
+Bus     ~> Thumbs, Media
+Hal     <> Server  : gralloc buffers
+Server  -> Hal
+Hal     -> Linux   : ioctl
+Linux   -> V4l2
+Sensor  >> V4l2    : frames
+Jobs    -> Disk
+Camera  => Cloud   : upload
