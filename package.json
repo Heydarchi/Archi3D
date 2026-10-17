@@ -1,0 +1,50 @@
+{
+  "name": "archi3d",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview --port 4173 --strictPort",
+    "test": "vitest run",
+    "test:visual": "vite build && node scripts/export-standalone.mjs && node scripts/export-standalone.mjs --cdn && node scripts/build-vscode.mjs && playwright test",
+    "test:visual:update": "vite build && node scripts/export-standalone.mjs && node scripts/export-standalone.mjs --cdn && node scripts/build-vscode.mjs && playwright test --update-snapshots",
+    "lint": "eslint . && tsc -p .",
+    "vendor": "node scripts/vendor.mjs",
+    "offline:pack": "node scripts/offline-pack.mjs",
+    "generate": "node scripts/generate.mjs",
+    "export": "node scripts/export-standalone.mjs",
+    "render": "node scripts/render.mjs",
+    "vscode:build": "node scripts/build-vscode.mjs",
+    "vscode:package": "node scripts/build-vscode.mjs --package",
+    "test:vscode": "node scripts/build-vscode.mjs && node scripts/test-vscode.mjs"
+  },
+  "dependencies": {
+    "@codemirror/commands": "6.11.1",
+    "@codemirror/language": "6.13.1",
+    "@codemirror/lint": "6.9.7",
+    "@codemirror/state": "6.7.6",
+    "@codemirror/view": "6.43.14",
+    "@fontsource/inter": "5.3.0",
+    "@lezer/highlight": "1.2.5",
+    "@terrastruct/d2": "0.1.33",
+    "camera-controls": "3.1.2",
+    "elkjs": "0.9.3",
+    "three": "0.186.1",
+    "troika-three-text": "0.52.5"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@playwright/test": "1.64.1",
+    "@types/node": "26.6.5",
+    "@types/three": "0.186.0",
+    "@types/vscode": "1.90.0",
+    "@vscode/vsce": "4.0.0",
+    "eslint": "10.13.0",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.71.2",
+    "vite": "8.3.4",
+    "vitest": "5.0.5"
+  }
+}
