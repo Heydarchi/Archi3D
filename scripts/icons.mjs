@@ -50,6 +50,21 @@ const FIT = `(() => {
 const plateColors = (i) => [C.plate[i], '#8aa0b4', '#6f879d'];
 const blockColors = ['#f7f9fa', '#c9d3dc', '#a3b2bf'];
 
+/** Icon 2 refined: a plate, a white and an orange block, a thick arc between their ports. */
+function bridge2({ bg = '#eef1f5', arcColor = C.navy, blockH = 2.0, levels = false, plate = ['#c3d1dd', '#8fa5b9', '#6f879d'] }) {
+  const P = iso(15, 128, 92);
+  const edge = 'rgba(19,38,56,0.35)';
+  const top = 0.8 + blockH;
+  return tile(bg, [
+    levels ? box(P, -0.9, -0.9, -2.2, 9.8, 9.8, 0.6, ['#a9bccd', '#8aa0b4', '#748ba0'], edge) : '',
+    box(P, 0, 0, 0, 8, 8, 0.8, plate, edge),
+    box(P, 0.6, 5.0, 0.8, 2.4, 2.4, blockH, ['#ffffff', '#d5dde4', '#b3c0cc'], edge),
+    box(P, 5.0, 0.6, 0.8, 2.4, 2.4, blockH, [C.orange, '#c9701a', '#a85d16'], edge),
+    arc(P, [1.8, 6.2, top], [6.2, 1.8, top], 3.4, arcColor, 9),
+    dot(P, 1.8, 6.2, top, 8.5, C.red), dot(P, 6.2, 1.8, top, 8.5, C.teal),
+  ].join(''));
+}
+
 export const icons = {
   // 1. Stacked levels: three plates, two blocks on top, an orange link.
   stack: () => {
@@ -177,6 +192,12 @@ export const icons = {
       dot(P, 3.15, 5.95, 7.2, 5, C.red), dot(P, 5.95, 3.15, 7.2, 5, C.teal),
     ].join(''));
   },
+
+  // Refinements of 2 (bridge): stronger at small sizes.
+  'bridge-bold': () => bridge2({}),
+  'bridge-tall': () => bridge2({ blockH: 2.7 }),
+  'bridge-dark': () => bridge2({ bg: C.navy, arcColor: '#ffffff', plate: ['#d3dee8', '#aebfce', '#97aabc'] }),
+  'bridge-levels': () => bridge2({ levels: true }),
 };
 
 export async function renderIcons(outDir) {
@@ -197,7 +218,7 @@ export async function renderIcons(outDir) {
     const svg = fitted[n];
     return `<figure><div class="big">${svg}</div><div class="small"><span class="light">${svg}</span><span class="dark">${svg}</span></div><figcaption>${Object.keys(icons).indexOf(n) + 1} · ${n}</figcaption></figure>`;
   }).join('');
-  await page.setViewportSize({ width: 1000, height: Math.ceil(names.length / 3) * 308 + 24 });
+  await page.setViewportSize({ width: 1000, height: Math.ceil(names.length / 3) * 340 + 40 });
   await page.setContent(`<html><head><style>
     body{margin:0;padding:20px;font:600 16px system-ui;background:#fff;display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
     figure{margin:0;text-align:center} .big svg{width:200px;height:200px}
