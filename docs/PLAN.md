@@ -593,7 +593,7 @@ Pictures: overview bundled vs unbundled.
 
 ## Step 15 (optional) — Langium
 
-- [ ] Done — not started (see the session summary: it adds Langium + LSP packages and a second parser).
+- [ ] Done (not started yet: it needs Langium and LSP packages and a second parser)
 
 Move the grammar to Langium; run its language server in a worker for completion,
 go-to-definition and hover in CodeMirror (or Monaco). Tests: every fixture gives the
