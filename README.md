@@ -1,4 +1,10 @@
-# Archi3D
+<p align="center">
+  <img src="vscode/icon.png" alt="Archi3D" width="128" height="128">
+</p>
+
+<h1 align="center">Archi3D</h1>
+
+<p align="center">Software architecture as a 3D view you can orbit, zoom into and click through.</p>
 
 Archi3D turns a short text description of a software system — its components, their interfaces
 (ports) and the links between them — into a 3D view you can orbit, zoom into and click through.
@@ -37,6 +43,14 @@ npm ci
 npm run dev                        # http://localhost:5173
 npm run dev -- my-system.arch3d      # edit your own file; Save writes it back
 ```
+
+## VS Code extension
+
+**Archi3D for VS Code** (version 0.1.0) shows a live 3D preview beside your `.arch3d` file,
+marks errors as you type, and exports PNG or a single offline HTML file. Get it from the VS Code
+Marketplace (search "Archi3D"), or download the `.vsix` from
+[Releases](https://github.com/Heydarchi/Archi3D/releases) and install it with
+`code --install-extension archi3d-0.1.0.vsix`. Details: [vscode/README.md](vscode/README.md).
 
 ## Documentation
 
