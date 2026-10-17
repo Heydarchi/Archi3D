@@ -2,6 +2,8 @@
 
 See your software architecture in 3D, next to the file you are editing.
 
+Install: search for "Archi3D" in the Extensions view, or run `code --install-extension M-H-H.archi3d`.
+
 ![AOSP camera stack with CameraDeviceHal selected](images/hal-selected.png)
 
 ## What it does
