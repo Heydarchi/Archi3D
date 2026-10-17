@@ -1,0 +1,726 @@
+<title>Archi3D Prototype</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one-screen instrument — model text on the left, 3D survey view on the right; on phones the view fills and the model slides up as a sheet. */
+:root{
+  --bg:#eef1f3; --panel:#f8fafb; --ink:#17222b; --muted:#5b6b77; --line:#cfd8de;
+  --scene:#e4e9ed; --grid:#c4ced5;
+  --accent:#d9822b;           /* selection / focus */
+  --in:#1d8f8a; --out:#c4523e; /* port colors */
+  --comp:#f4f6f7; --compEdge:#8796a1; --db:#dde7ee; --queue:#efe6d6; --ext:#e6e1ee;
+  --plate0:#b9c7d2; --plate1:#cad6de; --plate2:#d8e1e7;
+  --edge:#4a5a66;
+  --err:#b3261e;
+  --display:"Familjen Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#10161b; --panel:#151d23; --ink:#e3e9ed; --muted:#8a9aa6; --line:#26323b;
+  --scene:#0d1317; --grid:#1f2a32;
+  --accent:#f0a04b; --in:#3cc2bb; --out:#ee7a63;
+  --comp:#2a3640; --compEdge:#6f8291; --db:#233544; --queue:#3a3326; --ext:#302a3c;
+  --plate0:#1d2932; --plate1:#24323c; --plate2:#2c3c47;
+  --edge:#9fb0bc; --err:#ff8a80; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#10161b; --panel:#151d23; --ink:#e3e9ed; --muted:#8a9aa6; --line:#26323b;
+  --scene:#0d1317; --grid:#1f2a32;
+  --accent:#f0a04b; --in:#3cc2bb; --out:#ee7a63;
+  --comp:#2a3640; --compEdge:#6f8291; --db:#233544; --queue:#3a3326; --ext:#302a3c;
+  --plate0:#1d2932; --plate1:#24323c; --plate2:#2c3c47;
+  --edge:#9fb0bc; --err:#ff8a80; color-scheme:dark}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--display);font-size:14px;overflow:hidden}
+.app{height:100%;display:grid;grid-template-rows:auto 1fr}
+header{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;padding-block:10px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  border-bottom:1px solid var(--line);background:var(--panel)}
+.brand{display:flex;align-items:baseline;gap:8px;margin-right:auto}
+.brand b{font-size:18px;font-weight:700;letter-spacing:-.01em}
+.brand span{color:var(--muted);font-size:12px}
+.ctl{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)}
+.ctl label{letter-spacing:.04em;text-transform:uppercase;font-size:11px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.seg button{border:0;background:transparent;color:var(--muted);font:inherit;font-size:12px;padding:6px 10px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--panel)}
+.btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);font:inherit;font-size:12px;font-weight:600;padding:6px 12px;border-radius:6px;cursor:pointer}
+.btn:hover{border-color:var(--muted)}
+button:focus-visible,textarea:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+input[type=range]{accent-color:var(--accent);width:110px}
+.main{display:grid;grid-template-columns:minmax(300px,380px) 1fr;min-height:0}
+.editor{display:flex;flex-direction:column;min-height:0;border-right:1px solid var(--line);background:var(--panel)}
+.editor h2{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:0;padding:12px 16px 6px}
+textarea{flex:1;min-height:0;resize:none;border:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+  background:var(--bg);color:var(--ink);font-family:var(--mono);font-size:12.5px;line-height:1.55;padding:12px 16px;white-space:pre;tab-size:2}
+.errors{font-family:var(--mono);font-size:12px;color:var(--err);padding:8px 16px;max-height:90px;overflow:auto}
+.errors:empty{display:none}
+.cheat{font-size:12px;color:var(--muted);padding:10px 16px 14px;line-height:1.5}
+.cheat code{font-family:var(--mono);font-size:11.5px;color:var(--ink)}
+.view{position:relative;min-width:0;min-height:0;background:var(--scene);overflow:hidden}
+#gl{position:absolute;inset:0;display:block;width:100%;height:100%;touch-action:none}
+#labels{position:absolute;inset:0;pointer-events:none}
+.lbl{font-family:var(--display);font-size:12px;font-weight:600;color:var(--ink);white-space:nowrap;
+  background:color-mix(in srgb,var(--panel) 82%,transparent);padding:2px 6px;border-radius:4px}
+.lbl.c{font-size:13px;letter-spacing:.02em;text-transform:uppercase;font-weight:700;background:transparent;color:var(--muted)}
+.lbl.c.closed{color:var(--ink);background:color-mix(in srgb,var(--panel) 82%,transparent)}
+.lbl.p{font-family:var(--mono);font-size:10.5px;font-weight:500;padding:1px 4px}
+.lbl.p.in{color:var(--in)} .lbl.p.out{color:var(--out)}
+.lbl.e{font-family:var(--mono);font-size:10.5px;font-weight:500;color:var(--muted)}
+.lbl small{font-weight:400;color:var(--muted);margin-left:5px;font-size:10.5px}
+.hud{position:absolute;left:max(12px,env(safe-area-inset-left,0px));bottom:12px;right:12px;display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;pointer-events:none}
+.info{pointer-events:auto;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px 14px;max-width:340px;min-width:0;font-size:12.5px;box-shadow:0 6px 24px rgb(0 0 0 / .12)}
+.info .crumbs{font-size:11px;color:var(--muted);display:flex;flex-wrap:wrap;gap:4px}
+.info .crumbs button{border:0;background:none;color:inherit;font:inherit;padding:0;cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+.info h3{margin:4px 0 8px;font-size:17px;line-height:1.2}
+.info h3 small{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-left:6px;font-weight:600}
+.info dl{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin:0}
+.info dt{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05em;padding-top:2px}
+.info dd{margin:0;font-family:var(--mono);font-size:11.5px;overflow-wrap:anywhere}
+.legend{pointer-events:auto;margin-left:auto;display:flex;flex-wrap:wrap;gap:6px 14px;font-size:11px;color:var(--muted);background:color-mix(in srgb,var(--panel) 85%,transparent);border-radius:6px;padding:6px 10px}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+.legend .ln{display:inline-block;width:16px;border-top:2px solid var(--edge);margin-right:5px;vertical-align:3px}
+.legend .ln.d{border-top-style:dashed}
+.hint{position:absolute;top:10px;left:max(12px,env(safe-area-inset-left,0px));font-size:11.5px;color:var(--muted);background:color-mix(in srgb,var(--panel) 85%,transparent);padding:5px 9px;border-radius:6px;pointer-events:none;max-width:calc(100% - 24px)}
+.stats{font-family:var(--mono);font-size:11px;color:var(--muted);padding:0 16px 10px;font-variant-numeric:tabular-nums}
+.fail{position:absolute;inset:0;display:grid;place-items:center;padding:24px;text-align:center;color:var(--muted)}
+#toggleEditor{display:none}
+@media (max-width:760px){
+  header{gap:8px 10px}
+  .brand span{display:none}
+  #toggleEditor{display:inline-block}
+  .main{grid-template-columns:1fr;position:relative}
+  .editor{position:absolute;left:0;right:0;bottom:0;height:62%;z-index:5;border-right:0;border-top:1px solid var(--line);box-shadow:0 -10px 30px rgb(0 0 0 / .2)}
+  .editor.closed{display:none}
+  .legend{display:none}
+  .info{max-width:none;flex:1}
+  input[type=range]{width:80px}
+}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
+</style>
+
+<div class="app">
+  <header>
+    <div class="brand"><b>Archi3D</b><span>DSL → ELK layout → three.js</span></div>
+    <div class="ctl"><label for="gap">Levels</label><input id="gap" type="range" min="6" max="160" value="60"></div>
+    <div class="ctl"><label>Edges</label>
+      <div class="seg" role="group" aria-label="Edge routing">
+        <button id="eOrtho" aria-pressed="true">Orthogonal</button><button id="eArc" aria-pressed="false">Arcs</button>
+      </div>
+    </div>
+    <div class="ctl"><label>Zoom</label>
+      <div class="seg" role="group" aria-label="Semantic zoom">
+        <button id="zAuto" aria-pressed="true">Semantic</button><button id="zOpen" aria-pressed="false">All open</button>
+      </div>
+    </div>
+    <button class="btn" id="overview">Overview</button>
+    <button class="btn" id="toggleEditor">Model</button>
+  </header>
+  <div class="main">
+    <section class="editor closed" id="editor" aria-label="Model text">
+      <h2>Model</h2>
+      <textarea id="src" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="Architecture model text"></textarea>
+      <div class="errors" id="errors" role="status"></div>
+      <div class="stats" id="stats"></div>
+      <div class="cheat">
+        <code>kind Name in: a, b out: c</code> declares a component. Kinds: <code>component ui database queue external</code>.<br>
+        <code>kind Name {</code> … <code>}</code> makes a container that nests anything.<br>
+        <code>A.port -&gt; B.port : label</code> is a sync call, <code>=&gt;</code> is async. Ports are optional.
+      </div>
+    </section>
+    <section class="view" id="view">
+      <canvas id="gl"></canvas>
+      <div id="labels"></div>
+      <div class="hint" id="hint">Drag to orbit · scroll or pinch to zoom · tap to select · double-tap to fly in</div>
+      <div class="hud">
+        <div class="info" id="info" hidden></div>
+        <div class="legend">
+          <span><i style="background:var(--in)"></i>in port</span>
+          <span><i style="background:var(--out)"></i>out port</span>
+          <span><span class="ln"></span>call</span>
+          <span><span class="ln d"></span>async</span>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script type="text/plain" id="sample"># Northwind Shop — example model
+# kind Name [in: a, b] [out: c]   |   A.port -> B.port : label
+
+external Customer        out: browse
+system Northwind {
+  container Storefront {
+    ui WebApp            in: browse    out: api
+    component BFF        in: api       out: orders, catalog, login
+  }
+  container Identity {
+    component AuthService  in: login   out: users
+    database UserDB        in: users
+  }
+  container Ordering {
+    component OrderAPI     in: orders  out: db, events, pay
+    database OrderDB       in: db
+    component Fulfilment   in: work    out: ship
+  }
+  container Catalog {
+    component CatalogAPI   in: catalog out: db, search
+    database ProductDB     in: db
+    component SearchIndex  in: query
+  }
+  queue EventBus           in: publish out: work
+}
+external PaymentGateway  in: charge
+external Carrier         in: label
+
+Customer.browse   -> WebApp.browse
+WebApp.api        -> BFF.api        : REST
+BFF.login         -> AuthService.login
+AuthService.users -> UserDB.users
+BFF.orders        -> OrderAPI.orders : REST
+BFF.catalog       -> CatalogAPI.catalog : gRPC
+OrderAPI.db       -> OrderDB.db
+OrderAPI.events   => EventBus.publish : OrderPlaced
+OrderAPI.pay      -> PaymentGateway.charge
+EventBus.work     => Fulfilment.work
+Fulfilment.ship   -> Carrier.label
+CatalogAPI.db     -> ProductDB.db
+CatalogAPI.search -> SearchIndex.query
+</script>
+<script src="https://cdn.jsdelivr.net/npm/elkjs@0.9.3/lib/elk.bundled.js"></script>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+<script>
+// ---- Archi3D core: tiny DSL parser + ELK graph builder + layout flattening ----
+// Shared by the page and the node test.
+
+const SHAPES = { component: 'box', service: 'box', database: 'db', db: 'db', queue: 'queue', external: 'ext', actor: 'ext', ui: 'box' };
+
+function parseDSL(src) {
+  const root = { id: '__root', name: 'root', kind: 'root', children: [], depth: -1, parent: null, isContainer: true };
+  const byName = new Map();
+  const edges = [];
+  const errors = [];
+  const stack = [root];
+  const lines = src.split(/\r?\n/);
+
+  const addNode = (n, ln) => {
+    if (byName.has(n.name)) { errors.push({ line: ln, msg: `"${n.name}" is defined twice. Names must be unique.` }); return false; }
+    byName.set(n.name, n); return true;
+  };
+  const list = s => (s || '').split(',').map(x => x.trim()).filter(Boolean);
+
+  lines.forEach((raw, i) => {
+    const ln = i + 1;
+    let line = raw.replace(/(#|\/\/).*$/, '').trim();
+    if (!line) return;
+    // closing braces (possibly several)
+    while (line.startsWith('}')) {
+      if (stack.length === 1) errors.push({ line: ln, msg: 'Unmatched "}".' }); else stack.pop();
+      line = line.slice(1).trim();
+    }
+    if (!line) return;
+    // edge:  A[.port] -> B[.port] [: label]
+    let m = line.match(/^([\w-]+)(?:\.([\w-]+))?\s*(->|-->|=>|<-)\s*([\w-]+)(?:\.([\w-]+))?\s*(?::\s*(.+))?$/);
+    if (m) {
+      let [, a, ap, arrow, b, bp, label] = m;
+      if (arrow === '<-') { [a, ap, b, bp] = [b, bp, a, ap]; }
+      edges.push({ from: a, fromPort: ap || null, to: b, toPort: bp || null, label: label ? label.trim() : '', async: arrow === '=>' , line: ln });
+      return;
+    }
+    // node / container:  kind Name [in: a,b] [out: c] [{]
+    m = line.match(/^([\w-]+)\s+([\w-]+)(.*)$/);
+    if (!m) { errors.push({ line: ln, msg: `Can't read "${line}". Expected "kind Name", "A -> B" or "}".` }); return; }
+    const [, kind, name] = m; let rest = m[3].trim();
+    const opens = rest.endsWith('{');
+    if (opens) rest = rest.slice(0, -1).trim();
+    const ins = list((rest.match(/\bin\s*:\s*([^:]*?)(?=\s+out\s*:|$)/) || [])[1]);
+    const outs = list((rest.match(/\bout\s*:\s*([^:]*?)(?=\s+in\s*:|$)/) || [])[1]);
+    const parent = stack[stack.length - 1];
+    const node = { id: name, name, kind: kind.toLowerCase(), parent, depth: parent.depth + 1, children: [], ins, outs, isContainer: opens, line: ln };
+    node.shape = SHAPES[node.kind] || 'box';
+    if (!addNode(node, ln)) return;
+    parent.children.push(node);
+    if (opens) stack.push(node);
+  });
+  if (stack.length > 1) errors.push({ line: lines.length, msg: `"${stack[stack.length - 1].name}" is missing a closing "}".` });
+
+  // resolve edges, auto-create undeclared ports
+  const good = [];
+  for (const e of edges) {
+    const A = byName.get(e.from), B = byName.get(e.to);
+    if (!A) { errors.push({ line: e.line, msg: `Unknown component "${e.from}".` }); continue; }
+    if (!B) { errors.push({ line: e.line, msg: `Unknown component "${e.to}".` }); continue; }
+    if (A === B) { errors.push({ line: e.line, msg: `"${e.from}" connects to itself.` }); continue; }
+    if (A.isContainer || B.isContainer) {
+      // container-level edge: attach to container without ports
+      e.fromPort = null; e.toPort = null;
+    } else {
+      if (!e.fromPort) e.fromPort = A.outs[0] || '_out';
+      if (!e.toPort) e.toPort = B.ins[0] || '_in';
+      if (!A.outs.includes(e.fromPort)) { if (A.ins.includes(e.fromPort)) { /* allow using an in-port as source */ } else A.outs.push(e.fromPort); }
+      if (!B.ins.includes(e.toPort)) { if (B.outs.includes(e.toPort)) { } else B.ins.push(e.toPort); }
+    }
+    e.A = A; e.B = B; good.push(e);
+  }
+  return { root, byName, edges: good, errors };
+}
+
+function portSide(node, p) { return node.ins.includes(p) ? 'WEST' : 'EAST'; }
+
+function buildElk(model, opts = {}) {
+  const dir = opts.direction || 'RIGHT';
+  const toElk = n => {
+    if (n.isContainer) {
+      return {
+        id: n.id,
+        layoutOptions: { 'elk.padding': '[top=46,left=26,bottom=26,right=26]' },
+        children: n.children.map(toElk)
+      };
+    }
+    const portCount = Math.max(n.ins.filter(p => !p.startsWith('_')).length, n.outs.filter(p => !p.startsWith('_')).length, 1);
+    const w = Math.max(120, n.name.length * 9 + 44);
+    const h = Math.max(64, portCount * 24 + 24);
+    const ports = [];
+    n.ins.forEach(p => ports.push({ id: n.id + '.' + p, width: 10, height: 10, layoutOptions: { 'elk.port.side': 'WEST' } }));
+    n.outs.forEach(p => ports.push({ id: n.id + '.' + p, width: 10, height: 10, layoutOptions: { 'elk.port.side': 'EAST' } }));
+    return { id: n.id, width: w, height: h, ports, layoutOptions: { 'elk.portConstraints': 'FIXED_SIDE' } };
+  };
+  return {
+    id: '__root',
+    layoutOptions: {
+      'elk.algorithm': 'layered',
+      'elk.direction': dir,
+      'elk.hierarchyHandling': 'INCLUDE_CHILDREN',
+      'elk.edgeRouting': 'ORTHOGONAL',
+      'elk.json.edgeCoords': 'ROOT',
+      'elk.layered.spacing.nodeNodeBetweenLayers': '70',
+      'elk.spacing.nodeNode': '44',
+      'elk.layered.spacing.edgeNodeBetweenLayers': '24',
+      'elk.spacing.edgeEdge': '14',
+      'elk.layered.crossingMinimization.strategy': 'LAYER_SWEEP',
+      'elk.layered.nodePlacement.strategy': 'NETWORK_SIMPLEX',
+      'elk.padding': '[top=30,left=30,bottom=30,right=30]'
+    },
+    children: model.root.children.map(toElk),
+    edges: model.edges.map((e, i) => ({
+      id: 'e' + i,
+      sources: [e.fromPort ? e.A.id + '.' + e.fromPort : e.A.id],
+      targets: [e.toPort ? e.B.id + '.' + e.toPort : e.B.id]
+    }))
+  };
+}
+
+// Flatten ELK output to absolute 2D boxes, port positions and edge polylines.
+function flattenLayout(model, laid) {
+  const boxes = new Map(), ports = new Map();
+  const walk = (en, ox, oy) => {
+    for (const c of en.children || []) {
+      const x = ox + c.x, y = oy + c.y;
+      boxes.set(c.id, { x, y, w: c.width, h: c.height });
+      for (const p of c.ports || []) ports.set(p.id, { x: x + p.x + p.width / 2, y: y + p.y + p.height / 2 });
+      walk(c, x, y);
+    }
+  };
+  walk(laid, 0, 0);
+  // elkjs reports edge sections relative to the lowest common container of both ends.
+  const ancestors = n => { const a = []; let p = n.parent; while (p) { a.push(p); p = p.parent; } return a; };
+  const routes = model.edges.map((e, i) => {
+    const le = (laid.edges || []).find(x => x.id === 'e' + i);
+    const s = le && le.sections && le.sections[0];
+    if (!s) return null;
+    const bset = new Set(ancestors(e.B));
+    const lca = ancestors(e.A).find(x => bset.has(x));
+    const o = (!lca || lca.id === '__root') ? { x: 0, y: 0 } : boxes.get(lca.id);
+    return [s.startPoint, ...(s.bendPoints || []), s.endPoint].map(p => ({ x: p.x + o.x, y: p.y + o.y }));
+  });
+  return { boxes, ports, routes, width: laid.width, height: laid.height };
+}
+
+if (typeof module !== 'undefined') module.exports = { parseDSL, buildElk, flattenLayout };
+
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+import { Line2 } from 'three/addons/lines/Line2.js';
+import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
+import { LineGeometry } from 'three/addons/lines/LineGeometry.js';
+
+const $ = id => document.getElementById(id);
+const view = $('view'), canvas = $('gl'), srcEl = $('src');
+const COMP_H = 26, SLAB = 6, FOV = 40;
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// ---------- state ----------
+const S = { gap: 60, edgeMode: 'ortho', semantic: true, model: null, flat: null, selected: null, fitted: false };
+let comps = new Map(), conts = new Map(), edgeRecs = [], pickables = [];
+let P = {}; // palette
+
+// ---------- renderer / scene ----------
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+const labelRenderer = new CSS2DRenderer({ element: $('labels') });
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(FOV, 1, 1, 40000);
+camera.position.set(600, 900, 1100);
+const controls = new OrbitControls(camera, canvas);
+controls.enableDamping = true; controls.dampingFactor = 0.09; controls.screenSpacePanning = true;
+controls.maxPolarAngle = Math.PI * 0.49; controls.minDistance = 30; controls.maxDistance = 9000;
+scene.add(new THREE.HemisphereLight(0xffffff, 0x445566, 1.6));
+const sun = new THREE.DirectionalLight(0xffffff, 1.6); sun.position.set(-400, 900, 600); scene.add(sun);
+let world = new THREE.Group(); scene.add(world);
+let grid = null;
+
+function readPalette() {
+  const cs = getComputedStyle(document.documentElement);
+  const c = n => new THREE.Color(cs.getPropertyValue('--' + n).trim() || '#888');
+  P = { scene: c('scene'), grid: c('grid'), accent: c('accent'), in: c('in'), out: c('out'), comp: c('comp'), compEdge: c('compEdge'),
+    db: c('db'), queue: c('queue'), ext: c('ext'), plates: [c('plate0'), c('plate1'), c('plate2')], edge: c('edge'), ink: c('ink') };
+  scene.background = P.scene;
+}
+
+function resize() {
+  const w = view.clientWidth, h = view.clientHeight;
+  renderer.setSize(w, h, false); labelRenderer.setSize(w, h);
+  camera.aspect = w / Math.max(h, 1); camera.updateProjectionMatrix();
+  for (const e of edgeRecs) e.mat.resolution.set(w, h);
+}
+new ResizeObserver(resize).observe(view);
+
+// ---------- helpers ----------
+function disposeTree(o) { o.traverse(x => { if (x.geometry) x.geometry.dispose(); if (x.material) [].concat(x.material).forEach(m => m.dispose()); }); }
+function label(text, cls, sub) { const d = document.createElement('div'); d.className = 'lbl ' + (cls || ''); d.textContent = text;
+  if (sub) { const s = document.createElement('small'); s.textContent = sub; d.appendChild(s); } return new CSS2DObject(d); }
+const baseY = n => Math.max(0, n.depth) * S.gap;
+const portY = n => n.isContainer ? baseY(n) + SLAB : baseY(n) + COMP_H / 2;
+function subtreeDepth(n) { let d = n.depth; for (const c of n.children) d = Math.max(d, subtreeDepth(c)); return d; }
+
+// ---------- build scene from layout ----------
+function build() {
+  const { model, flat } = S; if (!model || !flat) return;
+  disposeTree(world); if (world.children.length) world.remove(...world.children);
+  comps = new Map(); conts = new Map(); edgeRecs = []; pickables = [];
+  const cx = flat.width / 2, cz = flat.height / 2;
+  const X = x => x - cx, Z = y => y - cz;
+
+  if (grid) { scene.remove(grid); disposeTree(grid); }
+  const gsize = Math.ceil(Math.max(flat.width, flat.height) * 1.6 / 100) * 100;
+  grid = new THREE.GridHelper(gsize, Math.round(gsize / 40), P.grid, P.grid); grid.position.y = -2; scene.add(grid);
+
+  const walk = n => {
+    for (const c of n.children) {
+      const b = flat.boxes.get(c.id); if (!b) continue;
+      const y0 = baseY(c);
+      if (c.isContainer) {
+        const slabMat = new THREE.MeshStandardMaterial({ color: P.plates[Math.min(c.depth, 2)], roughness: .9, transparent: true, opacity: .96 });
+        const slab = new THREE.Mesh(new THREE.BoxGeometry(b.w, SLAB, b.h), slabMat);
+        slab.position.set(X(b.x + b.w / 2), y0 + SLAB / 2, Z(b.y + b.h / 2));
+        const top = subtreeDepth(c) * S.gap + COMP_H + 6;
+        const lidH = Math.max(top - y0, COMP_H + 10);
+        const lidMat = new THREE.MeshStandardMaterial({ color: P.plates[Math.min(c.depth, 2)].clone().lerp(P.ink, .08), roughness: .7, transparent: true, opacity: 0 });
+        const lid = new THREE.Mesh(new THREE.BoxGeometry(b.w, lidH, b.h), lidMat);
+        lid.position.set(slab.position.x, y0 + lidH / 2, slab.position.z);
+        const edgesG = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(b.w, lidH, b.h)), new THREE.LineBasicMaterial({ color: P.compEdge, transparent: true, opacity: 0 }));
+        lid.add(edgesG);
+        const lbl = label(c.name, 'c', c.kind);
+        world.add(slab, lid, lbl);
+        const rec = { node: c, slab, lid, lidMat, lidEdges: edgesG, label: lbl, box: b, lidH, open: 1,
+          corner: new THREE.Vector3(X(b.x) + 10, y0 + SLAB + 2, Z(b.y) + 16), lidTop: new THREE.Vector3(slab.position.x, y0 + lidH + 4, slab.position.z),
+          center: new THREE.Vector3(slab.position.x, y0 + lidH / 2, slab.position.z), diag: Math.hypot(b.w, b.h) };
+        slab.userData.rec = rec; lid.userData.rec = rec; conts.set(c.id, rec); pickables.push(slab, lid);
+        walk(c);
+      } else {
+        const col = c.shape === 'db' ? P.db : c.shape === 'queue' ? P.queue : c.shape === 'ext' ? P.ext : P.comp;
+        const mat = new THREE.MeshStandardMaterial({ color: col, roughness: .55, metalness: .05, transparent: true, opacity: c.shape === 'ext' ? .8 : 1 });
+        const h = c.shape === 'queue' ? COMP_H * .6 : COMP_H;
+        let geo;
+        if (c.shape === 'db') { geo = new THREE.CylinderGeometry(.5, .5, h, 40); geo.scale(b.w, 1, b.h); }
+        else geo = new THREE.BoxGeometry(b.w, h, b.h);
+        const mesh = new THREE.Mesh(geo, mat);
+        mesh.position.set(X(b.x + b.w / 2), y0 + h / 2, Z(b.y + b.h / 2));
+        const outline = new THREE.LineSegments(new THREE.EdgesGeometry(geo, 30), new THREE.LineBasicMaterial({ color: P.compEdge, transparent: true }));
+        mesh.add(outline);
+        const lbl = label(c.name, '', c.kind === 'component' ? '' : c.kind);
+        lbl.position.set(mesh.position.x, y0 + h + 4, mesh.position.z); lbl.center.set(.5, 1);
+        world.add(mesh, lbl);
+        const rec = { node: c, mesh, mat, outline, label: lbl, box: b, ports: [], baseOpacity: mat.opacity };
+        for (const side of ['ins', 'outs']) for (const p of c[side]) {
+          const pp = flat.ports.get(c.id + '.' + p); if (!pp) continue;
+          const isIn = side === 'ins';
+          const pm = new THREE.Mesh(new THREE.SphereGeometry(5, 16, 12), new THREE.MeshStandardMaterial({ color: isIn ? P.in : P.out, roughness: .4, transparent: true }));
+          pm.position.set(X(pp.x), y0 + COMP_H / 2, Z(pp.y));
+          world.add(pm);
+          let pl = null;
+          if (!p.startsWith('_')) { pl = label(p, 'p ' + (isIn ? 'in' : 'out')); pl.position.set(pm.position.x + (isIn ? -8 : 8), pm.position.y + 8, pm.position.z);
+            pl.center.set(isIn ? 1 : 0, .5); world.add(pl); }
+          rec.ports.push({ mesh: pm, label: pl });
+        }
+        mesh.userData.rec = rec; comps.set(c.id, rec); pickables.push(mesh);
+      }
+    }
+  };
+  walk(model.root);
+
+  // edges
+  model.edges.forEach((e, i) => {
+    const r = flat.routes[i]; if (!r) return;
+    const pA = e.fromPort ? flat.ports.get(e.A.id + '.' + e.fromPort) : null;
+    const pB = e.toPort ? flat.ports.get(e.B.id + '.' + e.toPort) : null;
+    const yA = portY(e.A), yB = portY(e.B);
+    const s0 = pA ? { x: pA.x, y: pA.y } : r[0], s1 = pB ? { x: pB.x, y: pB.y } : r[r.length - 1];
+    let pts = [];
+    if (S.edgeMode === 'ortho') {
+      const hc = Math.max(yA, yB);
+      const route = r.slice(); route[0] = { x: route[0].x, y: route[0].y }; // ELK endpoints sit on port faces
+      const v = (x, y, h) => new THREE.Vector3(X(x), h, Z(y));
+      pts.push(v(s0.x, s0.y, yA));
+      // leave the port horizontally, then climb to cable height
+      const d0 = dirOf(route[0], route[1]), lead = 14;
+      const a1 = { x: route[0].x + d0.x * lead, y: route[0].y + d0.y * lead };
+      pts.push(v(a1.x, a1.y, yA)); if (hc - yA > .5) pts.push(v(a1.x, a1.y, hc));
+      for (let k = 1; k < route.length - 1; k++) pts.push(v(route[k].x, route[k].y, hc));
+      const n = route.length - 1, dn = dirOf(route[n - 1], route[n]);
+      const b1 = { x: route[n].x - dn.x * lead, y: route[n].y - dn.y * lead };
+      pts.push(v(b1.x, b1.y, hc)); if (hc - yB > .5) pts.push(v(b1.x, b1.y, yB));
+      pts.push(v(s1.x, s1.y, yB));
+      pts = dedupe(pts);
+    } else {
+      const a = new THREE.Vector3(X(s0.x), yA, Z(s0.y)), b = new THREE.Vector3(X(s1.x), yB, Z(s1.y));
+      const mid = a.clone().add(b).multiplyScalar(.5); mid.y = Math.max(yA, yB) + a.distanceTo(b) * .32 + 24;
+      pts = new THREE.QuadraticBezierCurve3(a, mid, b).getPoints(48);
+    }
+    const geo = new LineGeometry(); geo.setPositions(pts.flatMap(p => [p.x, p.y, p.z]));
+    const mat = new LineMaterial({ color: P.edge, linewidth: 2, transparent: true, opacity: .95, dashed: e.async, dashSize: 8, gapSize: 6, worldUnits: false });
+    mat.resolution.set(view.clientWidth, view.clientHeight);
+    const line = new Line2(geo, mat); line.computeLineDistances(); world.add(line);
+    // arrow head
+    const end = pts[pts.length - 1], prev = pts[pts.length - 2];
+    const cone = new THREE.Mesh(new THREE.ConeGeometry(4.5, 12, 14), new THREE.MeshBasicMaterial({ color: P.edge, transparent: true }));
+    const dir = end.clone().sub(prev).normalize();
+    cone.position.copy(end).addScaledVector(dir, -6); cone.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir); world.add(cone);
+    let lbl = null;
+    if (e.label) { // place on the longest segment
+      let best = 0, at = pts[0];
+      for (let k = 1; k < pts.length; k++) { const d = pts[k].distanceTo(pts[k - 1]); if (d > best) { best = d; at = pts[k].clone().add(pts[k - 1]).multiplyScalar(.5); } }
+      lbl = label(e.label, 'e'); lbl.position.copy(at).add(new THREE.Vector3(0, 7, 0)); world.add(lbl);
+    }
+    edgeRecs.push({ e, line, mat, cone, label: lbl, len: pathLen(pts) });
+  });
+  applySelection();
+}
+function dirOf(a, b) { const dx = b.x - a.x, dy = b.y - a.y, l = Math.hypot(dx, dy) || 1; return { x: dx / l, y: dy / l }; }
+function dedupe(pts) { return pts.filter((p, k) => k === 0 || p.distanceTo(pts[k - 1]) > .01); }
+function pathLen(pts) { let s = 0; for (let k = 1; k < pts.length; k++) s += pts[k].distanceTo(pts[k - 1]); return s; }
+
+// ---------- layout ----------
+const elk = new ELK();
+let layoutToken = 0;
+async function relayout() {
+  const tok = ++layoutToken;
+  const model = parseDSL(srcEl.value);
+  $('errors').textContent = model.errors.map(e => `Line ${e.line}: ${e.msg}`).join('\n');
+  const t0 = performance.now();
+  try {
+    const laid = await elk.layout(buildElk(model));
+    if (tok !== layoutToken) return;
+    const flat = flattenLayout(model, laid);
+    S.model = model; S.flat = flat;
+    const nComp = [...model.byName.values()].filter(n => !n.isContainer).length;
+    $('stats').textContent = `${nComp} components · ${model.byName.size - nComp} containers · ${model.edges.length} links · layout ${Math.round(performance.now() - t0)} ms`;
+    if (S.selected && !model.byName.has(S.selected)) S.selected = null;
+    build();
+    if (!S.fitted) { S.fitted = true; fitAll(true); }
+    renderInfo();
+  } catch (err) { $('errors').textContent += (model.errors.length ? '\n' : '') + 'Layout failed: ' + (err.message || err); }
+}
+
+// ---------- camera flights ----------
+let flight = null;
+function flyToBox(center, radius, instant) {
+  const dir = camera.position.clone().sub(controls.target).normalize();
+  if (dir.y < .35) { dir.y = .35; dir.normalize(); }
+  const dist = radius / Math.sin(THREE.MathUtils.degToRad(FOV / 2)) * 1.05;
+  const toPos = center.clone().addScaledVector(dir, dist), toTarget = center.clone();
+  if (instant || reduceMotion) { camera.position.copy(toPos); controls.target.copy(toTarget); controls.update(); return; }
+  flight = { t0: performance.now(), dur: 750, fromPos: camera.position.clone(), fromTarget: controls.target.clone(), toPos, toTarget };
+}
+function fitAll(instant) {
+  const f = S.flat; if (!f) return;
+  const r = Math.hypot(f.width, f.height) / 2;
+  flyToBox(new THREE.Vector3(0, 0, 0), r * .92, instant);
+}
+function flyToNode(n) {
+  if (n.isContainer) { const r = conts.get(n.id); if (r) flyToBox(r.center.clone(), r.diag / 2 * .85); }
+  else { const r = comps.get(n.id); if (r) flyToBox(r.mesh.position.clone(), Math.hypot(r.box.w, r.box.h) / 2 * 1.9); }
+}
+const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+// ---------- selection ----------
+function applySelection() {
+  const sel = S.selected ? S.model.byName.get(S.selected) : null;
+  const inside = n => { if (!sel) return true; let p = n; while (p) { if (p === sel) return true; p = p.parent; } return false; };
+  const touched = new Set();
+  for (const r of edgeRecs) {
+    const hit = !sel || inside(r.e.A) || inside(r.e.B);
+    r.hit = hit;
+    if (hit && sel) { touched.add(r.e.A.id); touched.add(r.e.B.id); }
+    r.mat.color.copy(sel && hit ? P.accent : P.edge); r.mat.linewidth = sel && hit ? 3 : 2; r.mat.opacity = hit ? .95 : .12;
+    r.cone.material.color.copy(r.mat.color); r.cone.material.opacity = r.mat.opacity;
+  }
+  for (const r of comps.values()) {
+    const on = !sel || inside(r.node) || touched.has(r.node.id);
+    r.mat.opacity = on ? r.baseOpacity : .18; r.outline.material.opacity = on ? 1 : .15;
+    r.mat.emissive.copy(sel && inside(r.node) ? P.accent : new THREE.Color(0)); r.mat.emissiveIntensity = .35;
+    r.ports.forEach(p => p.mesh.material.opacity = on ? 1 : .15);
+    r.dim = !on;
+  }
+}
+function renderInfo() {
+  const box = $('info');
+  const n = S.selected && S.model ? S.model.byName.get(S.selected) : null;
+  if (!n) { box.hidden = true; return; }
+  const path = []; let p = n.parent; while (p && p.id !== '__root') { path.unshift(p); p = p.parent; }
+  const out = S.model.edges.filter(e => e.A === n).map(e => e.B.name + (e.label ? ` (${e.label})` : ''));
+  const inc = S.model.edges.filter(e => e.B === n).map(e => e.A.name + (e.label ? ` (${e.label})` : ''));
+  box.innerHTML = '';
+  const crumbs = document.createElement('div'); crumbs.className = 'crumbs';
+  const ov = document.createElement('button'); ov.textContent = 'All'; ov.onclick = () => { select(null); fitAll(); }; crumbs.append(ov);
+  path.forEach(c => { crumbs.append(' › '); const b = document.createElement('button'); b.textContent = c.name; b.onclick = () => { select(c.id); flyToNode(c); }; crumbs.append(b); });
+  const h = document.createElement('h3'); h.textContent = n.name; const k = document.createElement('small'); k.textContent = n.kind; h.append(k);
+  const dl = document.createElement('dl');
+  const row = (t, v) => { if (!v) return; const dt = document.createElement('dt'); dt.textContent = t; const dd = document.createElement('dd'); dd.textContent = v; dl.append(dt, dd); };
+  if (n.isContainer) {
+    const count = x => x.children.reduce((s, c) => s + (c.isContainer ? count(c) : 1), 0);
+    row('Holds', `${count(n)} components`);
+    const ins = new Set(), outs = new Set(); const within = x => { let q = x; while (q) { if (q === n) return true; q = q.parent; } return false; };
+    S.model.edges.forEach(e => { const a = within(e.A), b = within(e.B); if (a && !b) outs.add(e.B.name); if (b && !a) ins.add(e.A.name); });
+    row('Calls out to', [...outs].join(', ') || '—'); row('Called by', [...ins].join(', ') || '—');
+  } else {
+    row('In ports', n.ins.filter(x => !x.startsWith('_')).join(', ') || '—');
+    row('Out ports', n.outs.filter(x => !x.startsWith('_')).join(', ') || '—');
+    row('Depends on', out.join(', ') || '—'); row('Used by', inc.join(', ') || '—');
+  }
+  box.append(crumbs, h, dl); box.hidden = false;
+}
+function select(id) { S.selected = id; applySelection(); renderInfo(); }
+
+// ---------- picking ----------
+const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
+let down = null, lastTap = { t: 0, id: undefined };
+canvas.addEventListener('pointerdown', e => { down = { x: e.clientX, y: e.clientY }; });
+canvas.addEventListener('pointerup', e => {
+  if (!down || Math.hypot(e.clientX - down.x, e.clientY - down.y) > 6) { down = null; return; }
+  down = null;
+  const rc = canvas.getBoundingClientRect();
+  ndc.set(((e.clientX - rc.left) / rc.width) * 2 - 1, -((e.clientY - rc.top) / rc.height) * 2 + 1);
+  ray.setFromCamera(ndc, camera);
+  const cand = pickables.filter(m => m.visible && (!m.userData.rec.lid || m !== m.userData.rec.lid || m.userData.rec.lidMat.opacity > .45));
+  const hit = ray.intersectObjects(cand, false)[0];
+  const id = hit ? hit.object.userData.rec.node.id : null;
+  const now = performance.now();
+  if (id && lastTap.id === id && now - lastTap.t < 380) { flyToNode(S.model.byName.get(id)); lastTap = { t: 0 }; }
+  else lastTap = { t: now, id };
+  select(id);
+  $('hint').hidden = true;
+});
+
+// ---------- per-frame semantic zoom ----------
+const tmp = new THREE.Vector3();
+function pxPerUnit(dist) { return (view.clientHeight / 2) / (dist * Math.tan(THREE.MathUtils.degToRad(FOV / 2))); }
+function frame() {
+  // closed-container state, outermost first
+  const closed = new Set();
+  const visit = (n, hiddenAbove) => {
+    for (const c of n.children) {
+      if (c.isContainer) {
+        const r = conts.get(c.id); if (!r) continue;
+        const dist = camera.position.distanceTo(r.center);
+        const ratio = dist / r.diag;
+        let open = S.semantic ? THREE.MathUtils.clamp((3.0 - ratio) / 0.9, 0, 1) : 1;
+        if (S.selected === c.id && ratio < 3.4) open = 1;
+        r.open += (open - r.open) * .18;
+        const lidOp = (1 - r.open) * .94;
+        const shown = !hiddenAbove;
+        r.slab.visible = shown; r.lid.visible = shown && lidOp > .02;
+        r.lidMat.opacity = lidOp; r.lidEdges.material.opacity = lidOp; r.lidMat.depthWrite = lidOp > .8;
+        const isClosed = lidOp > .8;
+        if (isClosed || hiddenAbove) closed.add(c.id);
+        // label
+        const px = r.diag * pxPerUnit(dist);
+        r.label.visible = shown && px > 70;
+        r.label.position.copy(isClosed ? r.lidTop : r.corner);
+        r.label.element.classList.toggle('closed', isClosed);
+        r.label.center.set(isClosed ? .5 : 0, isClosed ? 1 : .5);
+        visit(c, hiddenAbove || isClosed);
+      } else {
+        const r = comps.get(c.id); if (!r) continue;
+        const shown = !hiddenAbove;
+        r.mesh.visible = shown; r.ports.forEach(p => { p.mesh.visible = shown; });
+        const dist = camera.position.distanceTo(r.mesh.position), k = pxPerUnit(dist);
+        r.label.visible = shown && r.box.w * k > 48;
+        const showPorts = shown && r.box.h * k > 120 && !r.dim;
+        r.ports.forEach(p => { if (p.label) p.label.visible = showPorts; });
+      }
+    }
+  };
+  visit(S.model ? S.model.root : { children: [] }, false);
+  const hiddenNode = n => { let p = n.parent; while (p) { if (closed.has(p.id)) return p; p = p.parent; } return null; };
+  for (const r of edgeRecs) {
+    const ha = hiddenNode(r.e.A), hb = hiddenNode(r.e.B);
+    const sameBox = ha && hb && (ha === hb || isAnc(ha, hb) || isAnc(hb, ha));
+    r.line.visible = r.cone.visible = !sameBox;
+    if (r.label) {
+      const dist = camera.position.distanceTo(r.label.position);
+      r.label.visible = !ha && !hb && r.hit && r.len * pxPerUnit(dist) > 160;
+    }
+  }
+}
+function isAnc(a, b) { let p = b.parent; while (p) { if (p === a) return true; p = p.parent; } return false; }
+
+function loop(now) {
+  requestAnimationFrame(loop);
+  if (flight) {
+    const t = Math.min(1, (now - flight.t0) / flight.dur), k = ease(t);
+    camera.position.lerpVectors(flight.fromPos, flight.toPos, k); controls.target.lerpVectors(flight.fromTarget, flight.toTarget, k);
+    if (t >= 1) flight = null;
+  }
+  controls.update();
+  if (S.model) frame();
+  renderer.render(scene, camera); labelRenderer.render(scene, camera);
+}
+
+// ---------- UI wiring ----------
+let deb = null;
+srcEl.addEventListener('input', () => { clearTimeout(deb); deb = setTimeout(relayout, 450); });
+srcEl.addEventListener('keydown', e => { if (e.key === 'Tab') { e.preventDefault(); const s = srcEl.selectionStart; srcEl.setRangeText('  ', s, srcEl.selectionEnd, 'end'); } });
+$('gap').addEventListener('input', e => { S.gap = +e.target.value; build(); });
+const seg = (a, b, on) => { $(a).setAttribute('aria-pressed', on); $(b).setAttribute('aria-pressed', !on); };
+$('eOrtho').onclick = () => { S.edgeMode = 'ortho'; seg('eOrtho', 'eArc', true); build(); };
+$('eArc').onclick = () => { S.edgeMode = 'arc'; seg('eOrtho', 'eArc', false); build(); };
+$('zAuto').onclick = () => { S.semantic = true; seg('zAuto', 'zOpen', true); };
+$('zOpen').onclick = () => { S.semantic = false; seg('zAuto', 'zOpen', false); };
+$('overview').onclick = () => { select(null); fitAll(); };
+const mq = matchMedia('(max-width: 760px)');
+const syncEditor = () => { $('editor').classList.toggle('closed', mq.matches); $('toggleEditor').textContent = 'Model'; };
+mq.addEventListener('change', syncEditor); syncEditor();
+$('toggleEditor').onclick = () => { const ed = $('editor'); ed.classList.toggle('closed'); $('toggleEditor').textContent = ed.classList.contains('closed') ? 'Model' : 'Close'; };
+const rethem = () => { readPalette(); build(); };
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', rethem);
+new MutationObserver(rethem).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+srcEl.value = $('sample').textContent.trim() + '\n';
+readPalette(); resize(); relayout(); requestAnimationFrame(loop);
+window.__archiReady = true;
+</script>
+<script>
+// Library load guard: if the CDN scripts are blocked the page says so instead of staying blank.
+setTimeout(() => { if (window.__archiReady) return;
+  const v = document.getElementById('view'); const d = document.createElement('div'); d.className = 'fail';
+  d.textContent = 'The 3D or layout library did not load. Check your connection and reload the page.'; v.append(d); }, 8000);
+</script>

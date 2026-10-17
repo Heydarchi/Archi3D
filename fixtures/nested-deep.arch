@@ -1,0 +1,23 @@
+# Four levels of nesting, links that cross levels
+system Platform {
+  domain Payments {
+    container Billing {
+      component Invoicer   in: bill    out: ledger, notify
+      component Ledger     in: post
+    }
+    container Risk {
+      component Scorer     in: score
+    }
+  }
+  domain Messaging {
+    queue Bus              in: publish out: deliver
+    component Mailer       in: send
+  }
+}
+external Merchant          out: charge
+
+Merchant.charge  -> Invoicer.bill
+Invoicer.ledger  -> Ledger.post
+Invoicer.notify  => Bus.publish : InvoiceIssued
+Bus.deliver      => Mailer.send
+Invoicer         -> Scorer.score : check

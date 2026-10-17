@@ -1,0 +1,7 @@
+# Smallest useful model: three components, two links
+ui Web            out: api
+service Api       in: api   out: db
+database Store    in: db
+
+Web.api -> Api.api : HTTPS
+Api.db  -> Store.db

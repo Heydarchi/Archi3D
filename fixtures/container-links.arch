@@ -1,0 +1,11 @@
+# Links between containers (no ports) and between a component and a container
+container Frontend {
+  ui App
+}
+container Backend {
+  service Core
+  database Main
+}
+Frontend -> Backend : REST
+Core -> Main
+App <- Core : push

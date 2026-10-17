@@ -1,0 +1,3 @@
+component A  in: x
+component B  in: y
+A.x -> B.y
