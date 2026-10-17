@@ -35,14 +35,18 @@ export interface Editor {
   showDiagnostics(diagnostics: Diagnostic[]): void;
 }
 
-export function createEditor(parent: HTMLElement, initial: string, onChange: (text: string) => void): Editor {
+/** `onSave`: Ctrl/Cmd+S inside the editor. */
+export function createEditor(parent: HTMLElement, initial: string, onChange: (text: string) => void, onSave?: () => void): Editor {
   const view = new EditorView({
     parent,
     state: EditorState.create({
       doc: initial,
       extensions: [
         lineNumbers(), highlightActiveLine(), history(), lintGutter(),
-        keymap.of([...defaultKeymap, ...historyKeymap, indentWithTab]),
+        keymap.of([
+          ...(onSave ? [{ key: 'Mod-s', preventDefault: true, run: () => { onSave(); return true; } }] : []),
+          ...defaultKeymap, ...historyKeymap, indentWithTab,
+        ]),
         archLanguage, syntaxHighlighting(highlight), theme, EditorView.lineWrapping,
         EditorView.updateListener.of((u) => { if (u.docChanged) onChange(u.state.doc.toString()); }),
       ],
