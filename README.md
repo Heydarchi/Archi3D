@@ -6,31 +6,42 @@
 
 <p align="center">See your software architecture in 3D.</p>
 
-You describe your system in a small text file: components, their ports and the links between
+You describe your system in a small text file: elements, their ports and the links between
 them. Archi3D shows it in 3D. Containers are drawn as levels on top of each other, so you can see
 the nesting. You can rotate, zoom in and click on things.
 
-![AOSP camera stack in Archi3D](examples/07-aosp-camera.png)
+![Every element and link kind in Archi3D](examples/09-legend.png)
 
 A model looks like this:
 
 ```
+user User "Shopper"
 system Shop {
+  app Mobile "Shop app"
   container Backend {
     service Orders    in: api      out: db, pay
     database OrderDB  in: db
+    topic Events "Order events"
   }
 }
 external Payments   in: charge
 
+User       -> Mobile : tap
+Mobile    <=> Orders.api : WebSocket
 Orders.db  -> OrderDB.db
 Orders.pay -> Payments.charge : HTTPS
+Orders     ~> Events : OrderPlaced
 ```
+
+The keyword (`user`, `app`, `service`, `database`, `topic`...) picks the shape, and the arrow picks
+how the link looks: `->` call, `=>` message, `~>` event, `<=>` session, `>>` stream, `<>` shared.
+The same short list works for Android, AOSP and Linux. See the [user guide](docs/USER_GUIDE.md#3-the-language).
 
 ## Features
 
 - Edit the model in the browser and see the 3D view update while you type. Errors are underlined.
 - Click to select, double click to fly in. Big models close their containers when you zoom out.
+- Hide the editor (button or key `E`) to give the 3D view the whole window.
 - Import Mermaid `architecture-beta` and D2 files.
 - Export one HTML file that works offline (`npm run export`).
 - Render a PNG from the command line (`npm run render -- model.arch3d`).
@@ -57,8 +68,8 @@ while you type and can save the view as PNG or as an offline HTML file. Install 
 
 ## Docs
 
-- [User guide](docs/USER_GUIDE.md): how to use the app, the language, examples (also an Android
-  app and the AOSP camera stack), import/export, all scripts, WSL and VS Code.
+- [User guide](docs/USER_GUIDE.md): how to use the app, the language, examples (an Android
+  app, the AOSP camera stack, a Linux desktop and a legend), import/export, all scripts, WSL and VS Code.
 - [Deployment](docs/DEPLOY.md): put it on your own domain.
 - [Grammar](docs/GRAMMAR.md) and [architecture](docs/ARCHITECTURE.md).
 - [Build plan](docs/PLAN.md): the steps I followed to build it.
