@@ -5,7 +5,7 @@
 // Only the file given on the command line can be read or written. .mmd/.d2 files are read-only;
 // saving writes the converted model to a sibling .arch file.
 import { createHash } from 'node:crypto';
-import { existsSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, renameSync, unwatchFile, watchFile, writeFileSync } from 'node:fs';
 import { basename, dirname, extname, join, resolve } from 'node:path';
 
 export const FILE_ENDPOINT = '/__archi/file';
@@ -80,16 +80,18 @@ export function archiFilePlugin(filePath) {
         }
       });
 
-      server.watcher.add(file);
-      const onDisk = (changed) => {
-        if (resolve(changed) !== file) return;
+      // Our own watcher: Vite's skips git-ignored folders, and polling one file also works on
+      // network drives, WSL's /mnt and with editors that save by renaming a temp file.
+      let seen = hashText(readText(file));
+      watchFile(file, { interval: 250 }, () => {
         const text = readText(file);
         const hash = hashText(text);
+        if (hash === seen) return;
+        seen = hash;
         if (hash === lastWritten) return;
         server.ws.send({ type: 'custom', event: 'archi:file', data: { text, hash } });
-      };
-      server.watcher.on('change', onDisk);
-      server.watcher.on('add', onDisk);
+      });
+      server.httpServer?.on('close', () => unwatchFile(file));
     },
     // The model file may live inside the project (e.g. fixtures/): never hot-reload the page for it.
     handleHotUpdate(ctx) {
