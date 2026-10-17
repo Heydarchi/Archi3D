@@ -1,5 +1,5 @@
 // "npm run dev -- model.arch3d": open a file from disk, edit it in the app, save it back,
-// and stay in step with changes other programs make — against a real dev server.
+// and follow the changes other programs make. Runs against a real dev server.
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import type { AddressInfo } from 'node:net';
 import { join } from 'node:path';
@@ -60,7 +60,7 @@ test('edit a model file and save it back; follow changes made on disk', async ({
     writeFileSync(file, `${readFileSync(file, 'utf8')}\nexternal Mailer in: send\nOrders -> Mailer.send\n`);
     await waitLayout(page, rev);
     await expect(page.locator('.cm-content')).toContainText('external Mailer');
-    await expect(page.locator('#import-note')).toHaveText('Reloaded — the file changed on disk');
+    await expect(page.locator('#import-note')).toHaveText('Reloaded, the file changed on disk');
     expect(await page.evaluate(() => window.__archi.screenPos!('Mailer'))).not.toBeNull();
 
     // A change on disk while there are unsaved edits → ask, never overwrite silently.
@@ -86,7 +86,7 @@ test('a new file starts from a small example and is created on first save', asyn
   const file = join(dir, 'new-model.arch3d');
   const server = await open(page, file);
   try {
-    await expect(page.locator('#import-note')).toHaveText('New file — Save creates it');
+    await expect(page.locator('#import-note')).toHaveText('New file, Save creates it');
     await expect(page.locator('.cm-content')).toContainText('database Store');
     await page.locator('#save').click();
     await expect(page.locator('#import-note')).toHaveText('Saved new-model.arch3d');
@@ -103,7 +103,7 @@ test('a Mermaid file opens converted and saves to a sibling .arch3d, untouched i
   writeFileSync(file, original);
   const server = await open(page, file);
   try {
-    await expect(page.locator('#import-note')).toHaveText('Imported — Save writes flow.arch3d');
+    await expect(page.locator('#import-note')).toHaveText('Imported, Save writes flow.arch3d');
     await expect(page.locator('.cm-content')).toContainText('group shop {');
     await page.locator('#save').click();
     await expect(page.locator('#import-note')).toHaveText('Saved flow.arch3d');

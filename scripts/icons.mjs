@@ -129,7 +129,7 @@ export const icons = {
       dot(P, 4, 4, 7.2, 8, C.orange),
     ].join(''));
   },
-  // 6. A closed container (lid) linked to a component — semantic zoom in one picture.
+  // 6. A closed container (lid) linked to a component, like semantic zoom.
   lid: () => {
     const P = iso(14, 128, 80);
     return tile(C.navy, [

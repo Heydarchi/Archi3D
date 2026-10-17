@@ -6,7 +6,7 @@ export const PLACEHOLDER_PUBLISHER = 'archi3d-local';
 
 /** A Marketplace publisher ID: letters, digits and hyphens, no spaces (not the display name). */
 export function publisherIdProblem(id) {
-  if (!id) return 'missing — pass --publisher <id>';
+  if (!id) return 'missing, add --publisher <id>';
   if (/\s/.test(id)) return `"${id}" has spaces: that looks like the display name; the ID is the short name in marketplace.visualstudio.com/manage/publishers/<id>`;
   if (!/^[A-Za-z0-9][A-Za-z0-9-]*$/.test(id)) return `"${id}" may only contain letters, digits and hyphens`;
   if (id === PLACEHOLDER_PUBLISHER) return 'still the placeholder publisher';

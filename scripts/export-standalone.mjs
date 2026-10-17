@@ -90,7 +90,7 @@ export function standaloneModules({ workerCode, workerWithoutElk = '', cdnUrls =
 }
 
 /**
- * `model` is a file path; or pass `source` (+ `name`) directly — the VS Code extension builds a
+ * `model` is a file path. Or give `source` (and `name`) directly, the VS Code extension builds a
  * template with a placeholder source this way and fills it in at export time.
  */
 export async function exportStandalone({ model = join(root, 'fixtures', 'northwind.arch3d'), source, name, cdn = false, out } = {}) {

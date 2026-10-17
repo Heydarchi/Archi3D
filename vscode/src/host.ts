@@ -24,7 +24,7 @@ export interface Analysis {
 export function analyze(fileName: string, text: string): Analysis {
   const format = detectFormat(fileName, text);
   if (format === 'd2') {
-    return { format, archText: '', diagnostics: [], locations: {}, unsupported: 'D2 files are not previewed in VS Code yet — import them in the Archi3D app.' };
+    return { format, archText: '', diagnostics: [], locations: {}, unsupported: 'D2 files are not supported in the VS Code preview yet. You can import them in the Archi3D app.' };
   }
   const model = format === 'mermaid' ? fromMermaid(text) : buildModel(parse(text));
   const locations = Object.fromEntries(Object.values(model.nodes).map((n) => [n.id, n.loc]));

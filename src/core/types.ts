@@ -1,4 +1,4 @@
-// Contracts between the pipeline stages. See docs/ARCHITECTURE.md — change both together.
+// Contracts between the pipeline stages. See docs/ARCHITECTURE.md, always change both together.
 
 // ---------- shared ----------
 export type Id = string;                 // component or container name (unique per file)

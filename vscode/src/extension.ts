@@ -153,7 +153,7 @@ export function activate(ctx: vscode.ExtensionContext): void {
       });
       if (!target) return;
       await vscode.workspace.fs.writeFile(target, new TextEncoder().encode(fillTemplate(template, baseName(doc.uri).replace(/\.[^.]+$/, ''), a.archText)));
-      const open = await vscode.window.showInformationMessage(`Exported ${baseName(target)} — a single file that works offline.`, 'Open in browser');
+      const open = await vscode.window.showInformationMessage(`Exported ${baseName(target)}. It is one file and works offline.`, 'Open in browser');
       if (open) void vscode.env.openExternal(target);
     }),
   );
