@@ -81,7 +81,10 @@ if (args.includes('--package') || publish) {
     const r = spawnSync(process.execPath, [vsce, ...a], { cwd: ext, stdio: ['pipe', 'inherit', 'inherit'], input: 'y\n' });
     if (r.status !== 0) process.exit(r.status ?? 1);
   };
-  run('package', '--no-dependencies', '--out', vsix);
+  // The extension is in vscode/ of the repo, so README images and links must point there on GitHub.
+  const repoBase = 'https://github.com/Heydarchi/Archi3D';
+  run('package', '--no-dependencies', '--out', vsix,
+    '--baseImagesUrl', `${repoBase}/raw/HEAD/vscode`, '--baseContentUrl', `${repoBase}/blob/HEAD/vscode`);
   if (publish) {
     run('publish', '--packagePath', vsix);
     console.log(`published ${vsix}`);
