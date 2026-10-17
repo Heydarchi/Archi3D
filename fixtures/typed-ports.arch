@@ -1,0 +1,7 @@
+# Port interface types; one mismatch should raise W201
+service Gateway    out: orders:REST, search:gRPC
+service Orders     in: orders:REST
+service Search     in: query:GraphQL
+
+Gateway.orders -> Orders.orders
+Gateway.search -> Search.query

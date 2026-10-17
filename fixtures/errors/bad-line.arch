@@ -1,0 +1,4 @@
+component A
+-> B oops
+component B
+A -> B

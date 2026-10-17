@@ -1,0 +1,41 @@
+# Northwind Shop — example model
+# kind Name [in: a, b] [out: c]   |   A.port -> B.port : label
+
+external Customer        out: browse
+system Northwind {
+  container Storefront {
+    ui WebApp            in: browse    out: api
+    component BFF        in: api       out: orders, catalog, login
+  }
+  container Identity {
+    component AuthService  in: login   out: users
+    database UserDB        in: users
+  }
+  container Ordering {
+    component OrderAPI     in: orders  out: db, events, pay
+    database OrderDB       in: db
+    component Fulfilment   in: work    out: ship
+  }
+  container Catalog {
+    component CatalogAPI   in: catalog out: db, search
+    database ProductDB     in: db
+    component SearchIndex  in: query
+  }
+  queue EventBus           in: publish out: work
+}
+external PaymentGateway  in: charge
+external Carrier         in: label
+
+Customer.browse   -> WebApp.browse
+WebApp.api        -> BFF.api        : REST
+BFF.login         -> AuthService.login
+AuthService.users -> UserDB.users
+BFF.orders        -> OrderAPI.orders : REST
+BFF.catalog       -> CatalogAPI.catalog : gRPC
+OrderAPI.db       -> OrderDB.db
+OrderAPI.events   => EventBus.publish : OrderPlaced
+OrderAPI.pay      -> PaymentGateway.charge
+EventBus.work     => Fulfilment.work
+Fulfilment.ship   -> Carrier.label
+CatalogAPI.db     -> ProductDB.db
+CatalogAPI.search -> SearchIndex.query
