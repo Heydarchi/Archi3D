@@ -1,6 +1,7 @@
 // view=proj: a SceneSpec as two orthographic SVG views, top (x-z) and side (x-y, y up).
 import type { SceneSpec, V3 } from '../core/types';
 import { h, withStyles } from './html';
+import { LINK_SVG } from './linkStyle';
 import { s } from './svg';
 
 const PLATE_STROKE = ['#486581', '#627d98', '#829ab1', '#9fb3c8'];
@@ -27,12 +28,12 @@ function panel(scene: SceneSpec, axis: Axis, title: string, width: number, heigh
     svg.append(rect(p.center, p.size, { fill: axis === 'z' ? 'none' : '#d9e2ec', stroke: PLATE_STROKE[Math.min(p.depth, 3)], 'stroke-width': 1.5, 'data-plate': p.id }));
   }
   for (const b of scene.blocks) {
-    svg.append(rect(b.center, b.size, { fill: BLOCK_FILL[b.shape], stroke: '#52606d', 'stroke-width': 1, rx: b.shape === 'db' ? 6 : 1, 'data-block': b.id }));
+    svg.append(rect(b.center, b.size, { fill: BLOCK_FILL[b.shape] ?? BLOCK_FILL.box, stroke: '#52606d', 'stroke-width': 1, rx: b.shape === 'db' || b.shape === 'storage' || b.shape === 'cache' ? 6 : 1, 'data-block': b.id }));
   }
   for (const e of scene.edges) {
     svg.append(s('polyline', {
       points: e.points.map((p) => `${p.x},${vy(p)}`).join(' '), fill: 'none', stroke: '#243b53', 'stroke-width': 1.4,
-      ...(e.async ? { 'stroke-dasharray': '5 3' } : {}), 'data-edge': e.id,
+      ...(LINK_SVG[e.kind].dash ? { 'stroke-dasharray': LINK_SVG[e.kind].dash } : {}), 'data-edge': e.id,
     }));
   }
   for (const p of scene.ports) {

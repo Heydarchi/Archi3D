@@ -72,7 +72,8 @@ describe('D2 (compiled diagram → model)', () => {
     expect(structure(m)).toEqual(structure(native()));
     expect(m.nodes.OrderDB.shape).toBe('db');
     expect(m.nodes.EventBus.shape).toBe('queue');
-    expect(m.nodes.Customer.shape).toBe('ext');
+    expect(m.nodes.Customer.shape).toBe('person'); // {shape: person}
+    expect(m.edges.every((x) => x.kind === (x.async ? 'message' : 'call'))).toBe(true);
     const e = m.edges.find((x) => x.from.node === 'OrderAPI' && x.to.node === 'EventBus')!;
     expect(e).toMatchObject({ async: true, label: 'OrderPlaced' });
   }, 60_000);
@@ -85,11 +86,29 @@ describe('printArch', () => {
       const again = buildModel(parse(printArch(m)));
       expect(again.diagnostics.filter((d) => d.severity === 'error')).toEqual([]);
       expect(structure(again)).toEqual(structure(m));
-      expect(again.edges.map((e) => [e.from.port, e.to.port, e.async, e.label ?? null]))
-        .toEqual(m.edges.map((e) => [e.from.port, e.to.port, e.async, e.label ?? null]));
-      for (const n of Object.values(m.nodes)) expect(again.nodes[n.id].kind).toBe(n.kind);
+      expect(again.edges.map((e) => [e.from.port, e.to.port, e.kind, e.async, e.label ?? null]))
+        .toEqual(m.edges.map((e) => [e.from.port, e.to.port, e.kind, e.async, e.label ?? null]));
+      for (const n of Object.values(m.nodes)) expect([again.nodes[n.id].kind, again.nodes[n.id].title]).toEqual([n.kind, n.title]);
     });
   }
+});
+
+describe('printArch titles and kinds', () => {
+  it('quotes titles with escapes and writes one arrow per kind', () => {
+    const src = 'service A "Say \\"hi\\" #1"\nservice B\nA <=> B\nA >> B : f\nA <> B\nA ~> B\nA => B\nA -> B\n';
+    const out = printArch(buildModel(parse(src)));
+    expect(out).toContain('service A "Say \\"hi\\" #1"');
+    expect(out.split('\n').filter((l) => l.startsWith('A '))).toEqual(['A <=> B', 'A >> B : f', 'A <> B', 'A ~> B', 'A => B', 'A -> B']);
+  });
+});
+
+describe('Mermaid titles and sessions', () => {
+  it('[Title] becomes the title when it differs from the id; <--> is a session', () => {
+    const m = fromMermaid('architecture-beta\n  service api(server)[Orders API]\n  service db(database)[db]\n  api:R <--> L:db\n');
+    expect(m.nodes.api.title).toBe('Orders API');
+    expect(m.nodes.db.title).toBeUndefined();
+    expect(m.edges[0].kind).toBe('session');
+  });
 });
 
 describe('detectFormat', () => {

@@ -17,14 +17,17 @@ Install: search for "Archi3D" in the Extensions view, or run `code --install-ext
 - Save the view as PNG ("Archi3D: Save 3D Preview as PNG...").
 - Export one HTML file that works offline ("Archi3D: Export Standalone HTML...").
 - Syntax colors for `.arch3d`.
+- Element shapes for `user`, `ui`, `app`, `service`, `library`, `driver`, `kernel`, `device`,
+  `database`, `cache`, `storage`, `queue`, `topic` and `external`, and six link kinds:
+  `->` call, `=>` message, `~>` event, `<=>` session, `>>` stream, `<>` shared.
 
 Everything works offline. The layout engine and the font are inside the extension.
 
 D2 files are not supported in the preview yet. You can import them in the Archi3D web app.
 
-Examples (an Android app, the AOSP camera stack and more) and the guide for the language are in the
+Examples (an Android app, the AOSP camera stack, a Linux desktop and a legend) and the guide for the language are in the
 repo: https://github.com/Heydarchi/Archi3D
 
 License: MIT. Licenses of the libraries inside: `THIRD_PARTY_NOTICES.md`.
 
-![The preview in a dark theme](images/preview-dark.png)
+![Every element and link kind, dark theme](images/preview-dark.png)

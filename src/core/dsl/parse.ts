@@ -1,11 +1,20 @@
 // .arch3d text → AST. One statement per line; recovers at the next line after an error.
-import type { AstEdge, AstItem, AstNode, AstRef, Diagnostic, Loc, ParseResult, PortDecl } from '../types';
+import type { AstEdge, AstItem, AstNode, AstRef, Diagnostic, LinkKind, Loc, ParseResult, PortDecl } from '../types';
 import { byLocation, diag } from './diagnostics';
 import { tokenize, type LineTokens, type Token } from './tokenize';
 
 class LineError extends Error {
   constructor(message: string, readonly at: Token | undefined) { super(message); }
 }
+
+/** Arrow or word → link kind. "<-" is a call read right to left. */
+const ARROW_KIND: Record<string, LinkKind> = {
+  '->': 'call', '-->': 'call', '<-': 'call', '=>': 'message', '~>': 'event', '<=>': 'session', '>>': 'stream', '<>': 'shared',
+};
+export const LINK_WORDS: readonly LinkKind[] = ['call', 'message', 'event', 'session', 'stream', 'shared'];
+const isLinkWord = (t: Token | undefined): boolean => t?.type === 'ident' && (LINK_WORDS as readonly string[]).includes(t.text);
+/** Kinds that don't wait for an answer. */
+const ASYNC: ReadonlySet<LinkKind> = new Set(['message', 'event', 'stream']);
 
 const locOf = (line: number, from: Token, to: Token = from): Loc => ({ line, col: from.col, endCol: to.endCol });
 
@@ -34,11 +43,21 @@ function parseRef(c: Cursor): AstRef {
   return { name: name.text, loc: locOf(c.lt.line, name) };
 }
 
-function parseEdge(c: Cursor): AstEdge {
+function parseEdges(c: Cursor): AstEdge[] {
   const first = c.peek()!;
   const a = parseRef(c);
-  const arrow = c.expect('arrow', 'an arrow (->, -->, => or <-)');
-  const b = parseRef(c);
+  const link = c.peek();
+  if (!link) throw new LineError('Expected an arrow at end of line.', undefined);
+  if (link.type !== 'arrow' && !isLinkWord(link)) {
+    throw new LineError(`Expected an arrow (->, =>, ~>, <=>, >>, <>) or a link word, found "${link.text}".`, link);
+  }
+  c.next();
+  const targets = [parseRef(c)];
+  while (c.peek()?.type === 'comma') {
+    if (link.text === '<-') throw new LineError('"<-" takes one target. Write one line for each.', c.peek());
+    c.next();
+    targets.push(parseRef(c));
+  }
   let label: string | undefined;
   if (!c.done()) {
     const colon = c.expect('colon', '":" before a label');
@@ -46,9 +65,12 @@ function parseEdge(c: Cursor): AstEdge {
     c.i = c.tokens.length;
   }
   const loc: Loc = { line: c.lt.line, col: first.col, endCol: c.lt.text.length + 1 };
-  const swap = arrow.text === '<-';
-  const edge: AstEdge = { type: 'edge', from: swap ? b : a, to: swap ? a : b, async: arrow.text === '=>', loc };
-  return label === undefined ? edge : { ...edge, label };
+  const kind = link.type === 'arrow' ? ARROW_KIND[link.text] : (link.text as LinkKind);
+  const swap = link.text === '<-';
+  return targets.map((b) => {
+    const edge: AstEdge = { type: 'edge', from: swap ? b : a, to: swap ? a : b, kind, async: ASYNC.has(kind), loc };
+    return label === undefined ? edge : { ...edge, label };
+  });
 }
 
 function parsePortList(c: Cursor): PortDecl[] {
@@ -70,6 +92,12 @@ function parsePortList(c: Cursor): PortDecl[] {
 function parseNode(c: Cursor): AstNode {
   const kind = c.next();
   const name = c.next();
+  let title: string | undefined;
+  if (c.peek()?.type === 'string') {
+    const t = c.next();
+    if (t.unclosed) throw new LineError('The title has no closing quote (").', t);
+    title = t.text || undefined;
+  }
   const ins: PortDecl[] = [];
   const outs: PortDecl[] = [];
   let container = false;
@@ -88,7 +116,8 @@ function parseNode(c: Cursor): AstNode {
     }
     throw new LineError(`Expected "in:", "out:" or "{", found "${t.text}".`, t);
   }
-  return { type: 'node', kind: kind.text, name: name.text, container, ins, outs, children: [], loc: locOf(c.lt.line, name) };
+  const node: AstNode = { type: 'node', kind: kind.text, name: name.text, container, ins, outs, children: [], loc: locOf(c.lt.line, name) };
+  return title === undefined ? node : { ...node, title };
 }
 
 interface Frame { node: AstNode | null; items: AstItem[] }
@@ -110,9 +139,11 @@ export function parse(src: string): ParseResult {
         continue;
       }
       const c = new Cursor(lt);
-      const [t0, t1] = tokens;
-      if (t0.type === 'ident' && (t1?.type === 'arrow' || t1?.type === 'dot')) {
-        top().items.push(parseEdge(c));
+      const [t0, t1, t2, t3] = tokens;
+      // "A event B" is a link, "service event in: x" is a node called "event".
+      const wordLink = isLinkWord(t1) && t2?.type === 'ident' && !((t2.text === 'in' || t2.text === 'out') && t3?.type === 'colon');
+      if (t0.type === 'ident' && (t1?.type === 'arrow' || t1?.type === 'dot' || wordLink)) {
+        top().items.push(...parseEdges(c));
       } else if (t0.type === 'ident' && t1?.type === 'ident') {
         const node = parseNode(c);
         top().items.push(node);

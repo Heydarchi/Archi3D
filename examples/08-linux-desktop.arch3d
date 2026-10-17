@@ -1,0 +1,48 @@
+# A Linux desktop: plugging in a USB webcam and using it in a video call.
+# udev hears the kernel, D-Bus tells the desktop, PipeWire moves the video.
+
+user User "Desktop user"          out: click
+
+system UserSpace "User space" {
+  app VideoCall "Video call app"     in: click, video, added   out: open
+  ui Panel "GNOME shell"             in: notify
+  container Session "User session" {
+    service PipeWire                  in: open, frames    out: video, v4l2
+    service Portal "xdg-desktop-portal"  in: request      out: allow
+  }
+  container System "System services" {
+    service systemd "systemd (PID 1)"  in: start          out: unit
+    service udevd "systemd-udevd"      in: uevent         out: rules, dbus
+    topic   DBus "D-Bus system bus"    in: publish        out: signal
+    library libv4l2 "libv4l2.so"       in: call           out: ioctl
+    storage Config "/etc/udev/rules.d"  in: read
+    cache   Hwdb "hwdb.bin"             in: lookup
+  }
+}
+
+kernel Kernel "Linux kernel" {
+  service Netlink "netlink uevent"     in: event      out: uevent
+  driver UVC "uvcvideo driver"         in: ioctl, usb  out: event, frames
+  driver XHCI "xHCI USB host"          in: plug       out: probe
+}
+
+device Webcam "USB webcam"   out: usb
+
+Webcam.usb          >> XHCI.plug : USB
+XHCI.probe          -> UVC.usb : probe()
+UVC.event           ~> Netlink.event : add video4linux
+Netlink.uevent      ~> udevd.uevent
+udevd.rules         -> Config.read : rules
+udevd               -> Hwdb.lookup
+udevd.dbus          => DBus.publish : DeviceAdded
+DBus.signal         ~> VideoCall.added, Panel.notify : DeviceAdded
+udevd               -> systemd.start : SYSTEMD_WANTS
+User.click          -> VideoCall.click : start call
+VideoCall.open      -> Portal.request : Camera.AccessCamera
+Portal.allow        -> PipeWire.open
+VideoCall          <=> PipeWire : pw stream session
+PipeWire.v4l2       -> libv4l2.call
+libv4l2.ioctl       -> UVC.ioctl : VIDIOC_STREAMON
+UVC.frames          >> PipeWire.frames : frames
+PipeWire            <> UVC : dmabuf
+PipeWire.video      >> VideoCall.video : video

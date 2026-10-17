@@ -84,6 +84,7 @@ exports[`valid fixtures > container-links.arch3d parses with no errors 1`] = `
       },
       "name": "Frontend",
     },
+    "kind": "call",
     "label": "REST",
     "loc": {
       "col": 1,
@@ -110,6 +111,7 @@ exports[`valid fixtures > container-links.arch3d parses with no errors 1`] = `
       },
       "name": "Core",
     },
+    "kind": "call",
     "loc": {
       "col": 1,
       "endCol": 13,
@@ -135,6 +137,7 @@ exports[`valid fixtures > container-links.arch3d parses with no errors 1`] = `
       },
       "name": "Core",
     },
+    "kind": "call",
     "label": "push",
     "loc": {
       "col": 1,
@@ -148,6 +151,609 @@ exports[`valid fixtures > container-links.arch3d parses with no errors 1`] = `
         "line": 11,
       },
       "name": "App",
+    },
+    "type": "edge",
+  },
+]
+`;
+
+exports[`valid fixtures > kinds.arch3d parses with no errors 1`] = `
+[
+  {
+    "children": [],
+    "container": false,
+    "ins": [],
+    "kind": "user",
+    "loc": {
+      "col": 10,
+      "endCol": 16,
+      "line": 2,
+    },
+    "name": "Person",
+    "outs": [],
+    "title": "Phone user",
+    "type": "node",
+  },
+  {
+    "children": [
+      {
+        "children": [],
+        "container": false,
+        "ins": [],
+        "kind": "ui",
+        "loc": {
+          "col": 12,
+          "endCol": 18,
+          "line": 4,
+        },
+        "name": "Screen",
+        "outs": [],
+        "title": "Camera screen",
+        "type": "node",
+      },
+      {
+        "children": [],
+        "container": false,
+        "ins": [],
+        "kind": "app",
+        "loc": {
+          "col": 12,
+          "endCol": 18,
+          "line": 5,
+        },
+        "name": "Camera",
+        "outs": [],
+        "title": "Camera app",
+        "type": "node",
+      },
+      {
+        "children": [],
+        "container": false,
+        "ins": [],
+        "kind": "service",
+        "loc": {
+          "col": 12,
+          "endCol": 18,
+          "line": 6,
+        },
+        "name": "Server",
+        "outs": [],
+        "title": "CameraService",
+        "type": "node",
+      },
+      {
+        "children": [],
+        "container": false,
+        "ins": [],
+        "kind": "library",
+        "loc": {
+          "col": 12,
+          "endCol": 15,
+          "line": 7,
+        },
+        "name": "Hal",
+        "outs": [],
+        "title": "Camera HAL",
+        "type": "node",
+      },
+      {
+        "children": [],
+        "container": false,
+        "ins": [],
+        "kind": "database",
+        "loc": {
+          "col": 12,
+          "endCol": 17,
+          "line": 8,
+        },
+        "name": "Media",
+        "outs": [],
+        "title": "Media DB",
+        "type": "node",
+      },
+      {
+        "children": [],
+        "container": false,
+        "ins": [],
+        "kind": "cache",
+        "loc": {
+          "col": 12,
+          "endCol": 18,
+          "line": 9,
+        },
+        "name": "Thumbs",
+        "outs": [],
+        "title": "Thumbnails",
+        "type": "node",
+      },
+      {
+        "children": [],
+        "container": false,
+        "ins": [],
+        "kind": "storage",
+        "loc": {
+          "col": 12,
+          "endCol": 16,
+          "line": 10,
+        },
+        "name": "Disk",
+        "outs": [],
+        "title": "/sdcard",
+        "type": "node",
+      },
+      {
+        "children": [],
+        "container": false,
+        "ins": [],
+        "kind": "queue",
+        "loc": {
+          "col": 12,
+          "endCol": 16,
+          "line": 11,
+        },
+        "name": "Jobs",
+        "outs": [],
+        "title": "Job queue",
+        "type": "node",
+      },
+      {
+        "children": [],
+        "container": false,
+        "ins": [],
+        "kind": "topic",
+        "loc": {
+          "col": 12,
+          "endCol": 15,
+          "line": 12,
+        },
+        "name": "Bus",
+        "outs": [],
+        "title": "Broadcasts",
+        "type": "node",
+      },
+      {
+        "children": [],
+        "container": false,
+        "ins": [],
+        "kind": "kernel",
+        "loc": {
+          "col": 12,
+          "endCol": 17,
+          "line": 13,
+        },
+        "name": "Linux",
+        "outs": [],
+        "title": "Linux kernel",
+        "type": "node",
+      },
+      {
+        "children": [],
+        "container": false,
+        "ins": [],
+        "kind": "driver",
+        "loc": {
+          "col": 12,
+          "endCol": 16,
+          "line": 14,
+        },
+        "name": "V4l2",
+        "outs": [],
+        "title": "V4L2 driver",
+        "type": "node",
+      },
+      {
+        "children": [],
+        "container": false,
+        "ins": [],
+        "kind": "device",
+        "loc": {
+          "col": 12,
+          "endCol": 18,
+          "line": 15,
+        },
+        "name": "Sensor",
+        "outs": [],
+        "title": "Image sensor",
+        "type": "node",
+      },
+    ],
+    "container": true,
+    "ins": [],
+    "kind": "system",
+    "loc": {
+      "col": 10,
+      "endCol": 16,
+      "line": 3,
+    },
+    "name": "Device",
+    "outs": [],
+    "title": "Device",
+    "type": "node",
+  },
+  {
+    "children": [],
+    "container": false,
+    "ins": [],
+    "kind": "external",
+    "loc": {
+      "col": 10,
+      "endCol": 15,
+      "line": 17,
+    },
+    "name": "Cloud",
+    "outs": [],
+    "title": "Photo cloud",
+    "type": "node",
+  },
+  {
+    "async": false,
+    "from": {
+      "loc": {
+        "col": 1,
+        "endCol": 7,
+        "line": 19,
+      },
+      "name": "Person",
+    },
+    "kind": "call",
+    "label": "tap",
+    "loc": {
+      "col": 1,
+      "endCol": 25,
+      "line": 19,
+    },
+    "to": {
+      "loc": {
+        "col": 12,
+        "endCol": 18,
+        "line": 19,
+      },
+      "name": "Screen",
+    },
+    "type": "edge",
+  },
+  {
+    "async": false,
+    "from": {
+      "loc": {
+        "col": 1,
+        "endCol": 7,
+        "line": 20,
+      },
+      "name": "Screen",
+    },
+    "kind": "call",
+    "loc": {
+      "col": 1,
+      "endCol": 18,
+      "line": 20,
+    },
+    "to": {
+      "loc": {
+        "col": 12,
+        "endCol": 18,
+        "line": 20,
+      },
+      "name": "Camera",
+    },
+    "type": "edge",
+  },
+  {
+    "async": false,
+    "from": {
+      "loc": {
+        "col": 1,
+        "endCol": 7,
+        "line": 21,
+      },
+      "name": "Camera",
+    },
+    "kind": "session",
+    "label": "AIDL session",
+    "loc": {
+      "col": 1,
+      "endCol": 34,
+      "line": 21,
+    },
+    "to": {
+      "loc": {
+        "col": 12,
+        "endCol": 18,
+        "line": 21,
+      },
+      "name": "Server",
+    },
+    "type": "edge",
+  },
+  {
+    "async": true,
+    "from": {
+      "loc": {
+        "col": 1,
+        "endCol": 7,
+        "line": 22,
+      },
+      "name": "Server",
+    },
+    "kind": "message",
+    "label": "save job",
+    "loc": {
+      "col": 1,
+      "endCol": 30,
+      "line": 22,
+    },
+    "to": {
+      "loc": {
+        "col": 12,
+        "endCol": 16,
+        "line": 22,
+      },
+      "name": "Jobs",
+    },
+    "type": "edge",
+  },
+  {
+    "async": true,
+    "from": {
+      "loc": {
+        "col": 1,
+        "endCol": 7,
+        "line": 23,
+      },
+      "name": "Server",
+    },
+    "kind": "event",
+    "label": "NEW_PICTURE",
+    "loc": {
+      "col": 1,
+      "endCol": 33,
+      "line": 23,
+    },
+    "to": {
+      "loc": {
+        "col": 12,
+        "endCol": 15,
+        "line": 23,
+      },
+      "name": "Bus",
+    },
+    "type": "edge",
+  },
+  {
+    "async": true,
+    "from": {
+      "loc": {
+        "col": 1,
+        "endCol": 4,
+        "line": 24,
+      },
+      "name": "Bus",
+    },
+    "kind": "event",
+    "loc": {
+      "col": 1,
+      "endCol": 25,
+      "line": 24,
+    },
+    "to": {
+      "loc": {
+        "col": 12,
+        "endCol": 18,
+        "line": 24,
+      },
+      "name": "Thumbs",
+    },
+    "type": "edge",
+  },
+  {
+    "async": true,
+    "from": {
+      "loc": {
+        "col": 1,
+        "endCol": 4,
+        "line": 24,
+      },
+      "name": "Bus",
+    },
+    "kind": "event",
+    "loc": {
+      "col": 1,
+      "endCol": 25,
+      "line": 24,
+    },
+    "to": {
+      "loc": {
+        "col": 20,
+        "endCol": 25,
+        "line": 24,
+      },
+      "name": "Media",
+    },
+    "type": "edge",
+  },
+  {
+    "async": false,
+    "from": {
+      "loc": {
+        "col": 1,
+        "endCol": 4,
+        "line": 25,
+      },
+      "name": "Hal",
+    },
+    "kind": "shared",
+    "label": "gralloc buffers",
+    "loc": {
+      "col": 1,
+      "endCol": 37,
+      "line": 25,
+    },
+    "to": {
+      "loc": {
+        "col": 12,
+        "endCol": 18,
+        "line": 25,
+      },
+      "name": "Server",
+    },
+    "type": "edge",
+  },
+  {
+    "async": false,
+    "from": {
+      "loc": {
+        "col": 1,
+        "endCol": 7,
+        "line": 26,
+      },
+      "name": "Server",
+    },
+    "kind": "call",
+    "loc": {
+      "col": 1,
+      "endCol": 15,
+      "line": 26,
+    },
+    "to": {
+      "loc": {
+        "col": 12,
+        "endCol": 15,
+        "line": 26,
+      },
+      "name": "Hal",
+    },
+    "type": "edge",
+  },
+  {
+    "async": false,
+    "from": {
+      "loc": {
+        "col": 1,
+        "endCol": 4,
+        "line": 27,
+      },
+      "name": "Hal",
+    },
+    "kind": "call",
+    "label": "ioctl",
+    "loc": {
+      "col": 1,
+      "endCol": 27,
+      "line": 27,
+    },
+    "to": {
+      "loc": {
+        "col": 12,
+        "endCol": 17,
+        "line": 27,
+      },
+      "name": "Linux",
+    },
+    "type": "edge",
+  },
+  {
+    "async": false,
+    "from": {
+      "loc": {
+        "col": 1,
+        "endCol": 6,
+        "line": 28,
+      },
+      "name": "Linux",
+    },
+    "kind": "call",
+    "loc": {
+      "col": 1,
+      "endCol": 16,
+      "line": 28,
+    },
+    "to": {
+      "loc": {
+        "col": 12,
+        "endCol": 16,
+        "line": 28,
+      },
+      "name": "V4l2",
+    },
+    "type": "edge",
+  },
+  {
+    "async": true,
+    "from": {
+      "loc": {
+        "col": 1,
+        "endCol": 7,
+        "line": 29,
+      },
+      "name": "Sensor",
+    },
+    "kind": "stream",
+    "label": "frames",
+    "loc": {
+      "col": 1,
+      "endCol": 28,
+      "line": 29,
+    },
+    "to": {
+      "loc": {
+        "col": 12,
+        "endCol": 16,
+        "line": 29,
+      },
+      "name": "V4l2",
+    },
+    "type": "edge",
+  },
+  {
+    "async": false,
+    "from": {
+      "loc": {
+        "col": 1,
+        "endCol": 5,
+        "line": 30,
+      },
+      "name": "Jobs",
+    },
+    "kind": "call",
+    "loc": {
+      "col": 1,
+      "endCol": 16,
+      "line": 30,
+    },
+    "to": {
+      "loc": {
+        "col": 12,
+        "endCol": 16,
+        "line": 30,
+      },
+      "name": "Disk",
+    },
+    "type": "edge",
+  },
+  {
+    "async": true,
+    "from": {
+      "loc": {
+        "col": 1,
+        "endCol": 7,
+        "line": 31,
+      },
+      "name": "Camera",
+    },
+    "kind": "message",
+    "label": "upload",
+    "loc": {
+      "col": 1,
+      "endCol": 28,
+      "line": 31,
+    },
+    "to": {
+      "loc": {
+        "col": 12,
+        "endCol": 17,
+        "line": 31,
+      },
+      "name": "Cloud",
     },
     "type": "edge",
   },
@@ -406,6 +1012,7 @@ exports[`valid fixtures > nested-deep.arch3d parses with no errors 1`] = `
       "name": "Merchant",
       "port": "charge",
     },
+    "kind": "call",
     "loc": {
       "col": 1,
       "endCol": 34,
@@ -433,6 +1040,7 @@ exports[`valid fixtures > nested-deep.arch3d parses with no errors 1`] = `
       "name": "Invoicer",
       "port": "ledger",
     },
+    "kind": "call",
     "loc": {
       "col": 1,
       "endCol": 32,
@@ -460,6 +1068,7 @@ exports[`valid fixtures > nested-deep.arch3d parses with no errors 1`] = `
       "name": "Invoicer",
       "port": "notify",
     },
+    "kind": "message",
     "label": "InvoiceIssued",
     "loc": {
       "col": 1,
@@ -488,6 +1097,7 @@ exports[`valid fixtures > nested-deep.arch3d parses with no errors 1`] = `
       "name": "Bus",
       "port": "deliver",
     },
+    "kind": "message",
     "loc": {
       "col": 1,
       "endCol": 32,
@@ -514,6 +1124,7 @@ exports[`valid fixtures > nested-deep.arch3d parses with no errors 1`] = `
       },
       "name": "Invoicer",
     },
+    "kind": "call",
     "label": "check",
     "loc": {
       "col": 1,
@@ -1047,6 +1658,7 @@ exports[`valid fixtures > northwind.arch3d parses with no errors 1`] = `
       "name": "Customer",
       "port": "browse",
     },
+    "kind": "call",
     "loc": {
       "col": 1,
       "endCol": 35,
@@ -1074,6 +1686,7 @@ exports[`valid fixtures > northwind.arch3d parses with no errors 1`] = `
       "name": "WebApp",
       "port": "api",
     },
+    "kind": "call",
     "label": "REST",
     "loc": {
       "col": 1,
@@ -1102,6 +1715,7 @@ exports[`valid fixtures > northwind.arch3d parses with no errors 1`] = `
       "name": "BFF",
       "port": "login",
     },
+    "kind": "call",
     "loc": {
       "col": 1,
       "endCol": 39,
@@ -1129,6 +1743,7 @@ exports[`valid fixtures > northwind.arch3d parses with no errors 1`] = `
       "name": "AuthService",
       "port": "users",
     },
+    "kind": "call",
     "loc": {
       "col": 1,
       "endCol": 34,
@@ -1156,6 +1771,7 @@ exports[`valid fixtures > northwind.arch3d parses with no errors 1`] = `
       "name": "BFF",
       "port": "orders",
     },
+    "kind": "call",
     "label": "REST",
     "loc": {
       "col": 1,
@@ -1184,6 +1800,7 @@ exports[`valid fixtures > northwind.arch3d parses with no errors 1`] = `
       "name": "BFF",
       "port": "catalog",
     },
+    "kind": "call",
     "label": "gRPC",
     "loc": {
       "col": 1,
@@ -1212,6 +1829,7 @@ exports[`valid fixtures > northwind.arch3d parses with no errors 1`] = `
       "name": "OrderAPI",
       "port": "db",
     },
+    "kind": "call",
     "loc": {
       "col": 1,
       "endCol": 32,
@@ -1239,6 +1857,7 @@ exports[`valid fixtures > northwind.arch3d parses with no errors 1`] = `
       "name": "OrderAPI",
       "port": "events",
     },
+    "kind": "message",
     "label": "OrderPlaced",
     "loc": {
       "col": 1,
@@ -1267,6 +1886,7 @@ exports[`valid fixtures > northwind.arch3d parses with no errors 1`] = `
       "name": "OrderAPI",
       "port": "pay",
     },
+    "kind": "call",
     "loc": {
       "col": 1,
       "endCol": 43,
@@ -1294,6 +1914,7 @@ exports[`valid fixtures > northwind.arch3d parses with no errors 1`] = `
       "name": "EventBus",
       "port": "work",
     },
+    "kind": "message",
     "loc": {
       "col": 1,
       "endCol": 37,
@@ -1321,6 +1942,7 @@ exports[`valid fixtures > northwind.arch3d parses with no errors 1`] = `
       "name": "Fulfilment",
       "port": "ship",
     },
+    "kind": "call",
     "loc": {
       "col": 1,
       "endCol": 35,
@@ -1348,6 +1970,7 @@ exports[`valid fixtures > northwind.arch3d parses with no errors 1`] = `
       "name": "CatalogAPI",
       "port": "db",
     },
+    "kind": "call",
     "loc": {
       "col": 1,
       "endCol": 34,
@@ -1375,6 +1998,7 @@ exports[`valid fixtures > northwind.arch3d parses with no errors 1`] = `
       "name": "CatalogAPI",
       "port": "search",
     },
+    "kind": "call",
     "loc": {
       "col": 1,
       "endCol": 39,
@@ -1485,6 +2109,7 @@ exports[`valid fixtures > tiny.arch3d parses with no errors 1`] = `
       "name": "Web",
       "port": "api",
     },
+    "kind": "call",
     "label": "HTTPS",
     "loc": {
       "col": 1,
@@ -1513,6 +2138,7 @@ exports[`valid fixtures > tiny.arch3d parses with no errors 1`] = `
       "name": "Api",
       "port": "db",
     },
+    "kind": "call",
     "loc": {
       "col": 1,
       "endCol": 20,
@@ -1626,6 +2252,7 @@ exports[`valid fixtures > typed-ports.arch3d parses with no errors 1`] = `
       "name": "Gateway",
       "port": "orders",
     },
+    "kind": "call",
     "loc": {
       "col": 1,
       "endCol": 32,
@@ -1653,6 +2280,7 @@ exports[`valid fixtures > typed-ports.arch3d parses with no errors 1`] = `
       "name": "Gateway",
       "port": "search",
     },
+    "kind": "call",
     "loc": {
       "col": 1,
       "endCol": 31,

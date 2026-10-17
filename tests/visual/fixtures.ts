@@ -29,7 +29,7 @@ export async function openHarness(page: Page, query: string): Promise<void> {
 }
 
 /** toHaveScreenshot + a copy in artifacts/step-N/<name>.png for review. */
-export async function snap(page: Page, step: number, name: string): Promise<void> {
+export async function snap(page: Page, step: number | string, name: string): Promise<void> {
   await page.screenshot({ path: `artifacts/step-${step}/${name}.png` });
   await expect(page).toHaveScreenshot(`${name}.png`);
 }

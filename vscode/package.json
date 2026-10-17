@@ -2,7 +2,7 @@
   "name": "archi3d",
   "displayName": "Archi3D",
   "description": "Live 3D preview of software architecture models (.arch3d, Mermaid architecture-beta): components, ports and links stacked by nesting level.",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "publisher": "M-H-H",
   "license": "MIT",
   "repository": {

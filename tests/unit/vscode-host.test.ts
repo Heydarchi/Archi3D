@@ -18,7 +18,7 @@ describe('analyze', () => {
     const src = readFileSync(join(import.meta.dirname, '..', '..', 'examples', '05-mermaid.mmd'), 'utf8');
     const a = analyze('/w/x.mmd', src);
     expect(a.format).toBe('mermaid');
-    expect(a.archText).toContain('group shop {');
+    expect(a.archText).toContain('group shop "Shop" {'); // the [Title] is kept
     expect(a.locations.api.line).toBe(src.split('\n').findIndex((l) => l.includes('service api')) + 1);
   });
   it('D2 is reported as not previewable (no crash)', () => {

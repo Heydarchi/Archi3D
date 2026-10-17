@@ -1,7 +1,7 @@
 // Mermaid `architecture-beta` → ArchModel. A small hand-written reader (no Mermaid package):
 //   group id(icon)[Title] [in parent]      → container
 //   service id(icon)[Title] [in parent]    → component (kind from the icon)
-//   a:R --> L:b   (also --, <--, <-->)     → link; sides become port sides (unnamed ports _out_R, _in_L)
+//   a:R --> L:b   (also --, <--, <-->)     → link (<--> is a session); sides become port sides (unnamed ports _out_R, _in_L)
 // Anything else (junction, title, …) gives a W301 warning and is skipped.
 import { diag } from '../dsl/diagnostics';
 import { buildModel } from '../model/build';
@@ -33,11 +33,12 @@ export function fromMermaid(src: string): ArchModel {
     }
     const n = NODE_RE.exec(text);
     if (n) {
-      const [, what, id, icon = '', , parent] = n;
+      const [, what, id, icon = '', title, parent] = n;
       const idCol = col + text.indexOf(id, what.length);
       const node: AstNode = {
         type: 'node', kind: what === 'group' ? 'group' : KIND_BY_ICON[icon] ?? 'component', name: id,
         container: what === 'group', ins: [], outs: [], children: [], loc: loc(idCol, id.length),
+        ...(title && title !== id ? { title } : {}),
       };
       nodes.set(id, { node, parent, parentLoc: parent ? loc(col + text.lastIndexOf(parent), parent.length) : undefined });
       return;
@@ -50,7 +51,7 @@ export function fromMermaid(src: string): ArchModel {
       const swap = arrow === '<--';
       const from = swap ? ref(b, sb, 'out') : ref(a, sa, 'out');
       const to = swap ? ref(a, sa, 'in') : ref(b, sb, 'in');
-      edges.push({ type: 'edge', from, to, async: false, loc: loc() });
+      edges.push({ type: 'edge', from, to, kind: arrow === '<-->' ? 'session' : 'call', async: false, loc: loc() });
       return;
     }
     diagnostics.push(diag('W301', `Unsupported Mermaid line, skipped: "${text.length > 40 ? `${text.slice(0, 39)}…` : text}"`, loc()));

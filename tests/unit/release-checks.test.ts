@@ -41,8 +41,8 @@ describe('release checks', () => {
   });
   it('catches a version without a changelog entry and a missing icon', () => {
     fresh();
-    setManifest({ publisher: 'heydarchi', version: '0.2.0' });
+    setManifest({ publisher: 'heydarchi', version: '9.9.0' });
     rmSync(join(copy, 'icon.png'));
-    expect(releaseProblems(copy)).toEqual(['CHANGELOG.md has no "## 0.2.0" entry', 'icon.png is missing']);
+    expect(releaseProblems(copy)).toEqual(['CHANGELOG.md has no "## 9.9.0" entry', 'icon.png is missing']);
   });
 });
