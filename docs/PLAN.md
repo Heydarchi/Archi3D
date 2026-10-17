@@ -24,10 +24,11 @@ the `toHaveScreenshot()` comparison.
 
 - [x] Done
 
-> Note: Vite 8, Vitest 5, Playwright 1.64, TS 5.9.3 (typescript-eslint needs < 6.1), three 0.186.1,
-> elkjs pinned to 0.9.3 to match the documented edgeCoords gotcha. `.npmrc` points npm's cache at
-> `offline/npm-cache`; `npm ci --offline --cache offline/npm-cache` verified. @fontsource/inter ships
-> WOFF only (no TTF), so `vendor/fonts/` has WOFF. `npm run lint` also runs `tsc`. Visual tests run with `PW_CHANNEL=chrome`.
+> Note: Vite 8, Vitest 5, Playwright 1.64, TypeScript 5.9.3 (typescript-eslint needs < 6.1), three 0.186.1.
+> elkjs stays on 0.9.3 because of the edgeCoords problem described in ARCHITECTURE.md. `.npmrc` puts the
+> npm cache in `offline/npm-cache` and I checked that `npm ci --offline --cache offline/npm-cache` works.
+> @fontsource/inter only has WOFF (no TTF), so `vendor/fonts/` has WOFF files. `npm run lint` runs `tsc` too.
+> The visual tests run with `PW_CHANNEL=chrome`.
 
 **Goal.** An empty project where unit tests, screenshot tests and a WebGL test page
 all work, with the network off.
@@ -84,10 +85,10 @@ mean WebGL fell back or lights are missing).
 
 - [x] Done
 
-> Note: Line tokenizer (`dsl/tokenize.ts`, dashes in names stop before `->`/`-->`) + recursive
-> statement parser. `Loc.endCol` is exclusive; a node's `loc` spans its name, an edge's the whole
-> statement. `-->` is synchronous like `->`. Edges inside a container are that container's children.
-> Unset `label` is omitted (not `undefined`). 10k lines parse in a few ms.
+> Note: A tokenizer per line (`dsl/tokenize.ts`, a `-` in a name stops before `->` and `-->`) and a
+> parser for each kind of statement. `Loc.endCol` is exclusive. For a node the `loc` is its name, for
+> an edge the whole line. `-->` is synchronous like `->`. Edges inside a container are children of it.
+> If there is no label the field is not there (not `undefined`). 10k lines take a few ms.
 
 **Goal.** `parse(src)` turns `.arch3d` text into an AST with exact error locations,
 following docs/GRAMMAR.md.
@@ -125,10 +126,10 @@ picture shows the underline on the right line.
 
 - [x] Done
 
-> Note: `model/{build,lca,shape}.ts`. Ports created by a link (anonymous `_in`/`_out` or a named
-> undeclared one) get `implicit: true`. A container end with no ports of that direction stays
-> port-less; a component end always gets a port. If one end contains the other, lca is that
-> container. Edge ids count valid links only. Snapshots reviewed (lca/depth/ports correct).
+> Note: `model/{build,lca,shape}.ts`. Ports that a link creates (`_in`/`_out` without a name, or a
+> named one that is not declared) get `implicit: true`. A container end without ports of that direction
+> stays without a port, a component end always gets one. If one end is inside the other, the lca is
+> that container. Edge ids only count valid links. I checked the snapshots (lca, depth, ports).
 
 **Goal.** `buildModel(parsed)` resolves names, creates implicit ports, computes depth
 and the lowest common container of each link, and reports semantic errors.
@@ -166,10 +167,11 @@ just accept them).
 
 - [x] Done
 
-> Note: `layout/{toElk,flatten,orthogonal,size,index}.ts`; northwind cold layout ≈ 70 ms. Routes are
-> snapped to port centres and made strictly orthogonal (elkjs leaves ½-unit jogs where it joins
-> hierarchy-crossing edges). elk.bundled.js hijacks `self.onmessage` inside a Web Worker, so
-> `app/elkWorkerShim.ts` gives the layout worker a placeholder `document`. Later: edge labels sometimes sit on container borders.
+> Note: `layout/{toElk,flatten,orthogonal,size,index}.ts`. Northwind takes about 70 ms (cold). Routes
+> start and end in the center of the ports and all segments are straight, because elkjs leaves small
+> 0.5 jogs on edges that cross containers. elk.bundled.js takes over `self.onmessage` in a Web Worker,
+> so `app/elkWorkerShim.ts` gives the worker a fake `document`. Open point: edge labels are sometimes on
+> container borders.
 
 **Goal.** `layout(model)` returns absolute 2D boxes, port positions and orthogonal
 routes using ELK, and a 2D SVG view shows them.
@@ -212,10 +214,11 @@ overlaps, and nested containers read clearly.
 
 - [x] Done
 
-> Note: `scene/{lift,edgePaths,vec}.ts`; defaults levelGap 60, blockHeight 26, plate 6, port lead 14
-> (≤ half the first/last segment). The arc's *true* apex is at the spec height (control height solved
-> exactly). Container ends attach at plate top. Label ids: node id, port id, `edge:<id>`. Components
-> float one level above their parent plate (block bottom = depth × levelGap), as specified.
+> Note: `scene/{lift,edgePaths,vec}.ts`. Defaults: levelGap 60, blockHeight 26, plate 6, port lead 14
+> (max half of the first/last segment). The real top of the arc is at the height from the spec (the
+> control point is calculated for it). Container ends are on top of the plate. Label ids: node id, port
+> id, `edge:<id>`. Components float one level over their parent plate (block bottom = depth x levelGap),
+> like the spec says.
 
 **Goal.** `lift(model, layout, opts)` produces a `SceneSpec`: all 3D geometry as plain
 data, with no three.js.
@@ -257,10 +260,10 @@ the right blocks.
 
 - [x] Done
 
-> Note: `render/{build,view,poses,palette}.ts`. `SceneRoot` owns the object tree and disposes on
-> rebuild. Poses fit the eight bounds corners exactly (not a bounding sphere), far = 50° elevation
-> from +z, iso = 45°/45°, mid = 0.4 × far distance, near = block closest to the centre. Edges are
-> 1 px placeholder lines, labels empty (steps 6–7). index.html now shows northwind in 3D.
+> Note: `render/{build,view,poses,palette}.ts`. `SceneRoot` owns the objects and disposes them when the
+> scene changes. The poses fit the 8 corners of the bounds exactly (not a sphere): far = 50° from +z,
+> iso = 45°/45°, mid = 0.4 x far, near = the block closest to the center. Edges and labels were simple
+> placeholders here (done in steps 6 and 7). index.html shows northwind in 3D.
 
 **Goal.** A three.js view of a `SceneSpec` with fixed camera poses and orbit controls.
 
@@ -296,10 +299,10 @@ visibly stacked, and shading distinguishes the faces.
 
 - [x] Done
 
-> Note: `render/edges.ts` — each edge is a group of `line` (Line2, 2 px, dashed when async) and
-> `arrow` (cone whose tip sits on the target port). Resolution is set on setScene and resize.
-> index.html has an "Edges: ortho/arc" toggle that re-runs `lift`. Step 5 references were
-> regenerated because their edges changed from 1 px placeholders to Line2.
+> Note: `render/edges.ts`. Since step 11 all edges are drawn in two batches (solid and dashed, 2 px)
+> plus a cone per edge whose tip is on the target port. The resolution is set on setScene and resize.
+> index.html has an "Edges: ortho/arc" button that runs `lift` again. I made the step 5 pictures again
+> because the edges changed.
 
 **Goal.** Readable links in 3D: constant pixel width, arrowheads, dashed async.
 
@@ -325,10 +328,11 @@ visibly different from the solid ones.
 
 - [x] Done
 
-> Note: `render/labels.ts` (troika, billboarded, scaled to LABEL_PX per role; depth test off via a
-> base material, since troika derives its own). Fallback to CSS2D after 2 s, one warning. troika
-> fetches CDN fonts for uncovered glyphs, so `render/fontCoverage.ts` maps text outside Inter's
-> latin range to "?". `View.ready()` waits for every `sync()`. Step 5/6 references regenerated with labels.
+> Note: `render/labels.ts` (troika, always facing the camera, size in pixels per role, no depth test
+> by using a base material because troika makes its own). After 2 s without the font it uses CSS2D
+> labels and warns once. troika loads fonts from a CDN for missing characters, so
+> `render/fontCoverage.ts` changes characters outside Inter's latin range to "?". `View.ready()` waits for
+> all `sync()` calls. Step 5 and 6 pictures made again with labels.
 
 **Goal.** Names that stay crisp at every zoom level, working offline.
 
@@ -360,10 +364,11 @@ far picture text does not pile up (step 8 will hide more).
 
 - [x] Done
 
-> Note: `core/lod/{lod,lids,focus}.ts` + `render/semanticZoom.ts`. `lod()` takes a 5th `opts`
-> (`selected`, `enabled`) — ARCHITECTURE.md updated. Extras: a container's title is hidden below
-> ratio 0.8 (camera inside it), and a closed container's title moves to its lid top. Harness:
-> `cam=focus&focus=<id>&k=<×diag>`, `lod=off`; step 5/6 pictures use `lod=off`. App has an on/off button.
+> Note: `core/lod/{lod,lids,focus}.ts`. Since step 11 `render/present.ts` applies the result to the
+> view. `lod()` has a 5th parameter `opts` (`selected`, `enabled`), ARCHITECTURE.md is updated. Extra: the
+> title of a container is hidden when the camera is inside it (ratio < 0.8), and the title of a closed
+> container moves on top of its lid. Harness: `cam=focus&focus=<id>&k=<x diag>` and `lod=off`. Step 5 and 6
+> pictures use `lod=off`. The app has an on/off button.
 
 **Goal.** Far away you see closed containers; closer, they open and show components;
 closest, ports and edge labels appear.
@@ -400,9 +405,10 @@ closest, ports and edge labels appear.
 - [x] Done
 
 > Note: `core/model/query.ts` (connectedEdges, breadcrumb, neighbours, highlightSet),
-> `render/{highlight,picking}.ts`, `app/infoPanel.ts`. camera-controls replaces OrbitControls
-> (setLookAt with exact fit from `flyTarget`; smoothTime 0.35, instant in test mode). Selection
-> pictures use `lod=off` so OrderAPI's block, not Ordering's lid, is under the cursor.
+> `render/picking.ts` and `app/infoPanel.ts`. The highlight is in `render/present.ts` since step 11.
+> camera-controls replaced OrbitControls (setLookAt with the exact fit from `flyTarget`, smoothTime 0.35,
+> no animation in test mode). The selection pictures use `lod=off` so the click hits the OrderAPI block
+> and not the Ordering lid.
 
 **Goal.** Click to select and see dependencies; double-click to fly in; breadcrumb to fly out.
 
@@ -435,11 +441,12 @@ for `ready`, screenshot.
 
 - [x] Done
 
-> Note: CodeMirror 6 (+ @lezer/highlight) pinned; `app/{editor,archLanguage,lintMapping,store}.ts`.
-> Stability came from `elk.layered.considerModelOrder.strategy=NODES_AND_EDGES` on the root (on
-> every container it crashes elkjs 0.9.3); previous-layout hints are passed too but changed little.
-> This re-laid-out every fixture, so step 3–9 references were regenerated and re-reviewed. The app
-> reports ready only when the store is idle and in sync with the editor (no flaky mid-typing layouts).
+> Note: CodeMirror 6 (and @lezer/highlight) pinned, `app/{editor,archLanguage,lintMapping,store}.ts`.
+> The layout became stable with `elk.layered.considerModelOrder.strategy=NODES_AND_EDGES` on the root
+> (on every container it crashes elkjs 0.9.3). The old layout is also passed as hint, but that didn't
+> change much. This changed the layout of all fixtures, so I made the pictures of steps 3 to 9 again and
+> checked them. The app is only "ready" when the store is idle and has the same text as the editor
+> (no flaky tests in the middle of typing).
 
 **Goal.** Type in an editor and watch the 3D view update, with errors marked inline.
 
@@ -472,12 +479,12 @@ underlined), `app-after-edit.png`.
 
 - [x] Done
 
-> Note: gen-1000 (seed 42): layout **0.80 s** in Node, `lod()` median **0.24 ms**, **10** draw calls.
-> Renderer is now fully instanced (`render/{instances,present,outlines}.ts`, per-instance opacity via
-> a shader patch); edges are two LineSegments2 batches + instanced arrows. Links into closed
-> containers are drawn as one arc per pair (`core/lod/aggregate.ts`) — without that the far view
-> was noise. `lod()` has `maxLabels` (150). `scripts/generate.mjs` loads `gen.ts` via Vite's
-> `runnerImport` (works on Node 20). App: `?fixture=<name>`, "Laying out…" indicator.
+> Note: gen-1000 (seed 42): layout 0.80 s in Node, `lod()` median 0.24 ms, 10 draw calls.
+> The renderer uses instancing for everything now (`render/{instances,present,outlines}.ts`, opacity per
+> instance with a small shader patch). Edges are two LineSegments2 batches plus instanced arrows. Links
+> into closed containers are one arc per pair of containers (`core/lod/aggregate.ts`), without that the
+> far view was just noise. `lod()` has `maxLabels` (150). `scripts/generate.mjs` loads `gen.ts` with
+> Vite's `runnerImport` (works on Node 20). App: `?fixture=<name>` and a "Laying out..." indicator.
 
 **Goal.** Comfortable with 1,000 components.
 
@@ -506,11 +513,12 @@ underlined), `app-after-edit.png`.
 
 - [x] Done
 
-> Note: `npm run export` → `dist/archi3d-standalone.html` (2.62 MB); `--cdn` → `…-cdn.html`. The
-> layout worker is built twice as IIFE (with ELK; without ELK for CDN mode) and started from a Blob
-> URL (`app/workerFactory.standalone.ts`, swapped in at export). Remaining `http(s)` strings are
-> XML-namespace identifiers inside three/ELK and a shader comment — never fetched; the unit test
-> allow-lists exactly those and the browser test asserts zero requests. troika's CDN constant is blanked.
+> Note: `npm run export` makes `dist/archi3d-standalone.html` (2.62 MB), `--cdn` makes `...-cdn.html`.
+> The layout worker is built two times as IIFE (with ELK, and without ELK for the CDN version) and
+> started from a Blob URL (`app/workerFactory.standalone.ts`, swapped in for the export). The `http(s)`
+> strings that are left are XML namespace names inside three and ELK and one shader comment, they are
+> never loaded. The unit test allows exactly those and the browser test checks that no request is made.
+> troika's CDN address is removed.
 
 **Goal.** `npm run export` writes one HTML file you can email or double-click, which
 works with no internet.
@@ -540,11 +548,11 @@ works with no internet.
 
 - [x] Done
 
-> Note: `core/adapters/{mermaid,d2,detect}.ts` build an AST and reuse `buildModel`. Mermaid sides
-> become unnamed ports `_out_R`/`_in_L`… with the new optional `Port.side` (types.ts + ARCHITECTURE.md;
-> toElk honours it). D2 chosen over LikeC4 (no deps vs. LikeC4 pulling vite/playwright/esbuild);
-> `@terrastruct/d2` 0.1.33 is loaded lazily (8 MB chunk) and left out of the standalone file.
-> Import converts to `.arch3d` via the new `core/dsl/print.ts`. New warning code W301 (GRAMMAR.md).
+> Note: `core/adapters/{mermaid,d2,detect}.ts` make an AST and use `buildModel`. Mermaid sides become
+> ports without a name (`_out_R`, `_in_L`...) with the new optional `Port.side` (types.ts and
+> ARCHITECTURE.md, toElk uses it). I took D2 and not LikeC4: D2 has no dependencies, LikeC4 brings vite,
+> playwright and esbuild. `@terrastruct/d2` 0.1.33 is loaded only when needed (8 MB) and is not in the
+> offline file. Import converts to `.arch3d` with the new `core/dsl/print.ts`. New warning code W301.
 
 **Goal.** Read other formats into the same `ArchModel`.
 
@@ -572,10 +580,10 @@ works with no internet.
 
 - [x] Done
 
-> Note: `core/scene/bundle.ts` (tree path through raised container centres or a virtual root,
-> β = 0.85 straightening, clamped cubic B-spline, 33 samples). Applies to aggregated links between
-> closed containers; the selection's own links stay as arcs. Off by default ("Bundling" button,
-> harness `bundle=on`). Fixed on the way: EdgeBatch's change key ignored curve shape.
+> Note: `core/scene/bundle.ts` (path through the raised container centers or a virtual root,
+> beta 0.85, cubic B-spline, 33 points). Only for the arcs between closed containers, the links of the
+> selected element stay as arcs. Off by default ("Bundling" button, harness `bundle=on`). Fixed on the
+> way: EdgeBatch didn't notice when only the shape of a curve changed.
 
 Hierarchical edge bundling (Holten 2006) for links between containers in the far
 view: control points follow the nesting tree path from source to target through
