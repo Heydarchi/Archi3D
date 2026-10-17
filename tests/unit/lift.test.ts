@@ -1,5 +1,5 @@
 import { beforeAll, describe, expect, it } from 'vitest';
-import { lift, DEFAULT_SCENE_OPTIONS } from '../../src/core/scene/lift';
+import { lift, DEFAULT_SCENE_OPTIONS, HEIGHT_FACTOR, PEDESTAL } from '../../src/core/scene/lift';
 import type { ArchModel, Layout2D, SceneSpec, V3 } from '../../src/core/types';
 import { laidOut } from './pipeline';
 
@@ -157,5 +157,28 @@ describe('arcPath', async () => {
     const a = { x: 0, y: 0, z: 0 }, b = { x: 400, y: 180, z: 50 };
     const pts = arcPath(a, b);
     expect(Math.max(...pts.map((p) => p.y))).toBeCloseTo(arcApex(a, b), 0);
+  });
+});
+
+describe('lift: kinds, titles and shapes', () => {
+  let k: ArchModel, kl: Layout2D, s: SceneSpec;
+  beforeAll(async () => { ({ model: k, layout: kl } = await laidOut('kinds')); s = lift(k, kl); });
+
+  it('edges carry their kind', () => {
+    expect(s.edges.map((e) => e.kind)).toEqual(k.edges.map((e) => e.kind));
+    expect(new Set(s.edges.map((e) => e.kind))).toEqual(new Set(['call', 'message', 'event', 'session', 'stream', 'shared']));
+  });
+  it('labels show the title when there is one', () => {
+    expect(s.labels.find((x) => x.id === 'Camera')!.text).toBe('Camera app');
+    expect(s.labels.find((x) => x.id === 'Device')!.text).toBe('Device');
+  });
+  it('block heights follow the shape', () => {
+    for (const b of s.blocks) expect(b.size.y, b.id).toBeCloseTo(DEFAULT_SCENE_OPTIONS.blockHeight * HEIGHT_FACTOR[b.shape]);
+  });
+  it('links to a person, ui or app attach at its base', () => {
+    const p = s.ports.find((x) => x.owner === 'Person')!;
+    const b = s.blocks.find((x) => x.id === 'Person')!;
+    const bottom = b.center.y - b.size.y / 2;
+    expect(p.pos.y).toBeCloseTo(bottom + (b.size.y * PEDESTAL.person!) / 2);
   });
 });

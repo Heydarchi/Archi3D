@@ -10,8 +10,13 @@ export interface D2Diagram {
 }
 
 const KIND_BY_TYPE: Record<string, string> = {
-  cylinder: 'database', stored_data: 'database', queue: 'queue', person: 'actor', 'c4-person': 'actor',
+  cylinder: 'database', stored_data: 'database', queue: 'queue', person: 'user', 'c4-person': 'user',
 };
+
+function linkKind(c: D2Diagram['connections'][number]): Pick<AstEdge, 'kind' | 'async'> {
+  if (c.srcArrow !== 'none' && c.dstArrow !== 'none') return { kind: 'session', async: false };
+  return c.strokeDash > 0 ? { kind: 'message', async: true } : { kind: 'call', async: false };
+}
 
 const NOWHERE: Loc = { line: 1, col: 1, endCol: 1 };
 const last = (id: string) => id.slice(id.lastIndexOf('.') + 1);
@@ -25,6 +30,7 @@ export function fromD2Diagram(diagram: D2Diagram): ArchModel {
     const container = isContainer(s.id);
     nodes.set(s.id, {
       type: 'node', kind: container ? 'container' : KIND_BY_TYPE[s.type] ?? 'component', name: last(s.id),
+      ...(s.label && s.label !== last(s.id) ? { title: s.label } : {}),
       container, ins: [], outs: [], children: [], loc: NOWHERE,
     });
   }
@@ -35,8 +41,9 @@ export function fromD2Diagram(diagram: D2Diagram): ArchModel {
   }
   for (const c of diagram.connections) {
     const backwards = c.srcArrow !== 'none' && c.dstArrow === 'none';
+    // Arrows at both ends: a session. Dashed: a message (async). Otherwise a call.
     const [a, b] = backwards ? [c.dst, c.src] : [c.src, c.dst];
-    const edge: AstEdge = { type: 'edge', from: { name: last(a), loc: NOWHERE }, to: { name: last(b), loc: NOWHERE }, async: c.strokeDash > 0, loc: NOWHERE };
+    const edge: AstEdge = { type: 'edge', from: { name: last(a), loc: NOWHERE }, to: { name: last(b), loc: NOWHERE }, ...linkKind(c), loc: NOWHERE };
     items.push(c.label ? { ...edge, label: c.label } : edge);
   }
   return buildModel({ items, diagnostics: [] });

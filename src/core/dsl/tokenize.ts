@@ -1,20 +1,36 @@
 // Splits one line of .arch3d text into tokens with 1-based columns. Comments are stripped.
 
-export type TokenType = 'ident' | 'arrow' | 'colon' | 'comma' | 'dot' | 'lbrace' | 'rbrace' | 'other';
-export interface Token { type: TokenType; text: string; col: number; endCol: number }
+export type TokenType = 'ident' | 'arrow' | 'string' | 'colon' | 'comma' | 'dot' | 'lbrace' | 'rbrace' | 'other';
+/** For a string token, `text` is the value without quotes and escapes. `unclosed` is set when the line ends first. */
+export interface Token { type: TokenType; text: string; col: number; endCol: number; unclosed?: boolean }
 export interface LineTokens { line: number; text: string; tokens: Token[] }
 
 const IDENT_START = /[A-Za-z_]/;
 const IDENT_PART = /[A-Za-z0-9_-]/;
-const ARROWS = ['-->', '->', '=>', '<-'];
+/** Longest first, so "<=>" is not read as "<" and "=>". */
+export const ARROWS = ['<=>', '-->', '->', '=>', '~>', '>>', '<>', '<-'];
 const SINGLE: Record<string, TokenType> = { ':': 'colon', ',': 'comma', '.': 'dot', '{': 'lbrace', '}': 'rbrace' };
 
-/** The line without its comment (`#` or `//` to end of line). */
+/** End of the string that starts with the quote at `i`: the index after it, and whether the quote was closed. */
+function scanString(line: string, i: number): { end: number; closed: boolean } {
+  let j = i + 1;
+  while (j < line.length && line[j] !== '"') j += line[j] === '\\' ? 2 : 1;
+  return j < line.length ? { end: j + 1, closed: true } : { end: line.length, closed: false };
+}
+
+/** The line without its comment (`#` or `//` to end of line). Quoted text is not a comment. */
 export function stripComment(line: string): string {
-  const hash = line.indexOf('#');
-  const slashes = line.indexOf('//');
-  const cut = [hash, slashes].filter((i) => i >= 0);
-  return cut.length ? line.slice(0, Math.min(...cut)) : line;
+  for (let i = 0; i < line.length; i++) {
+    if (line[i] === '"') i = scanString(line, i).end - 1;
+    else if (line[i] === '#' || line.startsWith('//', i)) return line.slice(0, i);
+  }
+  return line;
+}
+
+function readString(text: string, i: number): Token {
+  const { end, closed } = scanString(text, i);
+  const value = text.slice(i + 1, closed ? end - 1 : end).replace(/\\(["\\])/g, '$1');
+  return { type: 'string', text: value, col: i + 1, endCol: end + 1, ...(closed ? {} : { unclosed: true }) };
 }
 
 export function tokenizeLine(raw: string, line: number): LineTokens {
@@ -24,6 +40,12 @@ export function tokenizeLine(raw: string, line: number): LineTokens {
   while (i < text.length) {
     const ch = text[i];
     if (ch === ' ' || ch === '\t') { i++; continue; }
+    if (ch === '"') {
+      const t = readString(text, i);
+      tokens.push(t);
+      i = t.endCol - 1;
+      continue;
+    }
     const arrow = ARROWS.find((a) => text.startsWith(a, i));
     if (arrow) {
       tokens.push({ type: 'arrow', text: arrow, col: i + 1, endCol: i + 1 + arrow.length });

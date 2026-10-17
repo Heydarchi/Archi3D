@@ -150,3 +150,73 @@ describe('lexical details', () => {
     expect(ms).toBeLessThan(200);
   });
 });
+
+describe('link kinds', () => {
+  const one = (src: string) => parse(src).items[0] as AstEdge;
+  const table: [string, string, boolean][] = [
+    ['A -> B', 'call', false], ['A --> B', 'call', false], ['A => B', 'message', true], ['A ~> B', 'event', true],
+    ['A <=> B', 'session', false], ['A >> B', 'stream', true], ['A <> B', 'shared', false],
+  ];
+  for (const [src, kind, async] of table) {
+    it(`${src} is a ${kind}`, () => {
+      expect(one(src)).toMatchObject({ kind, async, from: { name: 'A' }, to: { name: 'B' } });
+      expect(parse(src).diagnostics).toEqual([]);
+    });
+  }
+  it('<- is a reversed call', () => expect(one('A <- B')).toMatchObject({ kind: 'call', from: { name: 'B' }, to: { name: 'A' } }));
+  it('arrows work without spaces', () => {
+    expect(one('A<=>B')).toMatchObject({ kind: 'session', to: { name: 'B' } });
+    expect(one('a-b~>c-d')).toMatchObject({ kind: 'event', from: { name: 'a-b' }, to: { name: 'c-d' } });
+  });
+  it('words work like arrows', () => {
+    for (const kind of ['call', 'message', 'event', 'session', 'stream', 'shared']) {
+      expect(one(`App.x ${kind} Svc.y : z`)).toMatchObject({ kind, from: { name: 'App', port: 'x' }, to: { name: 'Svc', port: 'y' }, label: 'z' });
+    }
+  });
+  it('a node whose kind is a link word is still a node', () => {
+    const n = parse('event Boot').items[0] as AstNode;
+    expect(n).toMatchObject({ type: 'node', kind: 'event', name: 'Boot' });
+  });
+});
+
+describe('several targets', () => {
+  it('A ~> B, C, D makes one link per target with the same kind and label', () => {
+    const r = parse('System ~> Mail, Sync.boot, Logger : BOOT_COMPLETED');
+    expect(r.diagnostics).toEqual([]);
+    expect((r.items as AstEdge[]).map((e) => [e.from.name, e.to.name, e.to.port, e.kind, e.label])).toEqual([
+      ['System', 'Mail', undefined, 'event', 'BOOT_COMPLETED'],
+      ['System', 'Sync', 'boot', 'event', 'BOOT_COMPLETED'],
+      ['System', 'Logger', undefined, 'event', 'BOOT_COMPLETED'],
+    ]);
+    expect((r.items[2] as AstEdge).to.loc.col).toBe(28);
+  });
+  it('a trailing comma is an error', () => {
+    expect(parse('A ~> B,').diagnostics[0]).toMatchObject({ code: 'E001' });
+  });
+  it('<- with several targets is an error (it reads right to left)', () => {
+    expect(parse('A <- B, C').diagnostics[0]).toMatchObject({ code: 'E001' });
+  });
+});
+
+describe('titles', () => {
+  it('a quoted title after the name', () => {
+    const n = parse('driver V4L2 "V4L2 camera driver" in: ioctl').items[0] as AstNode;
+    expect(n).toMatchObject({ kind: 'driver', name: 'V4L2', title: 'V4L2 camera driver' });
+    expect(n.ins.map((p) => p.name)).toEqual(['ioctl']);
+  });
+  it('on a container', () => {
+    const n = parse('system Kernel "Linux kernel" {\n}').items[0] as AstNode;
+    expect(n).toMatchObject({ container: true, title: 'Linux kernel' });
+  });
+  it('# and // inside quotes are not comments; \\" is a quote', () => {
+    const r = parse('service Cam "Camera #1 // main \\"wide\\"" in: x  # a comment');
+    expect(r.diagnostics).toEqual([]);
+    expect((r.items[0] as AstNode).title).toBe('Camera #1 // main "wide"');
+  });
+  it('no title: the field is not there', () => {
+    expect('title' in (parse('service A').items[0] as AstNode)).toBe(false);
+  });
+  it('a missing closing quote is E001 at the quote', () => {
+    expect(parse('service A "oops').diagnostics[0]).toMatchObject({ code: 'E001', loc: { col: 11 } });
+  });
+});

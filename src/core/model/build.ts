@@ -28,7 +28,7 @@ function collectNodes(items: AstItem[], diagnostics: Diagnostic[]) {
     n.ins.forEach(add('in'));
     n.outs.forEach(add('out'));
     nodes[n.name] = {
-      id: n.name, kind: n.kind, shape: shapeOf(n.kind), container: n.container,
+      id: n.name, kind: n.kind, ...(n.title !== undefined ? { title: n.title } : {}), shape: shapeOf(n.kind), container: n.container,
       parent, depth, children: [], ports, loc: n.loc,
     };
     if (parent === null) roots.push(n.name);
@@ -97,6 +97,7 @@ export function buildModel(parsed: ParseResult): ArchModel {
       id: `e${edges.length}`,
       from: pa ? { node: a.id, port: pa.id } : { node: a.id },
       to: pb ? { node: b.id, port: pb.id } : { node: b.id },
+      kind: e.kind,
       async: e.async,
       ...(e.label !== undefined ? { label: e.label } : {}),
       lca: lowestCommonContainer(nodes, a.id, b.id),

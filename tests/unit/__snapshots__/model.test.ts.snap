@@ -10,6 +10,7 @@ exports[`valid fixtures > container-links.arch3d model snapshot 1`] = `
         "node": "Frontend",
       },
       "id": "e0",
+      "kind": "call",
       "label": "REST",
       "lca": null,
       "to": {
@@ -23,6 +24,7 @@ exports[`valid fixtures > container-links.arch3d model snapshot 1`] = `
         "port": "Core._out",
       },
       "id": "e1",
+      "kind": "call",
       "lca": "Backend",
       "to": {
         "node": "Main",
@@ -36,6 +38,7 @@ exports[`valid fixtures > container-links.arch3d model snapshot 1`] = `
         "port": "Core._out",
       },
       "id": "e2",
+      "kind": "call",
       "label": "push",
       "lca": null,
       "to": {
@@ -65,7 +68,7 @@ exports[`valid fixtures > container-links.arch3d model snapshot 1`] = `
           "name": "_in",
         },
       ],
-      "shape": "box",
+      "shape": "screen",
     },
     "Backend": {
       "children": [
@@ -154,6 +157,618 @@ exports[`valid fixtures > container-links.arch3d model snapshot 1`] = `
 }
 `;
 
+exports[`valid fixtures > kinds.arch3d model snapshot 1`] = `
+{
+  "diagnostics": [],
+  "edges": [
+    {
+      "async": false,
+      "from": {
+        "node": "Person",
+        "port": "Person._out",
+      },
+      "id": "e0",
+      "kind": "call",
+      "label": "tap",
+      "lca": null,
+      "to": {
+        "node": "Screen",
+        "port": "Screen._in",
+      },
+    },
+    {
+      "async": false,
+      "from": {
+        "node": "Screen",
+        "port": "Screen._out",
+      },
+      "id": "e1",
+      "kind": "call",
+      "lca": "Device",
+      "to": {
+        "node": "Camera",
+        "port": "Camera._in",
+      },
+    },
+    {
+      "async": false,
+      "from": {
+        "node": "Camera",
+        "port": "Camera._out",
+      },
+      "id": "e2",
+      "kind": "session",
+      "label": "AIDL session",
+      "lca": "Device",
+      "to": {
+        "node": "Server",
+        "port": "Server._in",
+      },
+    },
+    {
+      "async": true,
+      "from": {
+        "node": "Server",
+        "port": "Server._out",
+      },
+      "id": "e3",
+      "kind": "message",
+      "label": "save job",
+      "lca": "Device",
+      "to": {
+        "node": "Jobs",
+        "port": "Jobs._in",
+      },
+    },
+    {
+      "async": true,
+      "from": {
+        "node": "Server",
+        "port": "Server._out",
+      },
+      "id": "e4",
+      "kind": "event",
+      "label": "NEW_PICTURE",
+      "lca": "Device",
+      "to": {
+        "node": "Bus",
+        "port": "Bus._in",
+      },
+    },
+    {
+      "async": true,
+      "from": {
+        "node": "Bus",
+        "port": "Bus._out",
+      },
+      "id": "e5",
+      "kind": "event",
+      "lca": "Device",
+      "to": {
+        "node": "Thumbs",
+        "port": "Thumbs._in",
+      },
+    },
+    {
+      "async": true,
+      "from": {
+        "node": "Bus",
+        "port": "Bus._out",
+      },
+      "id": "e6",
+      "kind": "event",
+      "lca": "Device",
+      "to": {
+        "node": "Media",
+        "port": "Media._in",
+      },
+    },
+    {
+      "async": false,
+      "from": {
+        "node": "Hal",
+        "port": "Hal._out",
+      },
+      "id": "e7",
+      "kind": "shared",
+      "label": "gralloc buffers",
+      "lca": "Device",
+      "to": {
+        "node": "Server",
+        "port": "Server._in",
+      },
+    },
+    {
+      "async": false,
+      "from": {
+        "node": "Server",
+        "port": "Server._out",
+      },
+      "id": "e8",
+      "kind": "call",
+      "lca": "Device",
+      "to": {
+        "node": "Hal",
+        "port": "Hal._in",
+      },
+    },
+    {
+      "async": false,
+      "from": {
+        "node": "Hal",
+        "port": "Hal._out",
+      },
+      "id": "e9",
+      "kind": "call",
+      "label": "ioctl",
+      "lca": "Device",
+      "to": {
+        "node": "Linux",
+        "port": "Linux._in",
+      },
+    },
+    {
+      "async": false,
+      "from": {
+        "node": "Linux",
+        "port": "Linux._out",
+      },
+      "id": "e10",
+      "kind": "call",
+      "lca": "Device",
+      "to": {
+        "node": "V4l2",
+        "port": "V4l2._in",
+      },
+    },
+    {
+      "async": true,
+      "from": {
+        "node": "Sensor",
+        "port": "Sensor._out",
+      },
+      "id": "e11",
+      "kind": "stream",
+      "label": "frames",
+      "lca": "Device",
+      "to": {
+        "node": "V4l2",
+        "port": "V4l2._in",
+      },
+    },
+    {
+      "async": false,
+      "from": {
+        "node": "Jobs",
+        "port": "Jobs._out",
+      },
+      "id": "e12",
+      "kind": "call",
+      "lca": "Device",
+      "to": {
+        "node": "Disk",
+        "port": "Disk._in",
+      },
+    },
+    {
+      "async": true,
+      "from": {
+        "node": "Camera",
+        "port": "Camera._out",
+      },
+      "id": "e13",
+      "kind": "message",
+      "label": "upload",
+      "lca": null,
+      "to": {
+        "node": "Cloud",
+        "port": "Cloud._in",
+      },
+    },
+  ],
+  "nodes": {
+    "Bus": {
+      "children": [],
+      "container": false,
+      "depth": 1,
+      "id": "Bus",
+      "kind": "topic",
+      "loc": {
+        "col": 12,
+        "endCol": 15,
+        "line": 12,
+      },
+      "parent": "Device",
+      "ports": [
+        {
+          "dir": "in",
+          "id": "Bus._in",
+          "implicit": true,
+          "name": "_in",
+        },
+        {
+          "dir": "out",
+          "id": "Bus._out",
+          "implicit": true,
+          "name": "_out",
+        },
+      ],
+      "shape": "topic",
+      "title": "Broadcasts",
+    },
+    "Camera": {
+      "children": [],
+      "container": false,
+      "depth": 1,
+      "id": "Camera",
+      "kind": "app",
+      "loc": {
+        "col": 12,
+        "endCol": 18,
+        "line": 5,
+      },
+      "parent": "Device",
+      "ports": [
+        {
+          "dir": "in",
+          "id": "Camera._in",
+          "implicit": true,
+          "name": "_in",
+        },
+        {
+          "dir": "out",
+          "id": "Camera._out",
+          "implicit": true,
+          "name": "_out",
+        },
+      ],
+      "shape": "phone",
+      "title": "Camera app",
+    },
+    "Cloud": {
+      "children": [],
+      "container": false,
+      "depth": 0,
+      "id": "Cloud",
+      "kind": "external",
+      "loc": {
+        "col": 10,
+        "endCol": 15,
+        "line": 17,
+      },
+      "parent": null,
+      "ports": [
+        {
+          "dir": "in",
+          "id": "Cloud._in",
+          "implicit": true,
+          "name": "_in",
+        },
+      ],
+      "shape": "ext",
+      "title": "Photo cloud",
+    },
+    "Device": {
+      "children": [
+        "Screen",
+        "Camera",
+        "Server",
+        "Hal",
+        "Media",
+        "Thumbs",
+        "Disk",
+        "Jobs",
+        "Bus",
+        "Linux",
+        "V4l2",
+        "Sensor",
+      ],
+      "container": true,
+      "depth": 0,
+      "id": "Device",
+      "kind": "system",
+      "loc": {
+        "col": 10,
+        "endCol": 16,
+        "line": 3,
+      },
+      "parent": null,
+      "ports": [],
+      "shape": "box",
+      "title": "Device",
+    },
+    "Disk": {
+      "children": [],
+      "container": false,
+      "depth": 1,
+      "id": "Disk",
+      "kind": "storage",
+      "loc": {
+        "col": 12,
+        "endCol": 16,
+        "line": 10,
+      },
+      "parent": "Device",
+      "ports": [
+        {
+          "dir": "in",
+          "id": "Disk._in",
+          "implicit": true,
+          "name": "_in",
+        },
+      ],
+      "shape": "storage",
+      "title": "/sdcard",
+    },
+    "Hal": {
+      "children": [],
+      "container": false,
+      "depth": 1,
+      "id": "Hal",
+      "kind": "library",
+      "loc": {
+        "col": 12,
+        "endCol": 15,
+        "line": 7,
+      },
+      "parent": "Device",
+      "ports": [
+        {
+          "dir": "out",
+          "id": "Hal._out",
+          "implicit": true,
+          "name": "_out",
+        },
+        {
+          "dir": "in",
+          "id": "Hal._in",
+          "implicit": true,
+          "name": "_in",
+        },
+      ],
+      "shape": "library",
+      "title": "Camera HAL",
+    },
+    "Jobs": {
+      "children": [],
+      "container": false,
+      "depth": 1,
+      "id": "Jobs",
+      "kind": "queue",
+      "loc": {
+        "col": 12,
+        "endCol": 16,
+        "line": 11,
+      },
+      "parent": "Device",
+      "ports": [
+        {
+          "dir": "in",
+          "id": "Jobs._in",
+          "implicit": true,
+          "name": "_in",
+        },
+        {
+          "dir": "out",
+          "id": "Jobs._out",
+          "implicit": true,
+          "name": "_out",
+        },
+      ],
+      "shape": "queue",
+      "title": "Job queue",
+    },
+    "Linux": {
+      "children": [],
+      "container": false,
+      "depth": 1,
+      "id": "Linux",
+      "kind": "kernel",
+      "loc": {
+        "col": 12,
+        "endCol": 17,
+        "line": 13,
+      },
+      "parent": "Device",
+      "ports": [
+        {
+          "dir": "in",
+          "id": "Linux._in",
+          "implicit": true,
+          "name": "_in",
+        },
+        {
+          "dir": "out",
+          "id": "Linux._out",
+          "implicit": true,
+          "name": "_out",
+        },
+      ],
+      "shape": "kernel",
+      "title": "Linux kernel",
+    },
+    "Media": {
+      "children": [],
+      "container": false,
+      "depth": 1,
+      "id": "Media",
+      "kind": "database",
+      "loc": {
+        "col": 12,
+        "endCol": 17,
+        "line": 8,
+      },
+      "parent": "Device",
+      "ports": [
+        {
+          "dir": "in",
+          "id": "Media._in",
+          "implicit": true,
+          "name": "_in",
+        },
+      ],
+      "shape": "db",
+      "title": "Media DB",
+    },
+    "Person": {
+      "children": [],
+      "container": false,
+      "depth": 0,
+      "id": "Person",
+      "kind": "user",
+      "loc": {
+        "col": 10,
+        "endCol": 16,
+        "line": 2,
+      },
+      "parent": null,
+      "ports": [
+        {
+          "dir": "out",
+          "id": "Person._out",
+          "implicit": true,
+          "name": "_out",
+        },
+      ],
+      "shape": "person",
+      "title": "Phone user",
+    },
+    "Screen": {
+      "children": [],
+      "container": false,
+      "depth": 1,
+      "id": "Screen",
+      "kind": "ui",
+      "loc": {
+        "col": 12,
+        "endCol": 18,
+        "line": 4,
+      },
+      "parent": "Device",
+      "ports": [
+        {
+          "dir": "in",
+          "id": "Screen._in",
+          "implicit": true,
+          "name": "_in",
+        },
+        {
+          "dir": "out",
+          "id": "Screen._out",
+          "implicit": true,
+          "name": "_out",
+        },
+      ],
+      "shape": "screen",
+      "title": "Camera screen",
+    },
+    "Sensor": {
+      "children": [],
+      "container": false,
+      "depth": 1,
+      "id": "Sensor",
+      "kind": "device",
+      "loc": {
+        "col": 12,
+        "endCol": 18,
+        "line": 15,
+      },
+      "parent": "Device",
+      "ports": [
+        {
+          "dir": "out",
+          "id": "Sensor._out",
+          "implicit": true,
+          "name": "_out",
+        },
+      ],
+      "shape": "device",
+      "title": "Image sensor",
+    },
+    "Server": {
+      "children": [],
+      "container": false,
+      "depth": 1,
+      "id": "Server",
+      "kind": "service",
+      "loc": {
+        "col": 12,
+        "endCol": 18,
+        "line": 6,
+      },
+      "parent": "Device",
+      "ports": [
+        {
+          "dir": "in",
+          "id": "Server._in",
+          "implicit": true,
+          "name": "_in",
+        },
+        {
+          "dir": "out",
+          "id": "Server._out",
+          "implicit": true,
+          "name": "_out",
+        },
+      ],
+      "shape": "box",
+      "title": "CameraService",
+    },
+    "Thumbs": {
+      "children": [],
+      "container": false,
+      "depth": 1,
+      "id": "Thumbs",
+      "kind": "cache",
+      "loc": {
+        "col": 12,
+        "endCol": 18,
+        "line": 9,
+      },
+      "parent": "Device",
+      "ports": [
+        {
+          "dir": "in",
+          "id": "Thumbs._in",
+          "implicit": true,
+          "name": "_in",
+        },
+      ],
+      "shape": "cache",
+      "title": "Thumbnails",
+    },
+    "V4l2": {
+      "children": [],
+      "container": false,
+      "depth": 1,
+      "id": "V4l2",
+      "kind": "driver",
+      "loc": {
+        "col": 12,
+        "endCol": 16,
+        "line": 14,
+      },
+      "parent": "Device",
+      "ports": [
+        {
+          "dir": "in",
+          "id": "V4l2._in",
+          "implicit": true,
+          "name": "_in",
+        },
+      ],
+      "shape": "chip",
+      "title": "V4L2 driver",
+    },
+  },
+  "roots": [
+    "Person",
+    "Device",
+    "Cloud",
+  ],
+}
+`;
+
 exports[`valid fixtures > nested-deep.arch3d model snapshot 1`] = `
 {
   "diagnostics": [],
@@ -165,6 +780,7 @@ exports[`valid fixtures > nested-deep.arch3d model snapshot 1`] = `
         "port": "Merchant.charge",
       },
       "id": "e0",
+      "kind": "call",
       "lca": null,
       "to": {
         "node": "Invoicer",
@@ -178,6 +794,7 @@ exports[`valid fixtures > nested-deep.arch3d model snapshot 1`] = `
         "port": "Invoicer.ledger",
       },
       "id": "e1",
+      "kind": "call",
       "lca": "Billing",
       "to": {
         "node": "Ledger",
@@ -191,6 +808,7 @@ exports[`valid fixtures > nested-deep.arch3d model snapshot 1`] = `
         "port": "Invoicer.notify",
       },
       "id": "e2",
+      "kind": "message",
       "label": "InvoiceIssued",
       "lca": "Platform",
       "to": {
@@ -205,6 +823,7 @@ exports[`valid fixtures > nested-deep.arch3d model snapshot 1`] = `
         "port": "Bus.deliver",
       },
       "id": "e3",
+      "kind": "message",
       "lca": "Messaging",
       "to": {
         "node": "Mailer",
@@ -218,6 +837,7 @@ exports[`valid fixtures > nested-deep.arch3d model snapshot 1`] = `
         "port": "Invoicer.ledger",
       },
       "id": "e4",
+      "kind": "call",
       "label": "check",
       "lca": "Payments",
       "to": {
@@ -485,6 +1105,7 @@ exports[`valid fixtures > northwind.arch3d model snapshot 1`] = `
         "port": "Customer.browse",
       },
       "id": "e0",
+      "kind": "call",
       "lca": null,
       "to": {
         "node": "WebApp",
@@ -498,6 +1119,7 @@ exports[`valid fixtures > northwind.arch3d model snapshot 1`] = `
         "port": "WebApp.api",
       },
       "id": "e1",
+      "kind": "call",
       "label": "REST",
       "lca": "Storefront",
       "to": {
@@ -512,6 +1134,7 @@ exports[`valid fixtures > northwind.arch3d model snapshot 1`] = `
         "port": "BFF.login",
       },
       "id": "e2",
+      "kind": "call",
       "lca": "Northwind",
       "to": {
         "node": "AuthService",
@@ -525,6 +1148,7 @@ exports[`valid fixtures > northwind.arch3d model snapshot 1`] = `
         "port": "AuthService.users",
       },
       "id": "e3",
+      "kind": "call",
       "lca": "Identity",
       "to": {
         "node": "UserDB",
@@ -538,6 +1162,7 @@ exports[`valid fixtures > northwind.arch3d model snapshot 1`] = `
         "port": "BFF.orders",
       },
       "id": "e4",
+      "kind": "call",
       "label": "REST",
       "lca": "Northwind",
       "to": {
@@ -552,6 +1177,7 @@ exports[`valid fixtures > northwind.arch3d model snapshot 1`] = `
         "port": "BFF.catalog",
       },
       "id": "e5",
+      "kind": "call",
       "label": "gRPC",
       "lca": "Northwind",
       "to": {
@@ -566,6 +1192,7 @@ exports[`valid fixtures > northwind.arch3d model snapshot 1`] = `
         "port": "OrderAPI.db",
       },
       "id": "e6",
+      "kind": "call",
       "lca": "Ordering",
       "to": {
         "node": "OrderDB",
@@ -579,6 +1206,7 @@ exports[`valid fixtures > northwind.arch3d model snapshot 1`] = `
         "port": "OrderAPI.events",
       },
       "id": "e7",
+      "kind": "message",
       "label": "OrderPlaced",
       "lca": "Northwind",
       "to": {
@@ -593,6 +1221,7 @@ exports[`valid fixtures > northwind.arch3d model snapshot 1`] = `
         "port": "OrderAPI.pay",
       },
       "id": "e8",
+      "kind": "call",
       "lca": null,
       "to": {
         "node": "PaymentGateway",
@@ -606,6 +1235,7 @@ exports[`valid fixtures > northwind.arch3d model snapshot 1`] = `
         "port": "EventBus.work",
       },
       "id": "e9",
+      "kind": "message",
       "lca": "Northwind",
       "to": {
         "node": "Fulfilment",
@@ -619,6 +1249,7 @@ exports[`valid fixtures > northwind.arch3d model snapshot 1`] = `
         "port": "Fulfilment.ship",
       },
       "id": "e10",
+      "kind": "call",
       "lca": null,
       "to": {
         "node": "Carrier",
@@ -632,6 +1263,7 @@ exports[`valid fixtures > northwind.arch3d model snapshot 1`] = `
         "port": "CatalogAPI.db",
       },
       "id": "e11",
+      "kind": "call",
       "lca": "Catalog",
       "to": {
         "node": "ProductDB",
@@ -645,6 +1277,7 @@ exports[`valid fixtures > northwind.arch3d model snapshot 1`] = `
         "port": "CatalogAPI.search",
       },
       "id": "e12",
+      "kind": "call",
       "lca": "Catalog",
       "to": {
         "node": "SearchIndex",
@@ -1126,7 +1759,7 @@ exports[`valid fixtures > northwind.arch3d model snapshot 1`] = `
           "name": "api",
         },
       ],
-      "shape": "box",
+      "shape": "screen",
     },
   },
   "roots": [
@@ -1149,6 +1782,7 @@ exports[`valid fixtures > tiny.arch3d model snapshot 1`] = `
         "port": "Web.api",
       },
       "id": "e0",
+      "kind": "call",
       "label": "HTTPS",
       "lca": null,
       "to": {
@@ -1163,6 +1797,7 @@ exports[`valid fixtures > tiny.arch3d model snapshot 1`] = `
         "port": "Api.db",
       },
       "id": "e1",
+      "kind": "call",
       "lca": null,
       "to": {
         "node": "Store",
@@ -1241,7 +1876,7 @@ exports[`valid fixtures > tiny.arch3d model snapshot 1`] = `
           "name": "api",
         },
       ],
-      "shape": "box",
+      "shape": "screen",
     },
   },
   "roots": [
@@ -1274,6 +1909,7 @@ exports[`valid fixtures > typed-ports.arch3d model snapshot 1`] = `
         "port": "Gateway.orders",
       },
       "id": "e0",
+      "kind": "call",
       "lca": null,
       "to": {
         "node": "Orders",
@@ -1287,6 +1923,7 @@ exports[`valid fixtures > typed-ports.arch3d model snapshot 1`] = `
         "port": "Gateway.search",
       },
       "id": "e1",
+      "kind": "call",
       "lca": null,
       "to": {
         "node": "Search",

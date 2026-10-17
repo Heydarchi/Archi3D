@@ -142,3 +142,23 @@ describe('determinism', () => {
     expect(JSON.stringify(p)).toBe(before);
   });
 });
+
+describe('element keywords and link kinds', () => {
+  it('each keyword has its shape; unknown kinds are boxes', () => {
+    const shapes = { user: 'person', actor: 'person', ui: 'screen', app: 'phone', service: 'box', library: 'library', driver: 'chip',
+      kernel: 'kernel', device: 'device', database: 'db', db: 'db', cache: 'cache', storage: 'storage', queue: 'queue', topic: 'topic',
+      external: 'ext', component: 'box', Daemon: 'box' };
+    const m = model(Object.keys(shapes).map((k, i) => `${k} N${i}`).join('\n'));
+    expect(Object.keys(shapes).map((_, i) => m.nodes[`N${i}`].shape)).toEqual(Object.values(shapes));
+  });
+  it('title and kind reach the model', () => {
+    const m = model('app Cam "Camera app"\nservice Svc\nCam <=> Svc\nSvc ~> Cam : done');
+    expect(m.nodes.Cam.title).toBe('Camera app');
+    expect('title' in m.nodes.Svc).toBe(false);
+    expect(m.edges.map((e) => [e.kind, e.async])).toEqual([['session', false], ['event', true]]);
+  });
+  it('several targets make separate links with their own ports', () => {
+    const m = model('service A\nservice B in: x\nservice C\nA ~> B.x, C');
+    expect(m.edges.map((e) => `${e.from.port}>${e.to.port}`)).toEqual(['A._out>B.x', 'A._out>C._in']);
+  });
+});
