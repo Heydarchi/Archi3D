@@ -1,0 +1,19 @@
+# Containers nest anything; each level is drawn one storey higher in 3D.
+external Customer   out: browse
+
+system Shop {
+  container Frontend {
+    ui Web            in: browse   out: api
+  }
+  container Backend {
+    service Orders    in: api      out: db, pay
+    database OrderDB  in: db
+  }
+}
+
+external Payments   in: charge
+
+Customer.browse -> Web.browse
+Web.api         -> Orders.api   : REST
+Orders.db       -> OrderDB.db
+Orders.pay      -> Payments.charge

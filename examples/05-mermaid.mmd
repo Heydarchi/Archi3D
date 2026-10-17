@@ -1,0 +1,9 @@
+architecture-beta
+    %% Import this with the app's "Import…" button.
+    group shop(cloud)[Shop]
+    service web(internet)[Web] in shop
+    service api(server)[API] in shop
+    service db(database)[Database] in shop
+
+    web:R --> L:api
+    api:R --> L:db
