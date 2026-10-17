@@ -12,8 +12,8 @@ export const NAME_PLACEHOLDER = '__ARCHI3D_NAME_PLACEHOLDER__';
 
 export interface Analysis {
   format: SourceFormat;
-  /** .arch text for the preview (Mermaid is converted). */
-  arch: string;
+  /** .arch3d text for the preview (Mermaid is converted). */
+  archText: string;
   diagnostics: Diagnostic[];
   /** Where each component/container is defined in the document. */
   locations: Record<string, Loc>;
@@ -24,15 +24,15 @@ export interface Analysis {
 export function analyze(fileName: string, text: string): Analysis {
   const format = detectFormat(fileName, text);
   if (format === 'd2') {
-    return { format, arch: '', diagnostics: [], locations: {}, unsupported: 'D2 files are not previewed in VS Code yet — import them in the Archi3D app.' };
+    return { format, archText: '', diagnostics: [], locations: {}, unsupported: 'D2 files are not previewed in VS Code yet — import them in the Archi3D app.' };
   }
   const model = format === 'mermaid' ? fromMermaid(text) : buildModel(parse(text));
   const locations = Object.fromEntries(Object.values(model.nodes).map((n) => [n.id, n.loc]));
-  return { format, arch: format === 'mermaid' ? printArch(model) : text, diagnostics: model.diagnostics, locations };
+  return { format, archText: format === 'mermaid' ? printArch(model) : text, diagnostics: model.diagnostics, locations };
 }
 
 export const isModelFile = (fileName: string, languageId: string): boolean =>
-  languageId === 'arch' || /\.(arch|mmd|mermaid)$/i.test(fileName);
+  languageId === 'arch3d' || /\.(arch3d|mmd|mermaid)$/i.test(fileName);
 
 /** The webview page: one script from the extension, a strict CSP, workers from blob: URLs. */
 export function previewHtml(o: { cspSource: string; scriptUri: string; nonce: string; title: string }): string {

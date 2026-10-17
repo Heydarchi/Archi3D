@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`valid fixtures > container-links.arch model snapshot 1`] = `
+exports[`valid fixtures > container-links.arch3d model snapshot 1`] = `
 {
   "diagnostics": [],
   "edges": [
@@ -154,7 +154,7 @@ exports[`valid fixtures > container-links.arch model snapshot 1`] = `
 }
 `;
 
-exports[`valid fixtures > nested-deep.arch model snapshot 1`] = `
+exports[`valid fixtures > nested-deep.arch3d model snapshot 1`] = `
 {
   "diagnostics": [],
   "edges": [
@@ -474,7 +474,7 @@ exports[`valid fixtures > nested-deep.arch model snapshot 1`] = `
 }
 `;
 
-exports[`valid fixtures > northwind.arch model snapshot 1`] = `
+exports[`valid fixtures > northwind.arch3d model snapshot 1`] = `
 {
   "diagnostics": [],
   "edges": [
@@ -1138,7 +1138,7 @@ exports[`valid fixtures > northwind.arch model snapshot 1`] = `
 }
 `;
 
-exports[`valid fixtures > tiny.arch model snapshot 1`] = `
+exports[`valid fixtures > tiny.arch3d model snapshot 1`] = `
 {
   "diagnostics": [],
   "edges": [
@@ -1252,7 +1252,7 @@ exports[`valid fixtures > tiny.arch model snapshot 1`] = `
 }
 `;
 
-exports[`valid fixtures > typed-ports.arch model snapshot 1`] = `
+exports[`valid fixtures > typed-ports.arch3d model snapshot 1`] = `
 {
   "diagnostics": [
     {

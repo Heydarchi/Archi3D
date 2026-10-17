@@ -1,4 +1,4 @@
-// CodeMirror stream-language mode for .arch: kinds, names, ports, arrows, labels, comments.
+// CodeMirror stream-language mode for .arch3d: kinds, names, ports, arrows, labels, comments.
 import { StreamLanguage, type StringStream } from '@codemirror/language';
 
 interface State { pos: 'start' | 'kind' | 'node' | 'ports' | 'edge' | 'label' }

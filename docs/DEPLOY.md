@@ -28,9 +28,9 @@ rm dist/harness.html              # optional: the test page is not needed in pro
 | `assets/browser-*.js` | ≈ 8 MB (6 MB gzipped) | D2 compiler, downloaded **only** when someone imports a `.d2` file |
 | `assets/inter-*.woff` | 30 kB | label font |
 
-To ship your own model as the start page, either replace `fixtures/northwind.arch` before
-building, or link to `index.html?fixture=<name>` for any `.arch` file you put in `fixtures/`.
-(Or publish the single-file export instead: `npm run export -- model.arch --out index.html`
+To ship your own model as the start page, either replace `fixtures/northwind.arch3d` before
+building, or link to `index.html?fixture=<name>` for any `.arch3d` file you put in `fixtures/`.
+(Or publish the single-file export instead: `npm run export -- model.arch3d --out index.html`
 gives one self-contained page — the simplest deployment of all, but without D2 import.)
 
 ## 2. Server requirements

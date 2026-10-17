@@ -9,7 +9,7 @@ import { buildModel } from '../../src/core/model/build';
 const dir = join(import.meta.dirname, '..', '..', 'examples');
 
 describe('examples/', () => {
-  for (const f of readdirSync(dir).filter((x) => /\.(arch|mmd)$/.test(x)).sort()) {
+  for (const f of readdirSync(dir).filter((x) => /\.(arch3d|mmd)$/.test(x)).sort()) {
     it(`${f} has no errors or warnings`, () => {
       const text = readFileSync(join(dir, f), 'utf8');
       const m = f.endsWith('.mmd') ? fromMermaid(text) : buildModel(parse(text));

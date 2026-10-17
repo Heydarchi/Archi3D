@@ -1,10 +1,10 @@
-// Editing one model file on disk through the dev server (npm run dev -- model.arch).
+// Editing one model file on disk through the dev server (npm run dev -- model.arch3d).
 // Absent in builds, the standalone file and the dev server without a file: then openModelFile() is null.
 
 export interface ModelFile {
   name: string;
   path: string;
-  /** Where Save writes: the file itself, or a sibling .arch for .mmd/.d2. */
+  /** Where Save writes: the file itself, or a sibling .arch3d for .mmd/.d2. */
   saveAs: string;
   exists: boolean;
   text: string;

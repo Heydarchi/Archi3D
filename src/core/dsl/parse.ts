@@ -1,4 +1,4 @@
-// .arch text → AST. One statement per line; recovers at the next line after an error.
+// .arch3d text → AST. One statement per line; recovers at the next line after an error.
 import type { AstEdge, AstItem, AstNode, AstRef, Diagnostic, Loc, ParseResult, PortDecl } from '../types';
 import { byLocation, diag } from './diagnostics';
 import { tokenize, type LineTokens, type Token } from './tokenize';

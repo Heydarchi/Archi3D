@@ -10,7 +10,7 @@ const cache = new Map<string, Promise<{ model: ArchModel; layout: Layout2D }>>()
 export function laidOut(name: string): Promise<{ model: ArchModel; layout: Layout2D }> {
   let p = cache.get(name);
   if (!p) {
-    const model = buildModel(parse(fixture(`${name}.arch`)));
+    const model = buildModel(parse(fixture(`${name}.arch3d`)));
     p = layout(model).then((l) => ({ model, layout: l }));
     cache.set(name, p);
   }

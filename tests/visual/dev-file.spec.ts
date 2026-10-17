@@ -1,4 +1,4 @@
-// "npm run dev -- model.arch": open a file from disk, edit it in the app, save it back,
+// "npm run dev -- model.arch3d": open a file from disk, edit it in the app, save it back,
 // and stay in step with changes other programs make — against a real dev server.
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import type { AddressInfo } from 'node:net';
@@ -32,11 +32,11 @@ test.beforeAll(() => { rmSync(dir, { recursive: true, force: true }); mkdirSync(
 
 test('edit a model file and save it back; follow changes made on disk', async ({ page }) => {
   test.setTimeout(180_000);
-  const file = join(dir, 'shop.arch');
-  writeFileSync(file, readFileSync('examples/03-containers.arch', 'utf8'));
+  const file = join(dir, 'shop.arch3d');
+  writeFileSync(file, readFileSync('examples/03-containers.arch3d', 'utf8'));
   const server = await open(page, file);
   try {
-    await expect(page.locator('#file-name')).toHaveText('shop.arch');
+    await expect(page.locator('#file-name')).toHaveText('shop.arch3d');
     await expect(page.locator('#save')).toBeVisible();
     await expect(page.locator('#save')).toBeDisabled();
     await expect(page.locator('.cm-content')).toContainText('container Backend');
@@ -47,11 +47,11 @@ test('edit a model file and save it back; follow changes made on disk', async ({
     await page.keyboard.press('ControlOrMeta+End');
     await page.keyboard.type('\nexternal Audit in: log\nOrders -> Audit.log : audit');
     await waitLayout(page, rev);
-    await expect(page.locator('#file-name')).toHaveText('● shop.arch');
+    await expect(page.locator('#file-name')).toHaveText('● shop.arch3d');
     expect((await state(page)).file!.dirty).toBe(true);
     await page.keyboard.press('ControlOrMeta+s');
-    await expect(page.locator('#file-name')).toHaveText('shop.arch');
-    await expect(page.locator('#import-note')).toHaveText('Saved shop.arch');
+    await expect(page.locator('#file-name')).toHaveText('shop.arch3d');
+    await expect(page.locator('#import-note')).toHaveText('Saved shop.arch3d');
     expect(readFileSync(file, 'utf8')).toContain('Orders -> Audit.log : audit');
     await page.screenshot({ path: 'artifacts/dev-file/saved.png' });
 
@@ -72,7 +72,7 @@ test('edit a model file and save it back; follow changes made on disk', async ({
     await page.screenshot({ path: 'artifacts/dev-file/conflict.png' });
     await page.locator('#file-banner button', { hasText: 'Keep mine' }).click();
     await page.locator('#save').click();
-    await expect(page.locator('#import-note')).toHaveText('Saved shop.arch');
+    await expect(page.locator('#import-note')).toHaveText('Saved shop.arch3d');
     const disk = readFileSync(file, 'utf8');
     expect(disk).toContain('# my unsaved note');
     expect(disk).not.toContain('# their change');
@@ -83,31 +83,31 @@ test('edit a model file and save it back; follow changes made on disk', async ({
 
 test('a new file starts from a small example and is created on first save', async ({ page }) => {
   test.setTimeout(120_000);
-  const file = join(dir, 'new-model.arch');
+  const file = join(dir, 'new-model.arch3d');
   const server = await open(page, file);
   try {
     await expect(page.locator('#import-note')).toHaveText('New file — Save creates it');
     await expect(page.locator('.cm-content')).toContainText('database Store');
     await page.locator('#save').click();
-    await expect(page.locator('#import-note')).toHaveText('Saved new-model.arch');
+    await expect(page.locator('#import-note')).toHaveText('Saved new-model.arch3d');
     expect(existsSync(file)).toBe(true);
   } finally {
     await server.close();
   }
 });
 
-test('a Mermaid file opens converted and saves to a sibling .arch, untouched itself', async ({ page }) => {
+test('a Mermaid file opens converted and saves to a sibling .arch3d, untouched itself', async ({ page }) => {
   test.setTimeout(120_000);
   const file = join(dir, 'flow.mmd');
   const original = readFileSync('examples/05-mermaid.mmd', 'utf8');
   writeFileSync(file, original);
   const server = await open(page, file);
   try {
-    await expect(page.locator('#import-note')).toHaveText('Imported — Save writes flow.arch');
+    await expect(page.locator('#import-note')).toHaveText('Imported — Save writes flow.arch3d');
     await expect(page.locator('.cm-content')).toContainText('group shop {');
     await page.locator('#save').click();
-    await expect(page.locator('#import-note')).toHaveText('Saved flow.arch');
-    expect(readFileSync(join(dir, 'flow.arch'), 'utf8')).toContain('group shop {');
+    await expect(page.locator('#import-note')).toHaveText('Saved flow.arch3d');
+    expect(readFileSync(join(dir, 'flow.arch3d'), 'utf8')).toContain('group shop {');
     expect(readFileSync(file, 'utf8')).toBe(original);
   } finally {
     await server.close();

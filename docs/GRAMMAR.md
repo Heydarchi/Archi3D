@@ -1,6 +1,6 @@
-# The `.arch` language (v1)
+# The `.arch3d` language (v1)
 
-A deliberately tiny, line-based language for components, their interfaces (ports)
+Files use the extension `.arch3d`. A deliberately tiny, line-based language for components, their interfaces (ports)
 and the links between them. One statement per line. `#` or `//` starts a comment.
 
 ## Statements

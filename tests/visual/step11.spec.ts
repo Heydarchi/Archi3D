@@ -20,7 +20,7 @@ test('gen-1000 near', async ({ page }) => {
 
 test('app shows a progress indicator while laying out', async ({ page }) => {
   await page.goto('/index.html?test=1&fixture=gen-1000');
-  await expect(page.locator('#file-name')).toHaveText('gen-1000.arch');
+  await expect(page.locator('#file-name')).toHaveText('gen-1000.arch3d');
   await page.waitForFunction(() => window.__archi?.ready === true, undefined, { timeout: 60_000 });
   await expect(page.locator('#busy')).toBeHidden();
 });

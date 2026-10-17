@@ -1,4 +1,4 @@
-// Seeded random .arch models for scale tests: systems → containers → components, with links
+// Seeded random .arch3d models for scale tests: systems → containers → components, with links
 // mostly inside a container, some across containers, a few across systems.
 
 export interface GenOptions {

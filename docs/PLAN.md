@@ -89,7 +89,7 @@ mean WebGL fell back or lights are missing).
 > statement. `-->` is synchronous like `->`. Edges inside a container are that container's children.
 > Unset `label` is omitted (not `undefined`). 10k lines parse in a few ms.
 
-**Goal.** `parse(src)` turns `.arch` text into an AST with exact error locations,
+**Goal.** `parse(src)` turns `.arch3d` text into an AST with exact error locations,
 following docs/GRAMMAR.md.
 
 **Build.**
@@ -103,10 +103,10 @@ following docs/GRAMMAR.md.
 - Harness: `view=parse`.
 
 **Unit tests.** (`tests/unit/parse.test.ts`)
-- Each fixture in `fixtures/*.arch` parses with no errors; AST matches a Vitest snapshot.
+- Each fixture in `fixtures/*.arch3d` parses with no errors; AST matches a Vitest snapshot.
 - Table-driven: each file in `fixtures/errors/` with E00x codes yields exactly the
   code and line in `expected.json`; parsing continues after the error (e.g. in
-  `bad-line.arch`, `B` and the link are still in the AST).
+  `bad-line.arch3d`, `B` and the link are still in the AST).
 - Columns: for `A -> B : label`, `from.loc.col === 1`, `to.loc.col === 6`, label text exact.
 - Ports with types: `in: http:REST, q` → two ports, first with `iface: 'REST'`.
 - Arrow variants `->`, `-->`, `=>`, `<-` (the last swaps ends).
@@ -147,9 +147,9 @@ and the lowest common container of each link, and reports semantic errors.
 **Unit tests.** (`tests/unit/model.test.ts`)
 - Model JSON snapshot for each valid fixture.
 - `expected.json` codes E1xx/W2xx are produced at the right lines.
-- `nested-deep.arch`: `Ledger.depth === 3`; lca of `Invoicer → Scorer` is `Payments`;
+- `nested-deep.arch3d`: `Ledger.depth === 3`; lca of `Invoicer → Scorer` is `Payments`;
   lca of `Merchant → Invoicer` is `null`.
-- `container-links.arch`: container-to-container link has no ports; `App <- Core`
+- `container-links.arch3d`: container-to-container link has no ports; `App <- Core`
   becomes `Core → App`.
 - Implicit ports: `A -> B` with no declared ports gives `A._out` and `B._in`.
 - Determinism: building twice gives deep-equal output; edge ids follow source order.
@@ -199,7 +199,7 @@ routes using ELK, and a 2D SVG view shows them.
     within 1 unit of its target port;
   - every route segment is horizontal or vertical;
   - running `layout()` twice gives identical output.
-- `northwind.arch` lays out in under 1 s in Node (first call, cold).
+- `northwind.arch3d` lays out in under 1 s in Node (first call, cold).
 
 **Pictures.** `artifacts/step-3/svg2d-<fixture>.png` for all valid fixtures.
 
@@ -483,7 +483,7 @@ underlined), `app-after-edit.png`.
 
 **Build.**
 - `scripts/generate.mjs` + `src/core/gen.ts`: seeded random model (systems → containers →
-  components, links mostly within a system). Writes `fixtures/gen-1000.arch`.
+  components, links mostly within a system). Writes `fixtures/gen-1000.arch3d`.
 - `InstancedMesh` for blocks (per shape) and ports; `LineSegments2` batch for edges of
   closed or far containers.
 - Label budget: at most 150 labels at once, nearest first.
@@ -518,7 +518,7 @@ works with no internet.
 **Build.**
 - `scripts/export-standalone.mjs`: builds with Vite in single-file mode (inline JS,
   CSS, fonts as data URIs, ELK in an inline worker from a Blob URL), embeds a chosen
-  `.arch` file. Output: `dist/archi3d-standalone.html`.
+  `.arch3d` file. Output: `dist/archi3d-standalone.html`.
 - Optional CDN mode (`--cdn`): a loader tries pinned CDN URLs (exact versions from
   `vendor/manifest.json`) with a 3 s timeout and falls back to the inlined copies.
 - Opens from `file://` (no fetches of relative files).
@@ -544,7 +544,7 @@ works with no internet.
 > become unnamed ports `_out_R`/`_in_L`… with the new optional `Port.side` (types.ts + ARCHITECTURE.md;
 > toElk honours it). D2 chosen over LikeC4 (no deps vs. LikeC4 pulling vite/playwright/esbuild);
 > `@terrastruct/d2` 0.1.33 is loaded lazily (8 MB chunk) and left out of the standalone file.
-> Import converts to `.arch` via the new `core/dsl/print.ts`. New warning code W301 (GRAMMAR.md).
+> Import converts to `.arch3d` via the new `core/dsl/print.ts`. New warning code W301 (GRAMMAR.md).
 
 **Goal.** Read other formats into the same `ArchModel`.
 
@@ -555,10 +555,10 @@ works with no internet.
 - Then one of: LikeC4 (`likec4` package's `fromSource`) or D2 (`@terrastruct/d2` WASM
   compile). Adapters that need heavy packages load them lazily.
 - App: file-type detection by extension or first line; "Import" button.
-- Fixtures: `fixtures/adapters/northwind.mmd` (same system as `northwind.arch`).
+- Fixtures: `fixtures/adapters/northwind.mmd` (same system as `northwind.arch3d`).
 
 **Unit tests.**
-- `northwind.mmd` → model with the same nodes, parents and links as `northwind.arch`
+- `northwind.mmd` → model with the same nodes, parents and links as `northwind.arch3d`
   (ports may differ; compare node ids, parents and edge endpoints).
 - Unsupported Mermaid lines give a warning, not a crash.
 

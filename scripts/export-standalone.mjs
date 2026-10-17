@@ -1,7 +1,7 @@
 // One HTML file you can email or double-click: JS, CSS and fonts inlined, the layout worker built
-// from inlined code through a Blob URL, one .arch model embedded. Works from file:// offline.
+// from inlined code through a Blob URL, one .arch3d model embedded. Works from file:// offline.
 //
-//   node scripts/export-standalone.mjs [model.arch] [--cdn] [--out file.html]
+//   node scripts/export-standalone.mjs [model.arch3d] [--cdn] [--out file.html]
 //
 // --cdn: the page first tries ELK from pinned CDN URLs (exact version from vendor/manifest.json,
 // 3 s timeout) and falls back to the inlined copy.
@@ -93,7 +93,7 @@ export function standaloneModules({ workerCode, workerWithoutElk = '', cdnUrls =
  * `model` is a file path; or pass `source` (+ `name`) directly — the VS Code extension builds a
  * template with a placeholder source this way and fills it in at export time.
  */
-export async function exportStandalone({ model = join(root, 'fixtures', 'northwind.arch'), source, name, cdn = false, out } = {}) {
+export async function exportStandalone({ model = join(root, 'fixtures', 'northwind.arch3d'), source, name, cdn = false, out } = {}) {
   const target = out ?? join(root, 'dist', cdn ? 'archi3d-standalone-cdn.html' : 'archi3d-standalone.html');
   const tmp = join(root, 'dist', '.standalone', cdn ? 'cdn' : 'offline');
   rmSync(tmp, { recursive: true, force: true });
@@ -102,7 +102,7 @@ export async function exportStandalone({ model = join(root, 'fixtures', 'northwi
   const cdnUrls = cdn ? cdnUrlsFromManifest() : [];
   const modules = standaloneModules({
     workerCode, workerWithoutElk, cdnUrls,
-    name: name ?? basename(model).replace(/\.arch$/, ''),
+    name: name ?? basename(model).replace(/\.arch(3d)?$/, ''),
     source: source ?? readFileSync(model, 'utf8'),
   });
 

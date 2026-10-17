@@ -1,4 +1,4 @@
-// The app's file mode (npm run dev -- model.arch): Save, an unsaved-changes marker, and staying in
+// The app's file mode (npm run dev -- model.arch3d): Save, an unsaved-changes marker, and staying in
 // step with the file on disk without ever silently throwing away anyone's edits.
 import type { Editor } from './editor';
 import { onDiskChange, saveModelFile, type ModelFile } from './fileSync';

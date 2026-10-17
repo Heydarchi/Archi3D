@@ -1,4 +1,4 @@
-// ArchModel → .arch text (used to put an imported model into the editor).
+// ArchModel → .arch3d text (used to put an imported model into the editor).
 import type { ArchModel, ModelEdge, ModelNode, Port } from '../types';
 
 const portList = (ports: Port[]) => ports.map((p) => (p.iface ? `${p.name}:${p.iface}` : p.name)).join(', ');

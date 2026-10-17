@@ -1,4 +1,4 @@
-// Archi3D for VS Code: live 3D preview, problems for .arch/.mmd files, PNG and HTML export.
+// Archi3D for VS Code: live 3D preview, problems for .arch3d/.mmd files, PNG and HTML export.
 import * as vscode from 'vscode';
 import type { HostMessage, PreviewMessage } from '../../src/app/previewProtocol';
 import type { Diagnostic } from '../../src/core/types';
@@ -63,7 +63,7 @@ class Preview {
   update() {
     const a = analyze(this.doc.fileName, this.doc.getText());
     if (a.unsupported) { void vscode.window.showInformationMessage(a.unsupported); return; }
-    this.post({ type: 'update', name: baseName(this.doc.uri), source: a.arch });
+    this.post({ type: 'update', name: baseName(this.doc.uri), source: a.archText });
   }
 
   private onMessage(m: PreviewMessage) {
@@ -121,7 +121,7 @@ export function activate(ctx: vscode.ExtensionContext): void {
 
     vscode.commands.registerCommand('archi3d.openPreview', () => {
       const doc = activeModelDocument();
-      if (!doc) { void vscode.window.showWarningMessage('Open a .arch or Mermaid (.mmd) file first.'); return; }
+      if (!doc) { void vscode.window.showWarningMessage('Open a .arch3d or Mermaid (.mmd) file first.'); return; }
       Preview.show(ctx, doc);
     }),
 
@@ -143,7 +143,7 @@ export function activate(ctx: vscode.ExtensionContext): void {
 
     vscode.commands.registerCommand('archi3d.exportHtml', async () => {
       const doc = activeModelDocument();
-      if (!doc) { void vscode.window.showWarningMessage('Open a .arch or Mermaid (.mmd) file first.'); return; }
+      if (!doc) { void vscode.window.showWarningMessage('Open a .arch3d or Mermaid (.mmd) file first.'); return; }
       const a = analyze(doc.fileName, doc.getText());
       if (a.unsupported) { void vscode.window.showWarningMessage(a.unsupported); return; }
       const template = new TextDecoder().decode(await vscode.workspace.fs.readFile(vscode.Uri.joinPath(ctx.extensionUri, 'dist', 'template.html')));
@@ -152,7 +152,7 @@ export function activate(ctx: vscode.ExtensionContext): void {
         filters: { 'HTML page': ['html'] },
       });
       if (!target) return;
-      await vscode.workspace.fs.writeFile(target, new TextEncoder().encode(fillTemplate(template, baseName(doc.uri).replace(/\.[^.]+$/, ''), a.arch)));
+      await vscode.workspace.fs.writeFile(target, new TextEncoder().encode(fillTemplate(template, baseName(doc.uri).replace(/\.[^.]+$/, ''), a.archText)));
       const open = await vscode.window.showInformationMessage(`Exported ${baseName(target)} — a single file that works offline.`, 'Open in browser');
       if (open) void vscode.env.openExternal(target);
     }),
