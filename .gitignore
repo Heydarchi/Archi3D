@@ -1,0 +1,9 @@
+node_modules
+dist
+artifacts
+offline
+test-results
+playwright-report
+vscode/dist
+vscode/*.vsix
+.DS_Store
