@@ -11,6 +11,7 @@ import { highlightSet, isInside } from '../core/model/query';
 import type { ArchModel, Id, LodResult, SceneSpec } from '../core/types';
 import type { SceneObjects } from './build';
 import type { Palette } from './palette';
+import { elementOf } from './shapes';
 
 export const LID_FADE_MS = 150;
 export const DIM_OPACITY = 0.15;
@@ -25,7 +26,7 @@ export class Presenter {
 
   /** Where an aggregated link attaches: the top centre of a lid or block. */
   private anchor(id: Id): V3 {
-    const m = this.o.lids.matrixOf(id) ?? this.o.blocks.matrixOf(id) ?? this.o.cylinders.matrixOf(id);
+    const m = this.o.lids.matrixOf(id) ?? this.o.bodies.map((s) => s.matrixOf(id)).find(Boolean);
     const p = new THREE.Vector3(), q = new THREE.Quaternion(), s = new THREE.Vector3();
     m?.decompose(p, q, s);
     return { x: p.x, y: p.y + s.y / 2, z: p.z };
@@ -64,13 +65,14 @@ export class Presenter {
       const base = o.plates.baseColor(id)!;
       o.plates.setColor(id, hl && id === selected ? base.clone().lerp(accent, 0.25) : base);
     }
-    for (const set of [o.blocks, o.cylinders]) {
-      for (const id of set.ids) {
-        set.setShown(id, shown(id));
+    for (const set of o.bodies) {
+      for (const part of set.ids) {
+        const id = elementOf(part);
+        set.setShown(part, shown(id));
         const on = !hl || hl.nodes.has(id);
-        set.setOpacity(id, on ? 1 : DIM_OPACITY);
-        const base = set.baseColor(id)!;
-        set.setColor(id, hl && isInside(model, id, selected!) ? base.clone().lerp(accent, 0.35) : base);
+        set.setOpacity(part, on ? 1 : DIM_OPACITY);
+        const base = set.baseColor(part)!;
+        set.setColor(part, hl && isInside(model, id, selected!) ? base.clone().lerp(accent, 0.35) : base);
         if (!on) dimmed.add(id);
       }
     }
@@ -103,8 +105,8 @@ export class Presenter {
     const outline = new THREE.Color(pal.outline);
     const dimOutline = outline.clone().lerp(bg, 1 - DIM_OPACITY);
     o.outlines.update(
-      (id) => (id.startsWith('lid:') ? r.containers[id.slice(4)] === 'closed' : shown(id)),
-      (id) => (hl && !id.startsWith('lid:') && !hl.nodes.has(id) ? dimOutline : outline),
+      (id) => (id.startsWith('lid:') ? r.containers[id.slice(4)] === 'closed' : shown(elementOf(id))),
+      (id) => (hl && !id.startsWith('lid:') && !hl.nodes.has(elementOf(id)) ? dimOutline : outline),
     );
     return { animating, dimLabels: hl ? dimmed : null, changed: true };
   }

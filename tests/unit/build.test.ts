@@ -4,7 +4,10 @@ import { lift } from '../../src/core/scene/lift';
 import { corners } from '../../src/core/scene/vec';
 import type { ArchModel, SceneSpec } from '../../src/core/types';
 import { buildSceneObjects, countDrawCalls, SceneRoot } from '../../src/render/build';
+import { LIGHT } from '../../src/render/palette';
+import { pick } from '../../src/render/picking';
 import { cameraPose, toPerspective } from '../../src/render/poses';
+import { BODY_OF, meshName } from '../../src/render/shapes';
 import { laidOut } from './pipeline';
 
 let scene: SceneSpec, model: ArchModel;
@@ -18,7 +21,9 @@ describe('buildSceneObjects', () => {
   it('creates exactly one instance per plate, block and port', () => {
     const g = buildSceneObjects(scene, undefined, model);
     expect(g.plates.ids.sort()).toEqual(scene.plates.map((p) => p.id).sort());
-    expect([...g.blocks.ids, ...g.cylinders.ids].sort()).toEqual(scene.blocks.map((b) => b.id).sort());
+    const bodies = g.bodies.flatMap((s) => s.ids).filter((id) => !id.endsWith('#base'));
+    expect(bodies.sort()).toEqual(scene.blocks.map((b) => b.id).sort());
+    expect(g.blocks.ids.filter((id) => id.endsWith('#base'))).toEqual(['WebApp#base']); // ui stands on a base
     expect(g.cylinders.ids.sort()).toEqual(scene.blocks.filter((b) => b.shape === 'db').map((b) => b.id).sort());
     expect(g.ports.ids.sort()).toEqual(scene.ports.map((p) => p.id).sort());
     expect(g.ports.mesh.count).toBe(scene.ports.length);
@@ -49,7 +54,7 @@ describe('buildSceneObjects', () => {
   });
 
   it('uses a handful of draw calls regardless of size', () => {
-    expect(countDrawCalls(buildSceneObjects(scene, undefined, model).root)).toBeLessThanOrEqual(10);
+    expect(countDrawCalls(buildSceneObjects(scene, undefined, model).root)).toBeLessThanOrEqual(11);
   });
 });
 
@@ -115,5 +120,46 @@ describe('camera poses', () => {
     const [far, mid, near] = (['far', 'mid', 'near'] as const).map((p) => dist(cameraPose(p, scene, 1.6, 800)));
     expect(mid).toBeCloseTo(far * 0.4, 5);
     expect(near).toBeLessThan(mid);
+  });
+});
+
+describe('element shapes', () => {
+  let ks: SceneSpec, km: ArchModel;
+  beforeAll(async () => { const r = await laidOut('kinds'); km = r.model; ks = lift(r.model, r.layout); });
+
+  it('each block is in the mesh of its shape, with the shape colour', () => {
+    const g = buildSceneObjects(ks, LIGHT, km);
+    for (const b of ks.blocks) {
+      const set = g.bodies.find((x) => x.has(b.id))!;
+      expect(set.mesh.name, b.id).toBe(meshName(BODY_OF[b.shape]));
+      expect(set.baseColor(b.id)!.getHex(), b.id).toBe(LIGHT.block[b.shape]);
+    }
+    expect(g.blocks.ids.filter((id) => id.endsWith('#base')).sort()).toEqual(['Camera#base', 'Person#base', 'Screen#base']);
+  });
+
+  it('a figure keeps its proportions; its base fills the footprint', () => {
+    const g = buildSceneObjects(ks, LIGHT, km);
+    const size = (m: THREE.Matrix4) => new THREE.Vector3().setFromMatrixScale(m);
+    const b = ks.blocks.find((x) => x.id === 'Person')!;
+    const fig = size(g.bodies.find((x) => x.mesh.name === 'blocks-person')!.matrixOf('Person')!);
+    expect(fig.x).toBeCloseTo(fig.z);
+    expect(fig.x).toBeLessThan(b.size.x);
+    expect(size(g.blocks.matrixOf('Person#base')!).x).toBeCloseTo(b.size.x);
+  });
+
+  it('picking a base gives the element', () => {
+    const g = buildSceneObjects(ks, LIGHT, km);
+    g.root.updateMatrixWorld(true);
+    const b = ks.blocks.find((x) => x.id === 'Person')!;
+    const at = new THREE.Vector3(b.center.x + b.size.x * 0.46, 0, b.center.z);
+    const cam = new THREE.PerspectiveCamera(30, 1, 1, 5000);
+    cam.position.set(at.x, 400, at.z);
+    cam.lookAt(at);
+    cam.updateMatrixWorld();
+    expect(pick(g, cam, 50, 50, 100, 100)).toBe('Person');
+  });
+
+  it('all shapes and link kinds stay under 30 draw calls', () => {
+    expect(countDrawCalls(buildSceneObjects(ks, LIGHT, km).root)).toBeLessThan(30);
   });
 });

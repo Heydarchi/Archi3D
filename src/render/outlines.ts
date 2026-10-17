@@ -1,10 +1,8 @@
 // Thin outlines of every shown block and closed lid in one LineSegments batch.
 import * as THREE from 'three';
 
-export interface OutlineItem { id: string; matrix: THREE.Matrix4; cylinder: boolean }
-
-const unitBox = new THREE.EdgesGeometry(new THREE.BoxGeometry(1, 1, 1));
-const unitCylinder = new THREE.EdgesGeometry(new THREE.CylinderGeometry(0.5, 0.5, 1, 40), 30);
+/** `edges`: the outline of the unit shape, placed with `matrix`. */
+export interface OutlineItem { id: string; matrix: THREE.Matrix4; edges: THREE.BufferGeometry }
 
 export class OutlineBatch {
   readonly lines: THREE.LineSegments;
@@ -25,7 +23,7 @@ export class OutlineBatch {
     const pos: number[] = [], col: number[] = [];
     const v = new THREE.Vector3();
     for (const it of visible) {
-      const src = (it.cylinder ? unitCylinder : unitBox).attributes.position;
+      const src = it.edges.attributes.position;
       const c = colorOf(it.id);
       for (let i = 0; i < src.count; i++) {
         v.fromBufferAttribute(src, i).applyMatrix4(it.matrix);

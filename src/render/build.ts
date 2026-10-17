@@ -1,7 +1,7 @@
 // SceneSpec → three.js objects. Needs no renderer, so it runs in Node for unit tests.
 // Every kind of element is one instanced draw (or one line batch), so 1,000 components stay
-// well under 60 draw calls: plates, lids, blocks, cylinders, ports, outlines, two edge batches,
-// arrowheads and the ground grid.
+// well under 60 draw calls: plates, lids, one mesh per block shape in use, ports, outlines, the
+// edge batches, arrowheads and the ground grid.
 import * as THREE from 'three';
 import { lidSpecs } from '../core/lod/lids';
 import type { ArchModel, SceneSpec } from '../core/types';
@@ -9,16 +9,19 @@ import { EdgeBatch } from './edges';
 import { boxMatrix, InstanceSet } from './instances';
 import { OutlineBatch } from './outlines';
 import { LIGHT, type Palette } from './palette';
+import { BODIES, blockParts, bodyEdges, bodyGeometry, meshName, type Body } from './shapes';
 
 export interface SceneObjects {
   root: THREE.Group;
   plates: InstanceSet;
   /** One lid per container, shown (faded in) when it is closed. */
   lids: InstanceSet;
-  /** Box-like blocks (box, queue, ext). */
+  /** Box-like blocks (box, queue, ext) and the bases of person, ui and app. */
   blocks: InstanceSet;
   /** Database blocks. */
   cylinders: InstanceSet;
+  /** Every block mesh, one per body (see shapes.ts), blocks and cylinders first. Ids may end in "#base". */
+  bodies: InstanceSet[];
   ports: InstanceSet;
   edges: EdgeBatch;
   outlines: OutlineBatch;
@@ -55,13 +58,13 @@ export function buildSceneObjects(scene: SceneSpec, pal: Palette = LIGHT, model?
     })));
   for (const l of lidList) { lids.setShown(l.id, false); lids.setOpacity(l.id, 0); }
 
-  const blockItem = (b: SceneSpec['blocks'][number]) => ({
-    id: b.id, matrix: boxMatrix(b.center, b.size), color: color(pal.block[b.shape]), opacity: b.shape === 'ext' ? EXT_OPACITY : 1,
-  });
-  const blocks = new InstanceSet('blocks', new THREE.BoxGeometry(1, 1, 1),
-    new THREE.MeshStandardMaterial({ roughness: 0.55, metalness: 0.05 }), scene.blocks.filter((b) => b.shape !== 'db').map(blockItem));
-  const cylinders = new InstanceSet('cylinders', new THREE.CylinderGeometry(0.5, 0.5, 1, 40),
-    new THREE.MeshStandardMaterial({ roughness: 0.55, metalness: 0.05 }), scene.blocks.filter((b) => b.shape === 'db').map(blockItem));
+  const parts = scene.blocks.flatMap((b) => blockParts(b).map((p) => ({ ...p, shape: b.shape })));
+  const bodies = BODIES.map((body: Body) => new InstanceSet(meshName(body), bodyGeometry(body),
+    new THREE.MeshStandardMaterial({ roughness: 0.55, metalness: 0.05 }),
+    parts.filter((p) => p.body === body).map((p) => ({
+      id: p.id, matrix: p.matrix, color: color(pal.block[p.shape]), opacity: p.shape === 'ext' ? EXT_OPACITY : 1,
+    }))));
+  const [blocks, cylinders] = bodies;
 
   const ports = new InstanceSet('ports', new THREE.SphereGeometry(PORT_RADIUS, 16, 12),
     new THREE.MeshStandardMaterial({ roughness: 0.4 }),
@@ -69,14 +72,13 @@ export function buildSceneObjects(scene: SceneSpec, pal: Palette = LIGHT, model?
 
   const edges = new EdgeBatch(scene.edges, pal);
   const outlines = new OutlineBatch([
-    ...scene.blocks.map((b) => ({ id: b.id, matrix: boxMatrix(b.center, b.size), cylinder: b.shape === 'db' })),
-    ...lidList.map((l) => ({ id: `lid:${l.id}`, matrix: boxMatrix(l.center, l.size), cylinder: false })),
+    ...parts.map((p) => ({ id: p.id, matrix: p.matrix, edges: bodyEdges(p.body) })),
+    ...lidList.map((l) => ({ id: `lid:${l.id}`, matrix: boxMatrix(l.center, l.size), edges: bodyEdges('box') })),
   ]);
   outlines.update((id) => !id.startsWith('lid:'), () => color(pal.outline));
 
   plates.mesh.renderOrder = 0;
-  blocks.mesh.renderOrder = 1;
-  cylinders.mesh.renderOrder = 1;
+  for (const set of bodies) set.mesh.renderOrder = 1;
   ports.mesh.renderOrder = 1;
   lids.mesh.renderOrder = 2;
 
@@ -85,8 +87,8 @@ export function buildSceneObjects(scene: SceneSpec, pal: Palette = LIGHT, model?
   const grid = ground(scene, pal);
   const root = new THREE.Group();
   root.name = 'archi';
-  root.add(grid, plates.mesh, blocks.mesh, cylinders.mesh, ports.mesh, outlines.lines, edges.group, lids.mesh, labels);
-  return { root, plates, lids, blocks, cylinders, ports, edges, outlines, labels, ground: grid };
+  root.add(grid, plates.mesh, ...bodies.map((set) => set.mesh), ports.mesh, outlines.lines, edges.group, lids.mesh, labels);
+  return { root, plates, lids, blocks, cylinders, bodies, ports, edges, outlines, labels, ground: grid };
 }
 
 /** Free every geometry and material under `obj`. */
