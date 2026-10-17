@@ -31,7 +31,7 @@ const r = spawnSync(bin, [
 
 const resultFile = join(it, 'result.json');
 const checks = existsSync(resultFile) ? JSON.parse(readFileSync(resultFile, 'utf8')) : [];
-for (const c of checks) console.log(`${c.ok ? '✓' : '✗'} ${c.name}${c.detail && !c.ok ? ` — ${c.detail}` : ''}`);
+for (const c of checks) console.log(`${c.ok ? '✓' : '✗'} ${c.name}${c.detail && !c.ok ? `: ${c.detail}` : ''}`);
 const ok = r.status === 0 && checks.length > 0 && checks.every((c) => c.ok);
 console.log(ok ? `VS Code integration: ${checks.length} checks passed` : `VS Code integration FAILED (exit ${r.status})`);
 process.exit(ok ? 0 : 1);

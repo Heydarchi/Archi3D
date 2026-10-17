@@ -1,4 +1,4 @@
-// Render a model to a PNG with headless Chrome — Archi3D as a command-line rendering tool.
+// Make a PNG of a model with headless Chrome, so Archi3D can be used as a render tool on the command line.
 //
 //   node scripts/render.mjs <model.arch3d|.mmd|.d2> [options]
 //

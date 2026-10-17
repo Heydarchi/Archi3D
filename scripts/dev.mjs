@@ -24,7 +24,7 @@ if (import.meta.url === pathToFileURL(process.argv[1] ?? '').href) {
   const server = await startDev({ file: path, port: Number(value('--port') ?? 5173), host: args.includes('--host'), open: args.includes('--open') });
   server.printUrls();
   if (path) {
-    console.log(`\n  Editing ${path}${existsSync(path) ? '' : ' (new file — created on first save)'}`);
+    console.log(`\n  Editing ${path}${existsSync(path) ? '' : ' (new file, the first save creates it)'}`);
     if (saveTarget(path) !== path) console.log(`  Saves go to ${saveTarget(path)} (the original is not changed)`);
     console.log('  Save in the app with the Save button or Ctrl/Cmd+S.\n');
   }

@@ -3,41 +3,105 @@
   "displayName": "Archi3D",
   "description": "Live 3D preview of software architecture models (.arch3d, Mermaid architecture-beta): components, ports and links stacked by nesting level.",
   "version": "0.1.0",
-  "publisher": "archi3d-local",
-  "license": "SEE LICENSE IN README.md",
-  "engines": { "vscode": "^1.90.0" },
-  "categories": ["Visualization", "Programming Languages"],
-  "keywords": ["architecture", "diagram", "3d", "c4", "mermaid"],
+  "publisher": "M-H-H",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Heydarchi/Archi3D.git"
+  },
+  "homepage": "https://github.com/Heydarchi/Archi3D#readme",
+  "bugs": {
+    "url": "https://github.com/Heydarchi/Archi3D/issues"
+  },
+  "icon": "icon.png",
+  "galleryBanner": {
+    "color": "#1f3a56",
+    "theme": "dark"
+  },
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Visualization",
+    "Programming Languages"
+  ],
+  "keywords": [
+    "architecture",
+    "diagram",
+    "3d",
+    "c4",
+    "mermaid"
+  ],
   "main": "./dist/extension.js",
-  "activationEvents": ["onLanguage:arch3d", "workspaceContains:**/*.{arch3d,mmd}"],
+  "activationEvents": [
+    "onLanguage:arch3d",
+    "workspaceContains:**/*.{arch3d,mmd}"
+  ],
   "contributes": {
     "languages": [
       {
         "id": "arch3d",
-        "aliases": ["Archi3D", "arch3d"],
-        "extensions": [".arch3d"],
+        "aliases": [
+          "Archi3D",
+          "arch3d"
+        ],
+        "extensions": [
+          ".arch3d"
+        ],
         "configuration": "./language-configuration.json"
       }
     ],
     "grammars": [
-      { "language": "arch3d", "scopeName": "source.arch3d", "path": "./syntaxes/arch.tmLanguage.json" }
+      {
+        "language": "arch3d",
+        "scopeName": "source.arch3d",
+        "path": "./syntaxes/arch.tmLanguage.json"
+      }
     ],
     "commands": [
-      { "command": "archi3d.openPreview", "title": "Open 3D Preview to the Side", "category": "Archi3D", "icon": "$(open-preview)" },
-      { "command": "archi3d.savePng", "title": "Save 3D Preview as PNG…", "category": "Archi3D" },
-      { "command": "archi3d.exportHtml", "title": "Export Standalone HTML…", "category": "Archi3D" }
+      {
+        "command": "archi3d.openPreview",
+        "title": "Open 3D Preview to the Side",
+        "category": "Archi3D",
+        "icon": "$(open-preview)"
+      },
+      {
+        "command": "archi3d.savePng",
+        "title": "Save 3D Preview as PNG…",
+        "category": "Archi3D"
+      },
+      {
+        "command": "archi3d.exportHtml",
+        "title": "Export Standalone HTML…",
+        "category": "Archi3D"
+      }
     ],
     "menus": {
       "editor/title": [
-        { "command": "archi3d.openPreview", "when": "editorLangId == arch3d || resourceExtname == .mmd", "group": "navigation" }
+        {
+          "command": "archi3d.openPreview",
+          "when": "editorLangId == arch3d || resourceExtname == .mmd",
+          "group": "navigation"
+        }
       ],
       "commandPalette": [
-        { "command": "archi3d.openPreview", "when": "editorLangId == arch3d || resourceExtname == .mmd" },
-        { "command": "archi3d.exportHtml", "when": "editorLangId == arch3d || resourceExtname == .mmd" }
+        {
+          "command": "archi3d.openPreview",
+          "when": "editorLangId == arch3d || resourceExtname == .mmd"
+        },
+        {
+          "command": "archi3d.exportHtml",
+          "when": "editorLangId == arch3d || resourceExtname == .mmd"
+        }
       ]
     },
     "keybindings": [
-      { "command": "archi3d.openPreview", "key": "ctrl+k v", "mac": "cmd+k v", "when": "editorLangId == arch3d" }
+      {
+        "command": "archi3d.openPreview",
+        "key": "ctrl+k v",
+        "mac": "cmd+k v",
+        "when": "editorLangId == arch3d"
+      }
     ]
   }
 }

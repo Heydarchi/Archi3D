@@ -40,7 +40,7 @@ async function sendModel(page: Page, file: string) {
   await waitReady(page);
 }
 
-test('webview: live updates, click reports the element, PNG capture — under the webview CSP', async ({ page }) => {
+test('webview: live updates, click reports the element, PNG capture, under the webview CSP', async ({ page }) => {
   test.setTimeout(120_000);
   const csp: string[] = [];
   await openWebview(page, csp);

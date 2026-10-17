@@ -1,4 +1,4 @@
-// view=svg2d: the 2D layout as SVG — containers, components with shape hints, ports, routes.
+// view=svg2d: the 2D layout as SVG with containers, components (with shape hints), ports and routes.
 import type { ArchModel, Layout2D, ModelNode, Pt, Rect } from '../core/types';
 import { fitSvg, s } from './svg';
 

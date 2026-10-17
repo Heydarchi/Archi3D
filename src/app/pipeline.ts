@@ -8,7 +8,7 @@ import { modelFromText } from './importFile';
 
 export interface Built { model: ArchModel; layout: Layout2D; scene: SceneSpec }
 
-/** `name` picks the reader (.arch3d, .mmd, .d2 — see core/adapters/detect.ts). */
+/** `name` picks the reader (.arch3d, .mmd, .d2, see core/adapters/detect.ts). */
 export async function buildFromSource(src: string, opts: Partial<SceneOptions> = {}, name = 'model.arch3d'): Promise<Built> {
   const model = (await modelFromText(name, src)).model ?? buildModel(parse(src));
   const client = createLayoutClient();

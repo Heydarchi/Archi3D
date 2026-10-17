@@ -1,6 +1,11 @@
 **
 !package.json
 !README.md
+!CHANGELOG.md
+!LICENSE
+!THIRD_PARTY_NOTICES.md
+!icon.png
+!images/**
 !language-configuration.json
 !syntaxes/**
 !dist/extension.js

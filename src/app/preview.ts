@@ -1,4 +1,4 @@
-// The live 3D preview used inside VS Code (a webview) — the 3D view without the editor.
+// The live 3D preview inside VS Code (a webview). It is the 3D view without the editor.
 // The extension sends the document text; clicks are sent back so it can reveal the line.
 // Outside VS Code (tests, a plain browser) messages go through window.postMessage and the
 // outgoing ones are collected in window.__archiOutbox.
@@ -89,7 +89,7 @@ function main(): void {
       view.setScene(s.scene, s.model);
       if (refit) { refit = false; view.setCamera('far'); }
       const errors = s.model.diagnostics.filter((d) => d.severity === 'error').length;
-      status.textContent = errors ? `${errors} error${errors === 1 ? '' : 's'} — showing what is valid` : '';
+      status.textContent = errors ? `${errors} error${errors === 1 ? '' : 's'}, showing what is valid` : '';
       void view.ready().then(async () => {
         if (store.get().scene !== s.scene || !store.idle()) return;
         view.render();

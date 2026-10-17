@@ -1,4 +1,4 @@
-// view=proj: a SceneSpec as two orthographic SVG views — top (x–z) and side (x–y, y up).
+// view=proj: a SceneSpec as two orthographic SVG views, top (x-z) and side (x-y, y up).
 import type { SceneSpec, V3 } from '../core/types';
 import { h, withStyles } from './html';
 import { s } from './svg';

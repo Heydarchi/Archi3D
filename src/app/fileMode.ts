@@ -31,7 +31,7 @@ export function startFileMode(file: ModelFile, editor: Editor, ui: FileModeUi): 
     ui.name.textContent = `${dirty() ? '● ' : ''}${file.name}`;
     ui.name.title = imported ? `${file.path}\nSave writes ${file.saveAs}` : file.path;
     ui.save.disabled = saving || (!dirty() && file.exists && !imported);
-    document.title = `${dirty() ? '● ' : ''}${file.name} — Archi3D`;
+    document.title = `${dirty() ? '● ' : ''}${file.name} - Archi3D`;
   };
   const note = (text: string) => { ui.note.textContent = text; };
   const hideBanner = () => { ui.banner.hidden = true; ui.banner.replaceChildren(); };
@@ -82,12 +82,12 @@ export function startFileMode(file: ModelFile, editor: Editor, ui: FileModeUi): 
   onDiskChange((text, hash) => {
     if (hash === baseHash) return;
     if (!dirty()) {
-      void loadDisk(text, hash).then(() => note('Reloaded — the file changed on disk'));
+      void loadDisk(text, hash).then(() => note('Reloaded, the file changed on disk'));
       return;
     }
     showBanner('The file changed on disk and you have unsaved edits.', [
       ['Use the disk version', () => void loadDisk(text, hash).then(() => note('Loaded the disk version'))],
-      ['Keep mine', () => { baseHash = hash; note('Keeping your version — Save to overwrite the file'); refresh(); }],
+      ['Keep mine', () => { baseHash = hash; note('Kept your version, Save overwrites the file'); refresh(); }],
     ]);
   });
 
@@ -97,8 +97,8 @@ export function startFileMode(file: ModelFile, editor: Editor, ui: FileModeUi): 
     if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 's') { e.preventDefault(); void save(); }
   });
   window.addEventListener('beforeunload', (e) => { if (dirty()) e.preventDefault(); });
-  if (!file.exists) note('New file — Save creates it');
-  else if (imported) note(`Imported — Save writes ${base(file.saveAs)}`);
+  if (!file.exists) note('New file, Save creates it');
+  else if (imported) note(`Imported, Save writes ${base(file.saveAs)}`);
   refresh();
 
   return {

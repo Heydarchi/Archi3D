@@ -1,4 +1,4 @@
-// All links in two batches — solid and dashed LineSegments2 (constant 2 px width) — plus one
+// All links in two batches, solid and dashed LineSegments2 (always 2 px wide), plus one
 // instanced cone per link as its arrowhead. Rebuilt only when the visible set or colours change.
 import * as THREE from 'three';
 import { LineMaterial } from 'three/addons/lines/LineMaterial.js';

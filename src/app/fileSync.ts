@@ -47,7 +47,7 @@ export function onDiskChange(fn: (text: string, hash: string) => void): void {
   import.meta.hot?.on('archi:file', (d: { text: string; hash: string }) => fn(d.text, d.hash));
 }
 
-export const STARTER_MODEL = `# New Archi3D model — see docs/USER_GUIDE.md for the language.
+export const STARTER_MODEL = `# New Archi3D model. The language is explained in docs/USER_GUIDE.md
 ui       Web      out: api
 service  Api      in: api    out: db
 database Store    in: db

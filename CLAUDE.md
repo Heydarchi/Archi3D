@@ -52,8 +52,9 @@ tests with `PW_CHANNEL=chrome` (or `msedge`). On PowerShell: `$env:PW_CHANNEL="c
 
 ## Git
 
-No co-author or tool-credit lines; short plain commit messages; small commits at every step;
-work on branches, never directly on `main`. Full rules (shared with all agents): @AGENTS.md
+No co-author or tool credit lines. Short and simple commit messages. Small commits at every step.
+Work on a branch and push only the branch, `main` is protected and I merge the pull requests.
+All the rules (same for every agent): @AGENTS.md
 
 ## Reference material
 
