@@ -1,0 +1,1673 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`valid fixtures > container-links.arch parses with no errors 1`] = `
+[
+  {
+    "children": [
+      {
+        "children": [],
+        "container": false,
+        "ins": [],
+        "kind": "ui",
+        "loc": {
+          "col": 6,
+          "endCol": 9,
+          "line": 3,
+        },
+        "name": "App",
+        "outs": [],
+        "type": "node",
+      },
+    ],
+    "container": true,
+    "ins": [],
+    "kind": "container",
+    "loc": {
+      "col": 11,
+      "endCol": 19,
+      "line": 2,
+    },
+    "name": "Frontend",
+    "outs": [],
+    "type": "node",
+  },
+  {
+    "children": [
+      {
+        "children": [],
+        "container": false,
+        "ins": [],
+        "kind": "service",
+        "loc": {
+          "col": 11,
+          "endCol": 15,
+          "line": 6,
+        },
+        "name": "Core",
+        "outs": [],
+        "type": "node",
+      },
+      {
+        "children": [],
+        "container": false,
+        "ins": [],
+        "kind": "database",
+        "loc": {
+          "col": 12,
+          "endCol": 16,
+          "line": 7,
+        },
+        "name": "Main",
+        "outs": [],
+        "type": "node",
+      },
+    ],
+    "container": true,
+    "ins": [],
+    "kind": "container",
+    "loc": {
+      "col": 11,
+      "endCol": 18,
+      "line": 5,
+    },
+    "name": "Backend",
+    "outs": [],
+    "type": "node",
+  },
+  {
+    "async": false,
+    "from": {
+      "loc": {
+        "col": 1,
+        "endCol": 9,
+        "line": 9,
+      },
+      "name": "Frontend",
+    },
+    "label": "REST",
+    "loc": {
+      "col": 1,
+      "endCol": 27,
+      "line": 9,
+    },
+    "to": {
+      "loc": {
+        "col": 13,
+        "endCol": 20,
+        "line": 9,
+      },
+      "name": "Backend",
+    },
+    "type": "edge",
+  },
+  {
+    "async": false,
+    "from": {
+      "loc": {
+        "col": 1,
+        "endCol": 5,
+        "line": 10,
+      },
+      "name": "Core",
+    },
+    "loc": {
+      "col": 1,
+      "endCol": 13,
+      "line": 10,
+    },
+    "to": {
+      "loc": {
+        "col": 9,
+        "endCol": 13,
+        "line": 10,
+      },
+      "name": "Main",
+    },
+    "type": "edge",
+  },
+  {
+    "async": false,
+    "from": {
+      "loc": {
+        "col": 8,
+        "endCol": 12,
+        "line": 11,
+      },
+      "name": "Core",
+    },
+    "label": "push",
+    "loc": {
+      "col": 1,
+      "endCol": 19,
+      "line": 11,
+    },
+    "to": {
+      "loc": {
+        "col": 1,
+        "endCol": 4,
+        "line": 11,
+      },
+      "name": "App",
+    },
+    "type": "edge",
+  },
+]
+`;
+
+exports[`valid fixtures > nested-deep.arch parses with no errors 1`] = `
+[
+  {
+    "children": [
+      {
+        "children": [
+          {
+            "children": [
+              {
+                "children": [],
+                "container": false,
+                "ins": [
+                  {
+                    "loc": {
+                      "col": 32,
+                      "endCol": 36,
+                      "line": 5,
+                    },
+                    "name": "bill",
+                  },
+                ],
+                "kind": "component",
+                "loc": {
+                  "col": 17,
+                  "endCol": 25,
+                  "line": 5,
+                },
+                "name": "Invoicer",
+                "outs": [
+                  {
+                    "loc": {
+                      "col": 45,
+                      "endCol": 51,
+                      "line": 5,
+                    },
+                    "name": "ledger",
+                  },
+                  {
+                    "loc": {
+                      "col": 53,
+                      "endCol": 59,
+                      "line": 5,
+                    },
+                    "name": "notify",
+                  },
+                ],
+                "type": "node",
+              },
+              {
+                "children": [],
+                "container": false,
+                "ins": [
+                  {
+                    "loc": {
+                      "col": 32,
+                      "endCol": 36,
+                      "line": 6,
+                    },
+                    "name": "post",
+                  },
+                ],
+                "kind": "component",
+                "loc": {
+                  "col": 17,
+                  "endCol": 23,
+                  "line": 6,
+                },
+                "name": "Ledger",
+                "outs": [],
+                "type": "node",
+              },
+            ],
+            "container": true,
+            "ins": [],
+            "kind": "container",
+            "loc": {
+              "col": 15,
+              "endCol": 22,
+              "line": 4,
+            },
+            "name": "Billing",
+            "outs": [],
+            "type": "node",
+          },
+          {
+            "children": [
+              {
+                "children": [],
+                "container": false,
+                "ins": [
+                  {
+                    "loc": {
+                      "col": 32,
+                      "endCol": 37,
+                      "line": 9,
+                    },
+                    "name": "score",
+                  },
+                ],
+                "kind": "component",
+                "loc": {
+                  "col": 17,
+                  "endCol": 23,
+                  "line": 9,
+                },
+                "name": "Scorer",
+                "outs": [],
+                "type": "node",
+              },
+            ],
+            "container": true,
+            "ins": [],
+            "kind": "container",
+            "loc": {
+              "col": 15,
+              "endCol": 19,
+              "line": 8,
+            },
+            "name": "Risk",
+            "outs": [],
+            "type": "node",
+          },
+        ],
+        "container": true,
+        "ins": [],
+        "kind": "domain",
+        "loc": {
+          "col": 10,
+          "endCol": 18,
+          "line": 3,
+        },
+        "name": "Payments",
+        "outs": [],
+        "type": "node",
+      },
+      {
+        "children": [
+          {
+            "children": [],
+            "container": false,
+            "ins": [
+              {
+                "loc": {
+                  "col": 32,
+                  "endCol": 39,
+                  "line": 13,
+                },
+                "name": "publish",
+              },
+            ],
+            "kind": "queue",
+            "loc": {
+              "col": 11,
+              "endCol": 14,
+              "line": 13,
+            },
+            "name": "Bus",
+            "outs": [
+              {
+                "loc": {
+                  "col": 45,
+                  "endCol": 52,
+                  "line": 13,
+                },
+                "name": "deliver",
+              },
+            ],
+            "type": "node",
+          },
+          {
+            "children": [],
+            "container": false,
+            "ins": [
+              {
+                "loc": {
+                  "col": 32,
+                  "endCol": 36,
+                  "line": 14,
+                },
+                "name": "send",
+              },
+            ],
+            "kind": "component",
+            "loc": {
+              "col": 15,
+              "endCol": 21,
+              "line": 14,
+            },
+            "name": "Mailer",
+            "outs": [],
+            "type": "node",
+          },
+        ],
+        "container": true,
+        "ins": [],
+        "kind": "domain",
+        "loc": {
+          "col": 10,
+          "endCol": 19,
+          "line": 12,
+        },
+        "name": "Messaging",
+        "outs": [],
+        "type": "node",
+      },
+    ],
+    "container": true,
+    "ins": [],
+    "kind": "system",
+    "loc": {
+      "col": 8,
+      "endCol": 16,
+      "line": 2,
+    },
+    "name": "Platform",
+    "outs": [],
+    "type": "node",
+  },
+  {
+    "children": [],
+    "container": false,
+    "ins": [],
+    "kind": "external",
+    "loc": {
+      "col": 10,
+      "endCol": 18,
+      "line": 17,
+    },
+    "name": "Merchant",
+    "outs": [
+      {
+        "loc": {
+          "col": 33,
+          "endCol": 39,
+          "line": 17,
+        },
+        "name": "charge",
+      },
+    ],
+    "type": "node",
+  },
+  {
+    "async": false,
+    "from": {
+      "loc": {
+        "col": 1,
+        "endCol": 16,
+        "line": 19,
+      },
+      "name": "Merchant",
+      "port": "charge",
+    },
+    "loc": {
+      "col": 1,
+      "endCol": 34,
+      "line": 19,
+    },
+    "to": {
+      "loc": {
+        "col": 21,
+        "endCol": 34,
+        "line": 19,
+      },
+      "name": "Invoicer",
+      "port": "bill",
+    },
+    "type": "edge",
+  },
+  {
+    "async": false,
+    "from": {
+      "loc": {
+        "col": 1,
+        "endCol": 16,
+        "line": 20,
+      },
+      "name": "Invoicer",
+      "port": "ledger",
+    },
+    "loc": {
+      "col": 1,
+      "endCol": 32,
+      "line": 20,
+    },
+    "to": {
+      "loc": {
+        "col": 21,
+        "endCol": 32,
+        "line": 20,
+      },
+      "name": "Ledger",
+      "port": "post",
+    },
+    "type": "edge",
+  },
+  {
+    "async": true,
+    "from": {
+      "loc": {
+        "col": 1,
+        "endCol": 16,
+        "line": 21,
+      },
+      "name": "Invoicer",
+      "port": "notify",
+    },
+    "label": "InvoiceIssued",
+    "loc": {
+      "col": 1,
+      "endCol": 48,
+      "line": 21,
+    },
+    "to": {
+      "loc": {
+        "col": 21,
+        "endCol": 32,
+        "line": 21,
+      },
+      "name": "Bus",
+      "port": "publish",
+    },
+    "type": "edge",
+  },
+  {
+    "async": true,
+    "from": {
+      "loc": {
+        "col": 1,
+        "endCol": 12,
+        "line": 22,
+      },
+      "name": "Bus",
+      "port": "deliver",
+    },
+    "loc": {
+      "col": 1,
+      "endCol": 32,
+      "line": 22,
+    },
+    "to": {
+      "loc": {
+        "col": 21,
+        "endCol": 32,
+        "line": 22,
+      },
+      "name": "Mailer",
+      "port": "send",
+    },
+    "type": "edge",
+  },
+  {
+    "async": false,
+    "from": {
+      "loc": {
+        "col": 1,
+        "endCol": 9,
+        "line": 23,
+      },
+      "name": "Invoicer",
+    },
+    "label": "check",
+    "loc": {
+      "col": 1,
+      "endCol": 41,
+      "line": 23,
+    },
+    "to": {
+      "loc": {
+        "col": 21,
+        "endCol": 33,
+        "line": 23,
+      },
+      "name": "Scorer",
+      "port": "score",
+    },
+    "type": "edge",
+  },
+]
+`;
+
+exports[`valid fixtures > northwind.arch parses with no errors 1`] = `
+[
+  {
+    "children": [],
+    "container": false,
+    "ins": [],
+    "kind": "external",
+    "loc": {
+      "col": 10,
+      "endCol": 18,
+      "line": 4,
+    },
+    "name": "Customer",
+    "outs": [
+      {
+        "loc": {
+          "col": 31,
+          "endCol": 37,
+          "line": 4,
+        },
+        "name": "browse",
+      },
+    ],
+    "type": "node",
+  },
+  {
+    "children": [
+      {
+        "children": [
+          {
+            "children": [],
+            "container": false,
+            "ins": [
+              {
+                "loc": {
+                  "col": 30,
+                  "endCol": 36,
+                  "line": 7,
+                },
+                "name": "browse",
+              },
+            ],
+            "kind": "ui",
+            "loc": {
+              "col": 8,
+              "endCol": 14,
+              "line": 7,
+            },
+            "name": "WebApp",
+            "outs": [
+              {
+                "loc": {
+                  "col": 45,
+                  "endCol": 48,
+                  "line": 7,
+                },
+                "name": "api",
+              },
+            ],
+            "type": "node",
+          },
+          {
+            "children": [],
+            "container": false,
+            "ins": [
+              {
+                "loc": {
+                  "col": 30,
+                  "endCol": 33,
+                  "line": 8,
+                },
+                "name": "api",
+              },
+            ],
+            "kind": "component",
+            "loc": {
+              "col": 15,
+              "endCol": 18,
+              "line": 8,
+            },
+            "name": "BFF",
+            "outs": [
+              {
+                "loc": {
+                  "col": 45,
+                  "endCol": 51,
+                  "line": 8,
+                },
+                "name": "orders",
+              },
+              {
+                "loc": {
+                  "col": 53,
+                  "endCol": 60,
+                  "line": 8,
+                },
+                "name": "catalog",
+              },
+              {
+                "loc": {
+                  "col": 62,
+                  "endCol": 67,
+                  "line": 8,
+                },
+                "name": "login",
+              },
+            ],
+            "type": "node",
+          },
+        ],
+        "container": true,
+        "ins": [],
+        "kind": "container",
+        "loc": {
+          "col": 13,
+          "endCol": 23,
+          "line": 6,
+        },
+        "name": "Storefront",
+        "outs": [],
+        "type": "node",
+      },
+      {
+        "children": [
+          {
+            "children": [],
+            "container": false,
+            "ins": [
+              {
+                "loc": {
+                  "col": 32,
+                  "endCol": 37,
+                  "line": 11,
+                },
+                "name": "login",
+              },
+            ],
+            "kind": "component",
+            "loc": {
+              "col": 15,
+              "endCol": 26,
+              "line": 11,
+            },
+            "name": "AuthService",
+            "outs": [
+              {
+                "loc": {
+                  "col": 45,
+                  "endCol": 50,
+                  "line": 11,
+                },
+                "name": "users",
+              },
+            ],
+            "type": "node",
+          },
+          {
+            "children": [],
+            "container": false,
+            "ins": [
+              {
+                "loc": {
+                  "col": 32,
+                  "endCol": 37,
+                  "line": 12,
+                },
+                "name": "users",
+              },
+            ],
+            "kind": "database",
+            "loc": {
+              "col": 14,
+              "endCol": 20,
+              "line": 12,
+            },
+            "name": "UserDB",
+            "outs": [],
+            "type": "node",
+          },
+        ],
+        "container": true,
+        "ins": [],
+        "kind": "container",
+        "loc": {
+          "col": 13,
+          "endCol": 21,
+          "line": 10,
+        },
+        "name": "Identity",
+        "outs": [],
+        "type": "node",
+      },
+      {
+        "children": [
+          {
+            "children": [],
+            "container": false,
+            "ins": [
+              {
+                "loc": {
+                  "col": 32,
+                  "endCol": 38,
+                  "line": 15,
+                },
+                "name": "orders",
+              },
+            ],
+            "kind": "component",
+            "loc": {
+              "col": 15,
+              "endCol": 23,
+              "line": 15,
+            },
+            "name": "OrderAPI",
+            "outs": [
+              {
+                "loc": {
+                  "col": 45,
+                  "endCol": 47,
+                  "line": 15,
+                },
+                "name": "db",
+              },
+              {
+                "loc": {
+                  "col": 49,
+                  "endCol": 55,
+                  "line": 15,
+                },
+                "name": "events",
+              },
+              {
+                "loc": {
+                  "col": 57,
+                  "endCol": 60,
+                  "line": 15,
+                },
+                "name": "pay",
+              },
+            ],
+            "type": "node",
+          },
+          {
+            "children": [],
+            "container": false,
+            "ins": [
+              {
+                "loc": {
+                  "col": 32,
+                  "endCol": 34,
+                  "line": 16,
+                },
+                "name": "db",
+              },
+            ],
+            "kind": "database",
+            "loc": {
+              "col": 14,
+              "endCol": 21,
+              "line": 16,
+            },
+            "name": "OrderDB",
+            "outs": [],
+            "type": "node",
+          },
+          {
+            "children": [],
+            "container": false,
+            "ins": [
+              {
+                "loc": {
+                  "col": 32,
+                  "endCol": 36,
+                  "line": 17,
+                },
+                "name": "work",
+              },
+            ],
+            "kind": "component",
+            "loc": {
+              "col": 15,
+              "endCol": 25,
+              "line": 17,
+            },
+            "name": "Fulfilment",
+            "outs": [
+              {
+                "loc": {
+                  "col": 45,
+                  "endCol": 49,
+                  "line": 17,
+                },
+                "name": "ship",
+              },
+            ],
+            "type": "node",
+          },
+        ],
+        "container": true,
+        "ins": [],
+        "kind": "container",
+        "loc": {
+          "col": 13,
+          "endCol": 21,
+          "line": 14,
+        },
+        "name": "Ordering",
+        "outs": [],
+        "type": "node",
+      },
+      {
+        "children": [
+          {
+            "children": [],
+            "container": false,
+            "ins": [
+              {
+                "loc": {
+                  "col": 32,
+                  "endCol": 39,
+                  "line": 20,
+                },
+                "name": "catalog",
+              },
+            ],
+            "kind": "component",
+            "loc": {
+              "col": 15,
+              "endCol": 25,
+              "line": 20,
+            },
+            "name": "CatalogAPI",
+            "outs": [
+              {
+                "loc": {
+                  "col": 45,
+                  "endCol": 47,
+                  "line": 20,
+                },
+                "name": "db",
+              },
+              {
+                "loc": {
+                  "col": 49,
+                  "endCol": 55,
+                  "line": 20,
+                },
+                "name": "search",
+              },
+            ],
+            "type": "node",
+          },
+          {
+            "children": [],
+            "container": false,
+            "ins": [
+              {
+                "loc": {
+                  "col": 32,
+                  "endCol": 34,
+                  "line": 21,
+                },
+                "name": "db",
+              },
+            ],
+            "kind": "database",
+            "loc": {
+              "col": 14,
+              "endCol": 23,
+              "line": 21,
+            },
+            "name": "ProductDB",
+            "outs": [],
+            "type": "node",
+          },
+          {
+            "children": [],
+            "container": false,
+            "ins": [
+              {
+                "loc": {
+                  "col": 32,
+                  "endCol": 37,
+                  "line": 22,
+                },
+                "name": "query",
+              },
+            ],
+            "kind": "component",
+            "loc": {
+              "col": 15,
+              "endCol": 26,
+              "line": 22,
+            },
+            "name": "SearchIndex",
+            "outs": [],
+            "type": "node",
+          },
+        ],
+        "container": true,
+        "ins": [],
+        "kind": "container",
+        "loc": {
+          "col": 13,
+          "endCol": 20,
+          "line": 19,
+        },
+        "name": "Catalog",
+        "outs": [],
+        "type": "node",
+      },
+      {
+        "children": [],
+        "container": false,
+        "ins": [
+          {
+            "loc": {
+              "col": 32,
+              "endCol": 39,
+              "line": 24,
+            },
+            "name": "publish",
+          },
+        ],
+        "kind": "queue",
+        "loc": {
+          "col": 9,
+          "endCol": 17,
+          "line": 24,
+        },
+        "name": "EventBus",
+        "outs": [
+          {
+            "loc": {
+              "col": 45,
+              "endCol": 49,
+              "line": 24,
+            },
+            "name": "work",
+          },
+        ],
+        "type": "node",
+      },
+    ],
+    "container": true,
+    "ins": [],
+    "kind": "system",
+    "loc": {
+      "col": 8,
+      "endCol": 17,
+      "line": 5,
+    },
+    "name": "Northwind",
+    "outs": [],
+    "type": "node",
+  },
+  {
+    "children": [],
+    "container": false,
+    "ins": [
+      {
+        "loc": {
+          "col": 30,
+          "endCol": 36,
+          "line": 26,
+        },
+        "name": "charge",
+      },
+    ],
+    "kind": "external",
+    "loc": {
+      "col": 10,
+      "endCol": 24,
+      "line": 26,
+    },
+    "name": "PaymentGateway",
+    "outs": [],
+    "type": "node",
+  },
+  {
+    "children": [],
+    "container": false,
+    "ins": [
+      {
+        "loc": {
+          "col": 30,
+          "endCol": 35,
+          "line": 27,
+        },
+        "name": "label",
+      },
+    ],
+    "kind": "external",
+    "loc": {
+      "col": 10,
+      "endCol": 17,
+      "line": 27,
+    },
+    "name": "Carrier",
+    "outs": [],
+    "type": "node",
+  },
+  {
+    "async": false,
+    "from": {
+      "loc": {
+        "col": 1,
+        "endCol": 16,
+        "line": 29,
+      },
+      "name": "Customer",
+      "port": "browse",
+    },
+    "loc": {
+      "col": 1,
+      "endCol": 35,
+      "line": 29,
+    },
+    "to": {
+      "loc": {
+        "col": 22,
+        "endCol": 35,
+        "line": 29,
+      },
+      "name": "WebApp",
+      "port": "browse",
+    },
+    "type": "edge",
+  },
+  {
+    "async": false,
+    "from": {
+      "loc": {
+        "col": 1,
+        "endCol": 11,
+        "line": 30,
+      },
+      "name": "WebApp",
+      "port": "api",
+    },
+    "label": "REST",
+    "loc": {
+      "col": 1,
+      "endCol": 43,
+      "line": 30,
+    },
+    "to": {
+      "loc": {
+        "col": 22,
+        "endCol": 29,
+        "line": 30,
+      },
+      "name": "BFF",
+      "port": "api",
+    },
+    "type": "edge",
+  },
+  {
+    "async": false,
+    "from": {
+      "loc": {
+        "col": 1,
+        "endCol": 10,
+        "line": 31,
+      },
+      "name": "BFF",
+      "port": "login",
+    },
+    "loc": {
+      "col": 1,
+      "endCol": 39,
+      "line": 31,
+    },
+    "to": {
+      "loc": {
+        "col": 22,
+        "endCol": 39,
+        "line": 31,
+      },
+      "name": "AuthService",
+      "port": "login",
+    },
+    "type": "edge",
+  },
+  {
+    "async": false,
+    "from": {
+      "loc": {
+        "col": 1,
+        "endCol": 18,
+        "line": 32,
+      },
+      "name": "AuthService",
+      "port": "users",
+    },
+    "loc": {
+      "col": 1,
+      "endCol": 34,
+      "line": 32,
+    },
+    "to": {
+      "loc": {
+        "col": 22,
+        "endCol": 34,
+        "line": 32,
+      },
+      "name": "UserDB",
+      "port": "users",
+    },
+    "type": "edge",
+  },
+  {
+    "async": false,
+    "from": {
+      "loc": {
+        "col": 1,
+        "endCol": 11,
+        "line": 33,
+      },
+      "name": "BFF",
+      "port": "orders",
+    },
+    "label": "REST",
+    "loc": {
+      "col": 1,
+      "endCol": 44,
+      "line": 33,
+    },
+    "to": {
+      "loc": {
+        "col": 22,
+        "endCol": 37,
+        "line": 33,
+      },
+      "name": "OrderAPI",
+      "port": "orders",
+    },
+    "type": "edge",
+  },
+  {
+    "async": false,
+    "from": {
+      "loc": {
+        "col": 1,
+        "endCol": 12,
+        "line": 34,
+      },
+      "name": "BFF",
+      "port": "catalog",
+    },
+    "label": "gRPC",
+    "loc": {
+      "col": 1,
+      "endCol": 47,
+      "line": 34,
+    },
+    "to": {
+      "loc": {
+        "col": 22,
+        "endCol": 40,
+        "line": 34,
+      },
+      "name": "CatalogAPI",
+      "port": "catalog",
+    },
+    "type": "edge",
+  },
+  {
+    "async": false,
+    "from": {
+      "loc": {
+        "col": 1,
+        "endCol": 12,
+        "line": 35,
+      },
+      "name": "OrderAPI",
+      "port": "db",
+    },
+    "loc": {
+      "col": 1,
+      "endCol": 32,
+      "line": 35,
+    },
+    "to": {
+      "loc": {
+        "col": 22,
+        "endCol": 32,
+        "line": 35,
+      },
+      "name": "OrderDB",
+      "port": "db",
+    },
+    "type": "edge",
+  },
+  {
+    "async": true,
+    "from": {
+      "loc": {
+        "col": 1,
+        "endCol": 16,
+        "line": 36,
+      },
+      "name": "OrderAPI",
+      "port": "events",
+    },
+    "label": "OrderPlaced",
+    "loc": {
+      "col": 1,
+      "endCol": 52,
+      "line": 36,
+    },
+    "to": {
+      "loc": {
+        "col": 22,
+        "endCol": 38,
+        "line": 36,
+      },
+      "name": "EventBus",
+      "port": "publish",
+    },
+    "type": "edge",
+  },
+  {
+    "async": false,
+    "from": {
+      "loc": {
+        "col": 1,
+        "endCol": 13,
+        "line": 37,
+      },
+      "name": "OrderAPI",
+      "port": "pay",
+    },
+    "loc": {
+      "col": 1,
+      "endCol": 43,
+      "line": 37,
+    },
+    "to": {
+      "loc": {
+        "col": 22,
+        "endCol": 43,
+        "line": 37,
+      },
+      "name": "PaymentGateway",
+      "port": "charge",
+    },
+    "type": "edge",
+  },
+  {
+    "async": true,
+    "from": {
+      "loc": {
+        "col": 1,
+        "endCol": 14,
+        "line": 38,
+      },
+      "name": "EventBus",
+      "port": "work",
+    },
+    "loc": {
+      "col": 1,
+      "endCol": 37,
+      "line": 38,
+    },
+    "to": {
+      "loc": {
+        "col": 22,
+        "endCol": 37,
+        "line": 38,
+      },
+      "name": "Fulfilment",
+      "port": "work",
+    },
+    "type": "edge",
+  },
+  {
+    "async": false,
+    "from": {
+      "loc": {
+        "col": 1,
+        "endCol": 16,
+        "line": 39,
+      },
+      "name": "Fulfilment",
+      "port": "ship",
+    },
+    "loc": {
+      "col": 1,
+      "endCol": 35,
+      "line": 39,
+    },
+    "to": {
+      "loc": {
+        "col": 22,
+        "endCol": 35,
+        "line": 39,
+      },
+      "name": "Carrier",
+      "port": "label",
+    },
+    "type": "edge",
+  },
+  {
+    "async": false,
+    "from": {
+      "loc": {
+        "col": 1,
+        "endCol": 14,
+        "line": 40,
+      },
+      "name": "CatalogAPI",
+      "port": "db",
+    },
+    "loc": {
+      "col": 1,
+      "endCol": 34,
+      "line": 40,
+    },
+    "to": {
+      "loc": {
+        "col": 22,
+        "endCol": 34,
+        "line": 40,
+      },
+      "name": "ProductDB",
+      "port": "db",
+    },
+    "type": "edge",
+  },
+  {
+    "async": false,
+    "from": {
+      "loc": {
+        "col": 1,
+        "endCol": 18,
+        "line": 41,
+      },
+      "name": "CatalogAPI",
+      "port": "search",
+    },
+    "loc": {
+      "col": 1,
+      "endCol": 39,
+      "line": 41,
+    },
+    "to": {
+      "loc": {
+        "col": 22,
+        "endCol": 39,
+        "line": 41,
+      },
+      "name": "SearchIndex",
+      "port": "query",
+    },
+    "type": "edge",
+  },
+]
+`;
+
+exports[`valid fixtures > tiny.arch parses with no errors 1`] = `
+[
+  {
+    "children": [],
+    "container": false,
+    "ins": [],
+    "kind": "ui",
+    "loc": {
+      "col": 4,
+      "endCol": 7,
+      "line": 2,
+    },
+    "name": "Web",
+    "outs": [
+      {
+        "loc": {
+          "col": 24,
+          "endCol": 27,
+          "line": 2,
+        },
+        "name": "api",
+      },
+    ],
+    "type": "node",
+  },
+  {
+    "children": [],
+    "container": false,
+    "ins": [
+      {
+        "loc": {
+          "col": 23,
+          "endCol": 26,
+          "line": 3,
+        },
+        "name": "api",
+      },
+    ],
+    "kind": "service",
+    "loc": {
+      "col": 9,
+      "endCol": 12,
+      "line": 3,
+    },
+    "name": "Api",
+    "outs": [
+      {
+        "loc": {
+          "col": 34,
+          "endCol": 36,
+          "line": 3,
+        },
+        "name": "db",
+      },
+    ],
+    "type": "node",
+  },
+  {
+    "children": [],
+    "container": false,
+    "ins": [
+      {
+        "loc": {
+          "col": 23,
+          "endCol": 25,
+          "line": 4,
+        },
+        "name": "db",
+      },
+    ],
+    "kind": "database",
+    "loc": {
+      "col": 10,
+      "endCol": 15,
+      "line": 4,
+    },
+    "name": "Store",
+    "outs": [],
+    "type": "node",
+  },
+  {
+    "async": false,
+    "from": {
+      "loc": {
+        "col": 1,
+        "endCol": 8,
+        "line": 6,
+      },
+      "name": "Web",
+      "port": "api",
+    },
+    "label": "HTTPS",
+    "loc": {
+      "col": 1,
+      "endCol": 27,
+      "line": 6,
+    },
+    "to": {
+      "loc": {
+        "col": 12,
+        "endCol": 19,
+        "line": 6,
+      },
+      "name": "Api",
+      "port": "api",
+    },
+    "type": "edge",
+  },
+  {
+    "async": false,
+    "from": {
+      "loc": {
+        "col": 1,
+        "endCol": 7,
+        "line": 7,
+      },
+      "name": "Api",
+      "port": "db",
+    },
+    "loc": {
+      "col": 1,
+      "endCol": 20,
+      "line": 7,
+    },
+    "to": {
+      "loc": {
+        "col": 12,
+        "endCol": 20,
+        "line": 7,
+      },
+      "name": "Store",
+      "port": "db",
+    },
+    "type": "edge",
+  },
+]
+`;
+
+exports[`valid fixtures > typed-ports.arch parses with no errors 1`] = `
+[
+  {
+    "children": [],
+    "container": false,
+    "ins": [],
+    "kind": "service",
+    "loc": {
+      "col": 9,
+      "endCol": 16,
+      "line": 2,
+    },
+    "name": "Gateway",
+    "outs": [
+      {
+        "iface": "REST",
+        "loc": {
+          "col": 25,
+          "endCol": 36,
+          "line": 2,
+        },
+        "name": "orders",
+      },
+      {
+        "iface": "gRPC",
+        "loc": {
+          "col": 38,
+          "endCol": 49,
+          "line": 2,
+        },
+        "name": "search",
+      },
+    ],
+    "type": "node",
+  },
+  {
+    "children": [],
+    "container": false,
+    "ins": [
+      {
+        "iface": "REST",
+        "loc": {
+          "col": 24,
+          "endCol": 35,
+          "line": 3,
+        },
+        "name": "orders",
+      },
+    ],
+    "kind": "service",
+    "loc": {
+      "col": 9,
+      "endCol": 15,
+      "line": 3,
+    },
+    "name": "Orders",
+    "outs": [],
+    "type": "node",
+  },
+  {
+    "children": [],
+    "container": false,
+    "ins": [
+      {
+        "iface": "GraphQL",
+        "loc": {
+          "col": 24,
+          "endCol": 37,
+          "line": 4,
+        },
+        "name": "query",
+      },
+    ],
+    "kind": "service",
+    "loc": {
+      "col": 9,
+      "endCol": 15,
+      "line": 4,
+    },
+    "name": "Search",
+    "outs": [],
+    "type": "node",
+  },
+  {
+    "async": false,
+    "from": {
+      "loc": {
+        "col": 1,
+        "endCol": 15,
+        "line": 6,
+      },
+      "name": "Gateway",
+      "port": "orders",
+    },
+    "loc": {
+      "col": 1,
+      "endCol": 32,
+      "line": 6,
+    },
+    "to": {
+      "loc": {
+        "col": 19,
+        "endCol": 32,
+        "line": 6,
+      },
+      "name": "Orders",
+      "port": "orders",
+    },
+    "type": "edge",
+  },
+  {
+    "async": false,
+    "from": {
+      "loc": {
+        "col": 1,
+        "endCol": 15,
+        "line": 7,
+      },
+      "name": "Gateway",
+      "port": "search",
+    },
+    "loc": {
+      "col": 1,
+      "endCol": 31,
+      "line": 7,
+    },
+    "to": {
+      "loc": {
+        "col": 19,
+        "endCol": 31,
+        "line": 7,
+      },
+      "name": "Search",
+      "port": "query",
+    },
+    "type": "edge",
+  },
+]
+`;
