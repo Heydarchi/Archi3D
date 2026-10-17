@@ -31,6 +31,14 @@ npm run dev                # then open http://localhost:5173
 The app opens with an example model (`northwind`). Edit the text on the left; the 3D view on
 the right follows about 0.3 s after you stop typing.
 
+To work on **your own file**, give it to `npm run dev`:
+
+```sh
+npm run dev -- my-system.arch      # opens it in the editor; Save writes it back
+```
+
+See [Editing a file on disk](#editing-a-file-on-disk).
+
 To make a file you can email or double-click:
 
 ```sh
@@ -64,6 +72,24 @@ On narrow screens (phones) the editor moves to a sheet at the bottom.
 | Open another file | **Import…** (`.arch`, Mermaid `.mmd`, D2 `.d2`) |
 
 Mistakes never stop the view: everything that is valid is still drawn while you type.
+
+### Editing a file on disk
+
+```sh
+npm run dev -- path/to/my-system.arch          # also: --port 5174, --host, --open
+```
+
+- The editor shows the file. **Save** (button, or `Ctrl+S` / `Cmd+S`) writes it back.
+  A `●` before the name means there are unsaved changes; closing the tab then asks first.
+- A file that does not exist yet starts from a small example and is created on the first save.
+- **Edit it anywhere else too** (VS Code, vim, `git pull`): when the file changes on disk the app
+  reloads it and keeps your camera. If you also have unsaved edits, a bar asks whether to
+  **use the disk version** or **keep yours** — nothing is overwritten silently. A save is refused
+  if the file changed since you opened it, with the same choice.
+- **Mermaid (`.mmd`) or D2 (`.d2`)** files open converted to `.arch`; Save writes
+  `my-system.arch` next to them and never changes the original.
+- Only the file named on the command line can be read or written, and only through the dev server
+  on your machine (it listens on `localhost` unless you add `--host`).
 
 ### 3D view
 
@@ -342,7 +368,7 @@ Run these in the project folder. Arguments go after `--`.
 
 | Command | What it does |
 |---|---|
-| `npm run dev` | Development server with live reload at http://localhost:5173 |
+| `npm run dev -- [model.arch\|.mmd\|.d2] [--port 5173] [--host] [--open]` | The app at http://localhost:5173. With a file: edit it in the app and save it back ([details](#editing-a-file-on-disk)). |
 | `npm run build` | Production build into `dist/` (static files — see [DEPLOY.md](DEPLOY.md)) |
 | `npm run preview` | Serve the production build at http://localhost:4173 |
 | `npm run export -- [model.arch] [--cdn] [--out file.html]` | Single offline HTML file. Defaults: `fixtures/northwind.arch`, `dist/archi3d-standalone.html` (`…-cdn.html` with `--cdn`) |

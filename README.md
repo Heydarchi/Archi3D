@@ -34,7 +34,8 @@ Node.js 20 or newer:
 
 ```sh
 npm ci
-npm run dev          # http://localhost:5173
+npm run dev                        # http://localhost:5173
+npm run dev -- my-system.arch      # edit your own file; Save writes it back
 ```
 
 ## Documentation
