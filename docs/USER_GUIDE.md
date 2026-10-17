@@ -459,15 +459,22 @@ For the screenshot tests in WSL, install Playwright's browser once with
 
 A 3D preview inside VS Code, next to the file you are editing.
 
-Install:
+Install it from the Marketplace:
+[Archi3D for VS Code](https://marketplace.visualstudio.com/items?itemName=M-H-H.archi3d).
+In VS Code search for "Archi3D" in the Extensions view, or run:
+
+```sh
+code --install-extension M-H-H.archi3d
+```
+
+On WSL, run VS Code on Windows with the WSL extension and install Archi3D on the WSL side when it asks.
+
+To try your own build of the extension:
 
 ```sh
 npm run vscode:package                       # makes vscode/archi3d-0.1.0.vsix
 code --install-extension vscode/archi3d-0.1.0.vsix
 ```
-
-Or in VS Code: Extensions view, `…` menu, Install from VSIX. On WSL, run VS Code on Windows with
-the WSL extension and install the `.vsix` on the WSL side when it asks.
 
 Use:
 
