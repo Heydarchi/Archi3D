@@ -104,10 +104,10 @@ test('a Mermaid file opens converted and saves to a sibling .arch3d, untouched i
   const server = await open(page, file);
   try {
     await expect(page.locator('#import-note')).toHaveText('Imported, Save writes flow.arch3d');
-    await expect(page.locator('.cm-content')).toContainText('group shop {');
+    await expect(page.locator('.cm-content')).toContainText('group shop "Shop" {');
     await page.locator('#save').click();
     await expect(page.locator('#import-note')).toHaveText('Saved flow.arch3d');
-    expect(readFileSync(join(dir, 'flow.arch3d'), 'utf8')).toContain('group shop {');
+    expect(readFileSync(join(dir, 'flow.arch3d'), 'utf8')).toContain('group shop "Shop" {');
     expect(readFileSync(file, 'utf8')).toBe(original);
   } finally {
     await server.close();

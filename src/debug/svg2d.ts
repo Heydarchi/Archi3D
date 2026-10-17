@@ -44,7 +44,7 @@ export function labelPoint(r: Pt[]): Pt {
 
 export function renderSvg2d(root: HTMLElement, model: ArchModel, layout: Layout2D): void {
   const svg = fitSvg(root, layout.bounds);
-  svg.append(s('defs', {}, s('marker', { id: 'arrow', viewBox: '0 0 10 10', refX: 9, refY: 5, markerWidth: 7, markerHeight: 7, orient: 'auto-start-reverse' },
+  svg.append(s('defs', {}, s('marker', { id: 'arrow', viewBox: '0 0 10 10', refX: 9, refY: 5, markerWidth: 10.5, markerHeight: 10.5, markerUnits: 'userSpaceOnUse', orient: 'auto-start-reverse' },
     s('path', { d: 'M0,0 L10,5 L0,10 z', fill: COLORS.edge }))));
 
   const nodes = Object.values(model.nodes).sort((a, b) => a.depth - b.depth);
