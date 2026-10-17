@@ -20,11 +20,13 @@ export interface ViewOptions {
   theme?: 'light' | 'dark';
   /** Label font (WOFF/TTF). Defaults to the bundled Inter from vendor/fonts. */
   fontUrl?: string;
-  /** How long to wait for the label font before falling back to HTML labels. */
+  /** How long to wait for the label font before falling back to HTML labels (2 s, 15 s in test mode). */
   labelTimeoutMs?: number;
 }
 
 export type ViewEvent = 'pick' | 'dblpick';
+
+export const TEST_LABEL_TIMEOUT_MS = 15_000;
 
 export interface View {
   setScene(scene: SceneSpec, model: ArchModel): void;
@@ -69,7 +71,9 @@ export function createView(canvas: HTMLCanvasElement, opts: ViewOptions = {}): V
   const root = new SceneRoot(palette);
   scene3.add(root.group);
   const overlayHost = canvas.parentElement ?? document.body;
-  const labels = createLabelLayer({ fontUrl: opts.fontUrl ?? defaultFontUrl, palette, overlayHost, timeoutMs: opts.labelTimeoutMs });
+  // In test mode wait longer for the font, so a slow machine (CI) still draws the same labels.
+  const labelTimeoutMs = opts.labelTimeoutMs ?? (test ? TEST_LABEL_TIMEOUT_MS : undefined);
+  const labels = createLabelLayer({ fontUrl: opts.fontUrl ?? defaultFontUrl, palette, overlayHost, timeoutMs: labelTimeoutMs });
   scene3.add(labels.group);
 
   const camera = new THREE.PerspectiveCamera(40, 1, 1, 40000);
