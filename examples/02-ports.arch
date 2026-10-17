@@ -1,0 +1,12 @@
+# Ports name the interfaces a component provides (in) and requires (out).
+# "port:Type" adds an interface type; mismatched types give warning W201.
+ui      Web       out: api:REST
+service Api       in: api:REST, admin   out: db:SQL, events
+database Store    in: db:SQL
+queue   Events    in: publish   out: deliver
+service Mailer    in: send
+
+Web.api     -> Api.api
+Api.db      -> Store.db
+Api.events  => Events.publish : UserSignedUp   # "=>" is asynchronous (dashed)
+Events.deliver => Mailer.send

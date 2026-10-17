@@ -1,0 +1,16 @@
+# Links may point at containers (no ports) when the detail is not known yet.
+# "<-" reads right to left: "Web <- Push" means Push -> Web.
+container Mobile {
+  ui App
+}
+container Platform {
+  service Push
+  service Accounts
+}
+system Billing {
+  service Invoices
+}
+
+Mobile -> Platform : HTTPS
+App <- Push : notifications
+Accounts -> Billing

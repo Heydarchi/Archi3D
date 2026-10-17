@@ -1,0 +1,75 @@
+# How the AOSP stack serves one camera preview: an app opens the camera through the
+# framework, Binder carries the call to native services, which drive the HAL and the kernel.
+# Synchronous Binder/HAL calls are "->"; callbacks and buffer flows are "=>".
+
+system Apps {
+  ui CameraApp                  in: onOpened, frames   out: open, preview, perm
+}
+
+system Framework {
+  container JavaApi {
+    component CameraManager     in: open               out: binder:AIDL
+    component CameraDevice      in: request, cb        out: binder:AIDL, onOpened
+    component Surface           in: buffers            out: frames
+  }
+}
+
+system SystemServer {
+  service ActivityManagerService  in: check:AIDL
+  service PackageManagerService   in: perm:AIDL
+  service WindowManagerService    in: layout
+}
+
+system NativeServices {
+  container cameraserver {
+    service CameraService       in: connect:AIDL       out: hal:AIDL, permission:AIDL, cb
+    service Camera3Device       in: submit:AIDL        out: hal:AIDL, buffers
+  }
+  container surfaceflinger {
+    service SurfaceFlinger      in: queue              out: compose
+    service BufferQueue         in: produce            out: consume
+  }
+  service ServiceManager        in: lookup:AIDL
+}
+
+system HAL {
+  service CameraProvider        in: provider:AIDL      out: device
+  service CameraDeviceHal       in: session:AIDL       out: ioctl, results
+  service Gralloc               in: alloc
+  service HWComposer            in: present
+}
+
+system Kernel {
+  container Drivers {
+    component V4L2Driver        in: ioctl              out: irq
+    component Ion               in: dmabuf
+    component DisplayDriver     in: kms
+  }
+  external ImageSensor          in: i2c
+}
+
+CameraApp.perm                 -> PackageManagerService.perm : CAMERA permission
+CameraApp.open                 -> CameraManager.open : openCamera()
+CameraManager.binder           -> ServiceManager.lookup : getService("media.camera")
+CameraManager.binder           -> CameraService.connect : connectDevice()
+CameraService.permission       -> ActivityManagerService.check : checkPermission
+CameraService.hal              -> CameraProvider.provider : getCameraDeviceInterface
+CameraProvider.device          -> CameraDeviceHal.session : open()
+CameraService.cb               => CameraDevice.cb : onOpened
+CameraDevice.onOpened          => CameraApp.onOpened
+CameraApp.preview              -> CameraDevice.request : setRepeatingRequest
+CameraDevice.binder            -> Camera3Device.submit : submitRequestList
+Camera3Device.hal              -> CameraDeviceHal.session : processCaptureRequest
+CameraDeviceHal.ioctl          -> V4L2Driver.ioctl : VIDIOC_QBUF
+V4L2Driver.irq                 => CameraDeviceHal.session : frame ready
+V4L2Driver                     -> ImageSensor.i2c : stream on
+CameraDeviceHal.results        => Camera3Device.submit : processCaptureResult
+Camera3Device.buffers          => BufferQueue.produce : queueBuffer
+BufferQueue                    -> Gralloc.alloc : allocate
+Gralloc                        -> Ion.dmabuf
+BufferQueue.consume            => SurfaceFlinger.queue : acquireBuffer
+BufferQueue.consume            => Surface.buffers
+Surface.frames                 => CameraApp.frames : TextureView
+SurfaceFlinger.compose         -> HWComposer.present : presentDisplay
+HWComposer                     -> DisplayDriver.kms : atomic commit
+WindowManagerService           -> SurfaceFlinger.queue : layer transaction

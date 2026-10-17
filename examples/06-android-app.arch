@@ -1,0 +1,50 @@
+# An Android app in the recommended layered architecture (UI → domain → data),
+# with the platform services and backends it talks to.
+
+actor User                      out: touch
+
+system NotesApp {
+  container UiLayer {
+    ui MainActivity             in: touch          out: nav
+    ui NoteListFragment         in: show           out: state
+    ui EditorFragment           in: show           out: state
+    component NotesViewModel    in: state          out: list, save
+  }
+  container DomainLayer {
+    component GetNotesUseCase   in: run            out: notes
+    component SaveNoteUseCase   in: run            out: notes, sync
+  }
+  container DataLayer {
+    component NotesRepository   in: notes          out: local, remote
+    database RoomDatabase       in: dao:SQL
+    service RetrofitClient      in: call           out: https:REST
+    service SyncWorker          in: enqueue        out: push
+  }
+  service PushService           in: message        out: refresh
+}
+
+system AndroidPlatform {
+  service WorkManager           in: schedule       out: run
+  service FirebaseMessaging     in: register       out: deliver
+}
+
+external NotesBackend           in: api:REST
+
+User.touch                    -> MainActivity.touch
+MainActivity.nav              -> NoteListFragment.show
+MainActivity.nav              -> EditorFragment.show
+NoteListFragment.state        -> NotesViewModel.state : StateFlow
+EditorFragment.state          -> NotesViewModel.state
+NotesViewModel.list           -> GetNotesUseCase.run
+NotesViewModel.save           -> SaveNoteUseCase.run
+GetNotesUseCase.notes         -> NotesRepository.notes
+SaveNoteUseCase.notes         -> NotesRepository.notes
+SaveNoteUseCase.sync          => WorkManager.schedule : OneTimeWorkRequest
+WorkManager.run               => SyncWorker.enqueue
+SyncWorker.push               -> RetrofitClient.call
+NotesRepository.local         -> RoomDatabase.dao
+NotesRepository.remote        -> RetrofitClient.call
+RetrofitClient.https          -> NotesBackend.api
+NotesBackend                  => FirebaseMessaging.register : FCM push
+FirebaseMessaging.deliver     => PushService.message
+PushService.refresh           => NotesRepository.notes : refresh
