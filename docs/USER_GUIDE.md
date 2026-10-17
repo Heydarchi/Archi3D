@@ -51,7 +51,7 @@ npm run export -- examples/03-containers.arch3d --out shop.html
 
 ```
 ┌───────────── editor ─────────────┬───────────────── 3D view ──────────────────┐
-│ northwind.arch3d  Import…  1 err │      [Bundling] [Semantic zoom] [Edges]     │
+│ northwind.arch3d  Import…  1 err │ [Hide editor] [Bundling] [Semantic zoom] [Edges] │
 │  1 # Northwind Shop              │                                             │
 │  2 external Customer out: …      │            plates, blocks, links            │
 │  …                               │                                             │
@@ -60,7 +60,9 @@ npm run export -- examples/03-containers.arch3d --out shop.html
 └──────────────────────────────────┴─┴────────────┴─────────────────────────────┘
 ```
 
-On small screens (phones) the editor goes to the bottom.
+On small screens (phones) the editor goes to the bottom. To see only the 3D view, click
+**Hide editor** or press `E` (when you are not typing in the editor). Click **Show editor** or
+press `E` again to get it back. `?editor=0` in the URL opens the app with the editor hidden.
 
 ### Editor
 
@@ -106,10 +108,14 @@ npm run dev -- path/to/my-system.arch3d          # also possible: --port 5174, -
 What you see:
 
 - Plates are containers. Every nesting level is one floor higher.
-- Blocks are components: boxes, cylinders for databases, flat boxes for queues and light,
-  half transparent boxes for externals and actors.
+- Blocks are elements. The keyword decides the shape: a person for `user`, a screen for `ui`, a
+  phone for `app`, a cylinder for `database` and so on (see [the language](#3-the-language)).
 - Ports: teal is provided (`in`), red is required (`out`).
-- Links: solid line is synchronous (`->`), dashed is asynchronous (`=>`). The arrow is at the target.
+- Links: the line shows how the two sides talk. Solid is a call, dashed a message, dotted an
+  event, two thin lines a session, a thick line with marks a stream, a wide band a shared buffer.
+  The arrow is at the target.
+
+![Every element and link kind](../examples/09-legend.png)
 
 When you select something, it and its direct links become orange and the rest fades out. For a
 container, the links that cross its border are shown. The info panel shows the kind, the ports,
@@ -121,6 +127,7 @@ Buttons on the top right:
 |---|---|
 | Semantic zoom: on/off | On: from far away the containers close (you see a box) and the links inside them are drawn as one arc between two containers. They open when you come closer. Port and link labels only show when there is enough space. Off: everything open. |
 | Edges: ortho/arc | Links with right angles, or as arcs. |
+| Hide editor / Show editor | The 3D view takes the whole window. Key `E` does the same. |
 | Bundling: off/on | Links between closed containers follow the nesting tree and are bundled together (hierarchical edge bundling). Links of the selected element are not bundled. |
 
 ---
@@ -136,12 +143,34 @@ line tools, but the VS Code extension only knows `.arch3d`. To rename: `git mv m
 ### Components
 
 ```
-kind Name [in: port, port…] [out: port, port…]
+kind Name ["Title"] [in: port, port…] [out: port, port…]
 ```
 
-- `kind` only decides the shape: `database` or `db` is a cylinder, `queue` a flat box,
-  `external` or `actor` a transparent box, everything else (`component`, `service`, `ui`...) a box.
+- `kind` only decides the shape. The list is short on purpose and works for Android, AOSP and
+  Linux:
+
+  | Keyword | Shape | For example |
+  |---|---|---|
+  | `user` | a person | the phone user, a user at the shell |
+  | `ui` | a screen | an Activity, SystemUI, a GTK window |
+  | `app` | a phone | an APK, a system app, a desktop app |
+  | `service` | a box | a Service, a system_server service, a daemon |
+  | `library` | stacked layers | an AAR, a HAL implementation, a `.so` |
+  | `driver` | a chip | a kernel driver |
+  | `kernel` | a flat octagon | the Linux kernel, the binder driver |
+  | `device` | a box on feet | a sensor, a modem, a USB device |
+  | `database` (`db`) | a cylinder | Room, SQLite, PostgreSQL |
+  | `cache` | a hexagon | LruCache, Redis |
+  | `storage` | stacked disks | files, `/sdcard`, a file system |
+  | `queue` | a low box | a Handler queue, a message queue |
+  | `topic` | a pipe | broadcasts, D-Bus signals |
+  | `external` | a see-through box | a backend, a remote host |
+
+  Any other word (`component`, `system`, `container`...) is a plain box. `actor` still works
+  and is the same as `user`.
 - `Name`: letters, numbers, `_` and `-`. It must be unique in the file.
+- `"Title"` (optional) is shown as the label instead of the name, so the name can stay short:
+  `driver V4L2 "V4L2 camera driver"`. Links still use the name.
 - `in` ports are what the component provides (drawn on the left side), `out` ports are what it
   needs (right side).
 - A port can have a type: `in: orders:REST`.
@@ -160,14 +189,30 @@ system Shop {          # any word as kind, "{" at the end opens the container
 ### Links
 
 ```
-From[.port] -> To[.port] [: label]     # synchronous call
-From[.port] => To[.port] [: label]     # asynchronous message or event (dashed)
-From[.port] <- To[.port] [: label]     # same as To -> From
+From[.port] -> To[.port] [: label]       # a call
+From[.port] => To[.port] [: label]       # a message
+From[.port] ~> To, Other [: label]       # an event to two listeners
+From[.port] session To[.port] [: label]  # the same as <=>, words work too
+From[.port] <- To[.port] [: label]       # same as To -> From
 ```
+
+There are six kinds. Pick by how the two sides talk:
+
+| Arrow | Word | When | Looks like |
+|---|---|---|---|
+| `->` | `call` | ask and wait for the answer (method call, AIDL call, syscall, `ioctl`) | solid line |
+| `=>` | `message` | send and don't wait, one receiver (explicit Intent, `oneway` AIDL, message queue) | dashed line |
+| `~>` | `event` | tell anyone who listens (broadcast, callback, Flow, signal, uevent) | dotted line |
+| `<=>` | `session` | a connection that stays open both ways (bound service, HAL session, socket) | two thin lines, arrows at both ends |
+| `>>` | `stream` | data that keeps flowing (camera frames, audio, a pipe) | thick line with marks |
+| `<>` | `shared` | both use the same memory or data (gralloc buffers, ashmem, `mmap`) | wide band, squares at the ends |
+
+The full table with the Android, AOSP and Linux mapping is in [GRAMMAR.md](GRAMMAR.md#link-kinds).
 
 - If you leave out the port, the first port with the right direction is used. If there is none,
   a port without a name is created.
 - If you use a port in a link that is not declared, it is created for you.
+- Several targets with commas: `Bus ~> Mail, Sync : BOOT` is two links with the same kind and label.
 - Links can go to containers too: `Frontend -> Backend : REST`.
 - Links use names, not paths: `OrderDB`, not `Shop.Backend.OrderDB`.
 
@@ -252,55 +297,59 @@ App <- Push : notifications     # means Push -> App
 ### Android app
 
 [`examples/06-android-app.arch3d`](../examples/06-android-app.arch3d): the UI layer (Activity,
-Fragments, ViewModel), then the use cases, then the data layer (Repository, Room, Retrofit, a
-WorkManager sync worker, an FCM push service), plus the platform services and the backend.
-`StateFlow` updates, WorkManager jobs and push messages are asynchronous (`=>`).
+Fragments, ViewModel), then the use cases, then the data layer (Repository, Room, a memory cache,
+DataStore, Retrofit, a WorkManager sync worker, an FCM push service), plus the platform and the
+backend. The ViewModel's `StateFlow` is an event to both fragments, WorkManager jobs and push
+messages are messages, the network change is an event from a broadcast topic.
 
 ```
-system NotesApp {
-  container UiLayer {
+user User "Phone user"          out: touch
+
+app NotesApp "Notes app" {
+  container UiLayer "UI layer" {
     ui MainActivity             in: touch          out: nav
-    component NotesViewModel    in: state          out: list, save
+    ui NoteListFragment "Note list"  in: show, state   out: action
     …
   }
-  container DataLayer {
-    component NotesRepository   in: notes          out: local, remote
-    database RoomDatabase       in: dao:SQL
-    service RetrofitClient      in: call           out: https:REST
+  container DataLayer "Data layer" {
+    database RoomDatabase "Room"     in: dao:SQL
+    cache    NotesCache   "Memory cache"  in: get
+    library  RetrofitClient "Retrofit"    in: call   out: https:REST
     …
   }
 }
-SaveNoteUseCase.sync  => WorkManager.schedule : OneTimeWorkRequest
-RetrofitClient.https  -> NotesBackend.api
+MainActivity.nav       -> NoteListFragment.show, EditorFragment.show
+NotesViewModel.state   ~> NoteListFragment.state, EditorFragment.state : StateFlow
+SaveNoteUseCase.sync   => WorkManager.schedule : OneTimeWorkRequest
+Connectivity.changed   ~> WorkManager.schedule : CONNECTIVITY_CHANGE
 ```
 
-![Android app, 2D layout](../examples/06-android-app-2d.png)
+| 3D | 2D |
+|---|---|
+| ![Android app](../examples/06-android-app.png) | ![Android app, 2D layout](../examples/06-android-app-2d.png) |
 
 ### AOSP camera stack
 
 [`examples/07-aosp-camera.arch3d`](../examples/07-aosp-camera.arch3d) follows one camera preview
 through the whole platform. The app calls `CameraManager` in the framework. Binder sends
 `connectDevice()` to `CameraService` in the native `cameraserver` process. Before that there is a
-lookup in `ServiceManager` and a permission check in `system_server`. `CameraService` talks to the
-camera HAL (`ICameraProvider` and the device session, over AIDL) and the HAL talks to the V4L2
-kernel driver and the sensor. The frames come back as callbacks and buffers through
-`BufferQueue` and `Gralloc` to the `Surface` of the app, and `SurfaceFlinger` puts them on the
-screen with `HWComposer` and the display driver. Binder and HAL calls are `->`, callbacks and
-buffers are `=>`. The port types (`:AIDL`) are checked between the ports.
+lookup in `ServiceManager` and a permission check in `system_server`. The open camera is a
+session (`ICameraDeviceUser`), and so is the HAL device session. The HAL talks to the V4L2
+driver, the sensor streams frames over MIPI. Frames go through `BufferQueue` to the `Surface` of
+the app as streams, the gralloc and dmabuf buffers are shared, and `SurfaceFlinger` puts them on
+the screen with `HWComposer` and the display driver. Callbacks like `onOpened` are events.
 
 ```
-system NativeServices {
-  container cameraserver {
-    service CameraService   in: connect:AIDL   out: hal:AIDL, permission:AIDL, cb
-    service Camera3Device   in: submit:AIDL    out: hal:AIDL, buffers
-  }
-  …
-}
-CameraManager.binder  -> CameraService.connect    : connectDevice()
-CameraService.hal     -> CameraProvider.provider  : getCameraDeviceInterface
-Camera3Device.hal     -> CameraDeviceHal.session  : processCaptureRequest
-CameraDeviceHal.ioctl -> V4L2Driver.ioctl         : VIDIOC_QBUF
-Camera3Device.buffers => BufferQueue.produce      : queueBuffer
+library CameraManager        in: open, status       out: binder:AIDL
+service CameraService        in: connect:AIDL       out: hal:AIDL, permission:AIDL, cb, status
+library CameraDeviceHal "ICameraDeviceSession"  in: session:AIDL, frames   out: ioctl, results
+driver  V4L2Driver "V4L2 driver"     in: ioctl, mipi    out: frames
+…
+CameraManager.binder     -> CameraService.connect      : connectDevice()
+CameraService.cb         ~> CameraDevice.cb            : onOpened
+CameraDevice.binder     <=> Camera3Device.submit       : ICameraDeviceUser
+ImageSensor.mipi         >> V4L2Driver.mipi            : MIPI CSI-2
+CameraDeviceHal          <> Gralloc                    : gralloc buffers
 ```
 
 | The whole stack from far (one arc between two layers) | The HAL from close, `CameraDeviceHal` selected |
@@ -309,12 +358,39 @@ Camera3Device.buffers => BufferQueue.produce      : queueBuffer
 
 All the links in 2D: ![AOSP 2D](../examples/07-aosp-camera-2d.png)
 
+### Linux desktop
+
+[`examples/08-linux-desktop.arch3d`](../examples/08-linux-desktop.arch3d): a USB webcam is
+plugged in and used in a video call. The kernel sends a uevent, `systemd-udevd` reads its rules
+and the hwdb, D-Bus tells the app and the shell (an event to two listeners), the app asks
+`xdg-desktop-portal` and opens a PipeWire stream (a session). PipeWire reads the frames from the
+`uvcvideo` driver through `libv4l2` and shares dmabuf buffers with it.
+
+```
+DBus.signal         ~> VideoCall.added, Panel.notify : DeviceAdded
+VideoCall          <=> PipeWire : pw stream session
+UVC.frames          >> PipeWire.frames : frames
+PipeWire            <> UVC : dmabuf
+```
+
+![Linux desktop, PipeWire selected](../examples/08-linux-desktop.png)
+
+### Legend
+
+[`examples/09-legend.arch3d`](../examples/09-legend.arch3d) has every keyword and every link kind
+once. Copy from it when you forget a shape.
+
+![Legend](../examples/09-legend.png)
+
 I made these pictures with the render command (section 7):
 
 ```sh
+npm run render -- examples/06-android-app.arch3d
 npm run render -- examples/07-aosp-camera.arch3d --cam far --lod on
 npm run render -- examples/07-aosp-camera.arch3d --out examples/07-aosp-camera-hal.png --focus HAL --k 1.8 --select CameraDeviceHal --panel
 npm run render -- examples/07-aosp-camera.arch3d --view svg2d --out examples/07-aosp-camera-2d.png --width 1800 --height 1100
+npm run render -- examples/08-linux-desktop.arch3d --focus UserSpace --k 0.75 --select PipeWire --panel
+npm run render -- examples/09-legend.arch3d --focus Device --k 1.35
 ```
 
 Bigger models: [`fixtures/northwind.arch3d`](../fixtures/northwind.arch3d) (a web shop),
@@ -403,6 +479,7 @@ App (`index.html`, or the root of the dev server):
 | Parameter | What it does |
 |---|---|
 | `fixture=<name>` | Start with one of the bundled models: `northwind`, `nested-deep`, `tiny`, `gen-1000`, ... |
+| `editor=0` | Start with the editor hidden, only the 3D view |
 | `test=1` | Test mode (no animation, `window.__archi` for the tests) |
 
 Harness (`harness.html`, one view per page, useful for screenshots and debugging):
