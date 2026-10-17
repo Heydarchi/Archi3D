@@ -185,7 +185,7 @@ export async function renderIcons(outDir) {
   const page = await browser.newPage({ viewport: { width: 256, height: 256 }, deviceScaleFactor: 1 });
   const names = process.env.ICONS ? process.env.ICONS.split(',') : Object.keys(icons);
   const fitted = {};
-  for (const [i, name] of names.entries()) {
+  for (const name of names) {
     const base = join(outDir, `icon-${Object.keys(icons).indexOf(name) + 1}-${name}`);
     await page.setContent(`<html><body style="margin:0;background:transparent">${icons[name]()}</body></html>`);
     fitted[name] = await page.evaluate(FIT);
