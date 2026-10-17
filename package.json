@@ -20,7 +20,8 @@
     "vscode:package": "node scripts/build-vscode.mjs --package",
     "test:vscode": "node scripts/build-vscode.mjs && node scripts/test-vscode.mjs",
     "notices": "node scripts/notices.mjs",
-    "icon": "node scripts/icons.mjs --extension"
+    "icon": "node scripts/icons.mjs --extension",
+    "vscode:publish": "node scripts/build-vscode.mjs --publish"
   },
   "dependencies": {
     "@codemirror/commands": "6.11.1",
