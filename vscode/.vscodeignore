@@ -1,0 +1,8 @@
+**
+!package.json
+!README.md
+!language-configuration.json
+!syntaxes/**
+!dist/extension.js
+!dist/template.html
+!dist/media/**
