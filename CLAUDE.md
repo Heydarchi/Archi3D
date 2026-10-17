@@ -1,6 +1,6 @@
 # Archi3D — rules for Claude Code
 
-Archi3D turns a tiny text language (`.arch`, see docs/GRAMMAR.md) describing software
+Archi3D turns a tiny text language (`.arch3d`, see docs/GRAMMAR.md) describing software
 components, their ports and links into an interactive 3D view you can zoom into.
 Pipeline: parse → model → ELK 2D layout → 3D lift → three.js. Read
 docs/ARCHITECTURE.md before changing anything; docs/PLAN.md holds the steps.

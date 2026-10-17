@@ -1,4 +1,4 @@
-// Splits one line of .arch text into tokens with 1-based columns. Comments are stripped.
+// Splits one line of .arch3d text into tokens with 1-based columns. Comments are stripped.
 
 export type TokenType = 'ident' | 'arrow' | 'colon' | 'comma' | 'dot' | 'lbrace' | 'rbrace' | 'other';
 export interface Token { type: TokenType; text: string; col: number; endCol: number }

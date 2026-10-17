@@ -1,10 +1,10 @@
 {
-  "bad-line.arch":        [{ "code": "E001", "line": 2 }],
-  "unmatched-brace.arch": [{ "code": "E002", "line": 2 }],
-  "unclosed.arch":        [{ "code": "E003", "line": 1 }],
-  "duplicate.arch":       [{ "code": "E101", "line": 2 }],
-  "unknown-name.arch":    [{ "code": "E102", "line": 2 }],
-  "self-link.arch":       [{ "code": "E103", "line": 2 }],
-  "wrong-direction.arch": [{ "code": "W202", "line": 3 }],
-  "../typed-ports.arch":  [{ "code": "W201", "line": 7 }]
+  "bad-line.arch3d":        [{ "code": "E001", "line": 2 }],
+  "unmatched-brace.arch3d": [{ "code": "E002", "line": 2 }],
+  "unclosed.arch3d":        [{ "code": "E003", "line": 1 }],
+  "duplicate.arch3d":       [{ "code": "E101", "line": 2 }],
+  "unknown-name.arch3d":    [{ "code": "E102", "line": 2 }],
+  "self-link.arch3d":       [{ "code": "E103", "line": 2 }],
+  "wrong-direction.arch3d": [{ "code": "W202", "line": 3 }],
+  "../typed-ports.arch3d":  [{ "code": "W201", "line": 7 }]
 }

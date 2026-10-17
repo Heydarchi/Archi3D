@@ -1,4 +1,4 @@
-// npm run dev [-- <model.arch|.mmd|.d2>] [--port 5173] [--host] [--open]
+// npm run dev [-- <model.arch3d|.mmd|.d2>] [--port 5173] [--host] [--open]
 // Starts the app. With a file, the editor opens that file and Save writes it back.
 import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';

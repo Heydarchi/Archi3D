@@ -3,7 +3,7 @@
 //   PUT  /__archi/file  { text, baseHash } → { hash } | 409 { text, hash } if it changed on disk since baseHash
 // Changes made to the file by other programs are pushed to the page as the 'archi:file' event.
 // Only the file given on the command line can be read or written. .mmd/.d2 files are read-only;
-// saving writes the converted model to a sibling .arch file.
+// saving writes the converted model to a sibling .arch3d file.
 import { createHash } from 'node:crypto';
 import { existsSync, readFileSync, renameSync, unwatchFile, watchFile, writeFileSync } from 'node:fs';
 import { basename, dirname, extname, join, resolve } from 'node:path';
@@ -13,10 +13,11 @@ const MAX_BYTES = 5 * 1024 * 1024;
 
 export const hashText = (text) => createHash('sha256').update(text).digest('hex').slice(0, 16);
 
-/** Where saves go: the file itself for .arch (and new files), a sibling .arch for imported formats. */
+/** Where saves go: the file itself for .arch3d/.arch, name.arch3d for a bare name, a sibling .arch3d for imported formats. */
 export function saveTarget(file) {
   const ext = extname(file).toLowerCase();
-  return ext === '.arch' || ext === '' ? (ext ? file : `${file}.arch`) : join(dirname(file), `${basename(file, extname(file))}.arch`);
+  if (ext === '.arch3d' || ext === '.arch') return file;   // .arch: the older name, saved in place
+  return ext === '' ? `${file}.arch3d` : join(dirname(file), `${basename(file, extname(file))}.arch3d`);
 }
 
 const readText = (file) => (existsSync(file) ? readFileSync(file, 'utf8') : '');

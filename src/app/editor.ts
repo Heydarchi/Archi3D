@@ -1,4 +1,4 @@
-// The .arch editor: CodeMirror 6 with the stream-language mode and lint markers for diagnostics.
+// The .arch3d editor: CodeMirror 6 with the stream-language mode and lint markers for diagnostics.
 import { defaultKeymap, history, historyKeymap, indentWithTab } from '@codemirror/commands';
 import { HighlightStyle, syntaxHighlighting } from '@codemirror/language';
 import { lintGutter, setDiagnostics } from '@codemirror/lint';

@@ -1,7 +1,7 @@
 // Messages between the VS Code extension (host) and the 3D preview webview.
 
 export type HostMessage =
-  | { type: 'update'; name: string; source: string }       // .arch text (other formats converted by the host)
+  | { type: 'update'; name: string; source: string }       // .arch3d text (other formats converted by the host)
   | { type: 'select'; id: string | null }
   | { type: 'capture'; requestId: number };
 

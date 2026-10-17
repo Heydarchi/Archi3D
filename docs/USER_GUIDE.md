@@ -7,7 +7,7 @@ so the nesting is visible at a glance.
 
 - [1. Quick start](#1-quick-start)
 - [2. The app](#2-the-app)
-- [3. Writing models — the `.arch` language](#3-writing-models--the-arch-language)
+- [3. Writing models — the `.arch3d` language](#3-writing-models--the-arch-language)
 - [4. Examples](#4-examples)
 - [5. Importing Mermaid and D2](#5-importing-mermaid-and-d2)
 - [6. Sharing: the single offline HTML file](#6-sharing-the-single-offline-html-file)
@@ -34,7 +34,7 @@ the right follows about 0.3 s after you stop typing.
 To work on **your own file**, give it to `npm run dev`:
 
 ```sh
-npm run dev -- my-system.arch      # opens it in the editor; Save writes it back
+npm run dev -- my-system.arch3d      # opens it in the editor; Save writes it back
 ```
 
 See [Editing a file on disk](#editing-a-file-on-disk).
@@ -42,7 +42,7 @@ See [Editing a file on disk](#editing-a-file-on-disk).
 To make a file you can email or double-click:
 
 ```sh
-npm run export -- examples/03-containers.arch --out shop.html
+npm run export -- examples/03-containers.arch3d --out shop.html
 ```
 
 ---
@@ -51,7 +51,7 @@ npm run export -- examples/03-containers.arch --out shop.html
 
 ```
 ┌──────────── editor ────────────┬────────────────── 3D view ───────────────────┐
-│ northwind.arch  Import…  1 err │       [Bundling] [Semantic zoom] [Edges]     │
+│ northwind.arch3d  Import…  1 err │       [Bundling] [Semantic zoom] [Edges]     │
 │  1 # Northwind Shop            │                                              │
 │  2 external Customer out: …    │             plates, blocks, links            │
 │  …                             │                                              │
@@ -69,14 +69,14 @@ On narrow screens (phones) the editor moves to a sheet at the bottom.
 | Errors and warnings | Underlined red/amber; hover for the message. The count is shown top right. |
 | Undo / redo | `Ctrl+Z` / `Ctrl+Shift+Z` (`Cmd` on macOS) |
 | Indent | `Tab` |
-| Open another file | **Import…** (`.arch`, Mermaid `.mmd`, D2 `.d2`) |
+| Open another file | **Import…** (`.arch3d`, Mermaid `.mmd`, D2 `.d2`) |
 
 Mistakes never stop the view: everything that is valid is still drawn while you type.
 
 ### Editing a file on disk
 
 ```sh
-npm run dev -- path/to/my-system.arch          # also: --port 5174, --host, --open
+npm run dev -- path/to/my-system.arch3d          # also: --port 5174, --host, --open
 ```
 
 - The editor shows the file. **Save** (button, or `Ctrl+S` / `Cmd+S`) writes it back.
@@ -86,8 +86,8 @@ npm run dev -- path/to/my-system.arch          # also: --port 5174, --host, --op
   reloads it and keeps your camera. If you also have unsaved edits, a bar asks whether to
   **use the disk version** or **keep yours** — nothing is overwritten silently. A save is refused
   if the file changed since you opened it, with the same choice.
-- **Mermaid (`.mmd`) or D2 (`.d2`)** files open converted to `.arch`; Save writes
-  `my-system.arch` next to them and never changes the original.
+- **Mermaid (`.mmd`) or D2 (`.d2`)** files open converted to `.arch3d`; Save writes
+  `my-system.arch3d` next to them and never changes the original.
 - Only the file named on the command line can be read or written, and only through the dev server
   on your machine (it listens on `localhost` unless you add `--host`).
 
@@ -125,9 +125,14 @@ ports, what it *depends on* and what *uses* it.
 
 ---
 
-## 3. Writing models — the `.arch` language
+## 3. Writing models — the `.arch3d` language
 
 One statement per line. `#` or `//` starts a comment. Full grammar: [GRAMMAR.md](GRAMMAR.md).
+
+Model files use the extension **`.arch3d`** (chosen to be unique, so editors and other tools don't
+mistake them for something else). Files with the older `.arch` extension still open and save in the
+app and the command-line tools; the VS Code extension only claims `.arch3d` — rename old files with
+`git mv model.arch model.arch3d`.
 
 ### Components
 
@@ -187,7 +192,7 @@ From[.port] <- To[.port] [: label]     # same as To -> From
 
 All of these are in [`examples/`](../examples) and are checked by the unit tests.
 
-**Hello** — [`examples/01-hello.arch`](../examples/01-hello.arch)
+**Hello** — [`examples/01-hello.arch3d`](../examples/01-hello.arch3d)
 
 ```
 ui       Web
@@ -198,7 +203,7 @@ Web -> Api : HTTPS
 Api -> Store
 ```
 
-**Ports and interface types** — [`examples/02-ports.arch`](../examples/02-ports.arch)
+**Ports and interface types** — [`examples/02-ports.arch3d`](../examples/02-ports.arch3d)
 
 ```
 ui      Web       out: api:REST
@@ -213,7 +218,7 @@ Api.events  => Events.publish : UserSignedUp   # asynchronous
 Events.deliver => Mailer.send
 ```
 
-**Nesting** — [`examples/03-containers.arch`](../examples/03-containers.arch)
+**Nesting** — [`examples/03-containers.arch3d`](../examples/03-containers.arch3d)
 
 ```
 external Customer   out: browse
@@ -236,7 +241,7 @@ Orders.db       -> OrderDB.db
 Orders.pay      -> Payments.charge
 ```
 
-**Links to containers, reversed arrows** — [`examples/04-container-links.arch`](../examples/04-container-links.arch)
+**Links to containers, reversed arrows** — [`examples/04-container-links.arch3d`](../examples/04-container-links.arch3d)
 
 ```
 container Mobile   { … }
@@ -245,7 +250,7 @@ Mobile -> Platform : HTTPS
 App <- Push : notifications     # means Push -> App
 ```
 
-**An Android app** — [`examples/06-android-app.arch`](../examples/06-android-app.arch):
+**An Android app** — [`examples/06-android-app.arch3d`](../examples/06-android-app.arch3d):
 UI layer (Activity, Fragments, ViewModel) → domain use cases → data layer (Repository, Room,
 Retrofit, a WorkManager sync worker, an FCM push service), plus the platform services and the
 backend it talks to. `StateFlow` updates, WorkManager jobs and push messages are asynchronous (`=>`).
@@ -270,7 +275,7 @@ RetrofitClient.https  -> NotesBackend.api
 
 ![Android app, 2D layout](../examples/06-android-app-2d.png)
 
-**AOSP components interacting** — [`examples/07-aosp-camera.arch`](../examples/07-aosp-camera.arch):
+**AOSP components interacting** — [`examples/07-aosp-camera.arch3d`](../examples/07-aosp-camera.arch3d):
 one camera preview through the whole platform. The app calls `CameraManager` (framework), Binder
 carries `connectDevice()` to `CameraService` in the native `cameraserver` process (after a lookup in
 `ServiceManager` and a permission check in `system_server`), which drives the camera HAL
@@ -303,22 +308,22 @@ The full routing in 2D: ![AOSP 2D](../examples/07-aosp-camera-2d.png)
 These pictures were made with the render command (section 7):
 
 ```sh
-npm run render -- examples/07-aosp-camera.arch --cam far --lod on
-npm run render -- examples/07-aosp-camera.arch --out examples/07-aosp-camera-hal.png --focus HAL --k 1.8 --select CameraDeviceHal --panel
-npm run render -- examples/07-aosp-camera.arch --view svg2d --out examples/07-aosp-camera-2d.png --width 1800 --height 1100
+npm run render -- examples/07-aosp-camera.arch3d --cam far --lod on
+npm run render -- examples/07-aosp-camera.arch3d --out examples/07-aosp-camera-hal.png --focus HAL --k 1.8 --select CameraDeviceHal --panel
+npm run render -- examples/07-aosp-camera.arch3d --view svg2d --out examples/07-aosp-camera-2d.png --width 1800 --height 1100
 ```
 
-Bigger models: [`fixtures/northwind.arch`](../fixtures/northwind.arch) (a web shop),
-[`fixtures/nested-deep.arch`](../fixtures/nested-deep.arch) (four levels) and
-`fixtures/gen-1000.arch` (1,000 generated components — open the app with `?fixture=gen-1000`).
+Bigger models: [`fixtures/northwind.arch3d`](../fixtures/northwind.arch3d) (a web shop),
+[`fixtures/nested-deep.arch3d`](../fixtures/nested-deep.arch3d) (four levels) and
+`fixtures/gen-1000.arch3d` (1,000 generated components — open the app with `?fixture=gen-1000`).
 
 ---
 
 ## 5. Importing Mermaid and D2
 
-Click **Import…** and choose a file. The format is detected from the extension (`.arch`,
+Click **Import…** and choose a file. The format is detected from the extension (`.arch3d`,
 `.mmd`/`.mermaid`, `.d2`) or, for other names, from the first line (`architecture-beta`).
-The file is converted to `.arch` text in the editor, so you can keep editing it.
+The file is converted to `.arch3d` text in the editor, so you can keep editing it.
 
 **Mermaid `architecture-beta`** ([`examples/05-mermaid.mmd`](../examples/05-mermaid.mmd)):
 
@@ -348,14 +353,14 @@ offline file.
 ## 6. Sharing: the single offline HTML file
 
 ```sh
-npm run export -- my-model.arch --out my-model.html
+npm run export -- my-model.arch3d --out my-model.html
 ```
 
 `my-model.html` contains everything (≈ 2.6 MB): the app, the layout engine, the font and your
 model. It needs no server and no internet — double-click it, attach it to an email, put it on
 a USB stick. Readers can edit the model in it too (changes are not saved back to the file).
 
-- Only `.arch` models can be embedded (import Mermaid/D2 in the app first, then copy the text).
+- Only `.arch3d` models can be embedded (import Mermaid/D2 in the app first, then copy the text).
 - `--cdn` makes a variant that first tries to load the layout engine from a CDN (3 s timeout)
   and falls back to the built-in copy. It is not smaller; it exists for environments that
   prefer CDN-served libraries.
@@ -368,12 +373,12 @@ Run these in the project folder. Arguments go after `--`.
 
 | Command | What it does |
 |---|---|
-| `npm run dev -- [model.arch\|.mmd\|.d2] [--port 5173] [--host] [--open]` | The app at http://localhost:5173. With a file: edit it in the app and save it back ([details](#editing-a-file-on-disk)). |
+| `npm run dev -- [model.arch3d\|.mmd\|.d2] [--port 5173] [--host] [--open]` | The app at http://localhost:5173. With a file: edit it in the app and save it back ([details](#editing-a-file-on-disk)). |
 | `npm run build` | Production build into `dist/` (static files — see [DEPLOY.md](DEPLOY.md)) |
 | `npm run preview` | Serve the production build at http://localhost:4173 |
-| `npm run export -- [model.arch] [--cdn] [--out file.html]` | Single offline HTML file. Defaults: `fixtures/northwind.arch`, `dist/archi3d-standalone.html` (`…-cdn.html` with `--cdn`) |
-| `npm run render -- <model> [options]` | Render a model (`.arch`, `.mmd`, `.d2`) to a PNG with headless Chrome. Options: `--out file.png`, `--view scene\|svg2d`, `--cam far\|mid\|near\|iso` (default iso), `--focus <Id> --k <n>`, `--width 1600 --height 1000 --scale 1`, `--edges ortho\|arc`, `--lod off\|on` (default off: everything open), `--bundle`, `--select <Id>` (+ `--panel` to show the info panel), `--theme light\|dark`, `--browser chromium\|chrome\|msedge`. Builds the app first if the sources changed. |
-| `npm run generate -- [components] [seed]` | Write a random test model `fixtures/gen-<components>.arch` (defaults 1000, 42). The same seed always gives the same model. |
+| `npm run export -- [model.arch3d] [--cdn] [--out file.html]` | Single offline HTML file. Defaults: `fixtures/northwind.arch3d`, `dist/archi3d-standalone.html` (`…-cdn.html` with `--cdn`) |
+| `npm run render -- <model> [options]` | Render a model (`.arch3d`, `.mmd`, `.d2`) to a PNG with headless Chrome. Options: `--out file.png`, `--view scene\|svg2d`, `--cam far\|mid\|near\|iso` (default iso), `--focus <Id> --k <n>`, `--width 1600 --height 1000 --scale 1`, `--edges ortho\|arc`, `--lod off\|on` (default off: everything open), `--bundle`, `--select <Id>` (+ `--panel` to show the info panel), `--theme light\|dark`, `--browser chromium\|chrome\|msedge`. Builds the app first if the sources changed. |
+| `npm run generate -- [components] [seed]` | Write a random test model `fixtures/gen-<components>.arch3d` (defaults 1000, 42). The same seed always gives the same model. |
 | `npm test` | Unit tests (Vitest, Node) |
 | `npm run lint` | ESLint (including the "core must not import three.js" rule) and TypeScript |
 | `npm run test:visual` | Build, export, then screenshot tests (Playwright). Set `PW_CHANNEL=chrome` (or `msedge`) to use an installed browser. Pictures for review land in `artifacts/step-N/`. |
@@ -428,15 +433,15 @@ npm run dev             # open http://localhost:5173 in Windows — WSL forwards
 `npx playwright install --with-deps chromium`):
 
 ```sh
-npm run render -- ~/models/payments.arch --out ~/models/payments.png --cam iso
-npm run render -- ~/models/payments.arch --view svg2d --theme dark
+npm run render -- ~/models/payments.arch3d --out ~/models/payments.png --cam iso
+npm run render -- ~/models/payments.arch3d --view svg2d --theme dark
 explorer.exe "$(wslpath -w ~/models/payments.png)"
 ```
 
 …or a self-contained interactive viewer to open in Windows:
 
 ```sh
-npm run export -- ~/models/payments.arch --out ~/models/payments.html
+npm run export -- ~/models/payments.arch3d --out ~/models/payments.html
 explorer.exe "$(wslpath -w ~/models/payments.html)"
 ```
 
@@ -463,7 +468,7 @@ Windows with the *WSL* extension and install the `.vsix` into the WSL side when 
 
 | What | How |
 |---|---|
-| Open the preview | Open a `.arch` or Mermaid `.mmd` file → the preview button in the editor title, `Ctrl+K V` (`Cmd+K V`), or *Archi3D: Open 3D Preview to the Side* |
+| Open the preview | Open a `.arch3d` or Mermaid `.mmd` file → the preview button in the editor title, `Ctrl+K V` (`Cmd+K V`), or *Archi3D: Open 3D Preview to the Side* |
 | Live update | Just type — the preview follows ~0.3 s later and keeps your camera; switching to another model file re-frames |
 | Jump to the definition | Click a block in the preview; double-click flies in |
 | Errors and warnings | Squiggles in the editor and entries in the *Problems* panel (codes as in section 3) |

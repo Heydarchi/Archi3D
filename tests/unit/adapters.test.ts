@@ -14,12 +14,12 @@ const structure = (m: ArchModel) => ({
   nodes: Object.values(m.nodes).map((n) => `${n.id}<${n.parent ?? ''}`).sort(),
   edges: m.edges.map((e) => `${e.from.node}->${e.to.node}`).sort(),
 });
-const native = () => buildModel(parse(fixture('northwind.arch')));
+const native = () => buildModel(parse(fixture('northwind.arch3d')));
 
 describe('Mermaid architecture-beta', () => {
   const m = fromMermaid(readFileSync(join(fixturesDir, 'adapters', 'northwind.mmd'), 'utf8'));
 
-  it('northwind.mmd has the same nodes, parents and links as northwind.arch', () => {
+  it('northwind.mmd has the same nodes, parents and links as northwind.arch3d', () => {
     expect(m.diagnostics).toEqual([]);
     expect(structure(m)).toEqual(structure(native()));
   });
@@ -96,8 +96,15 @@ describe('detectFormat', () => {
   it('by extension, then by first line', () => {
     expect(detectFormat('x.mmd', '')).toBe('mermaid');
     expect(detectFormat('x.d2', '')).toBe('d2');
-    expect(detectFormat('x.arch', 'architecture-beta')).toBe('arch');
+    expect(detectFormat('x.arch3d', 'architecture-beta')).toBe('arch');
     expect(detectFormat('pasted', '%% hi\narchitecture-beta\n')).toBe('mermaid');
     expect(detectFormat('pasted', 'component A')).toBe('arch');
+  });
+});
+
+describe('file extensions', () => {
+  it('.arch3d is the model extension; the older .arch still reads as a model', () => {
+    expect(detectFormat('shop.arch3d', '')).toBe('arch');
+    expect(detectFormat('shop.arch', '')).toBe('arch');
   });
 });

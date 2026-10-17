@@ -79,7 +79,7 @@ describe.each(validFixtures())('%s', (f) => {
 });
 
 describe('toElk', () => {
-  const g = toElk(model('northwind.arch'));
+  const g = toElk(model('northwind.arch3d'));
   it('sets the layered options', () => {
     expect(g.layoutOptions).toMatchObject({
       'elk.algorithm': 'layered', 'elk.direction': 'RIGHT', 'elk.hierarchyHandling': 'INCLUDE_CHILDREN', 'elk.edgeRouting': 'ORTHOGONAL',
@@ -104,7 +104,7 @@ describe('toElk', () => {
 
 describe('edge offsets (elkjs lca gotcha)', () => {
   it('deeply nested edges land on their ports', async () => {
-    const m = model('nested-deep.arch');
+    const m = model('nested-deep.arch3d');
     const l = await layout(m);
     const e = m.edges.find((x) => x.lca === 'Billing')!;
     expect(dist(l.routes[e.id][0], l.ports[e.from.port!])).toBeLessThanOrEqual(1);

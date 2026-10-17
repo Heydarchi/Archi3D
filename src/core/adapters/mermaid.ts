@@ -45,7 +45,7 @@ export function fromMermaid(src: string): ArchModel {
     const e = EDGE_RE.exec(text);
     if (e) {
       const [, a, sa, arrow, sb, b] = e;
-      // "_" marks the port as unnamed: no label, and not written back when printed as .arch.
+      // "_" marks the port as unnamed: no label, and not written back when printed as .arch3d.
       const ref = (name: string, side: string, dir: 'in' | 'out') => ({ name, port: `_${dir}_${side}`, loc: loc(col + text.indexOf(name), name.length) });
       const swap = arrow === '<--';
       const from = swap ? ref(b, sb, 'out') : ref(a, sa, 'out');

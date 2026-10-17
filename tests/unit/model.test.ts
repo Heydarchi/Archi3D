@@ -27,12 +27,12 @@ describe('expected.json semantic diagnostics', () => {
   }
 
   it('keeps parse diagnostics', () => {
-    expect(model(fixture('errors/bad-line.arch')).diagnostics.map((d) => d.code)).toEqual(['E001']);
+    expect(model(fixture('errors/bad-line.arch3d')).diagnostics.map((d) => d.code)).toEqual(['E001']);
   });
 });
 
 describe('nested-deep', () => {
-  const m = model(fixture('nested-deep.arch'));
+  const m = model(fixture('nested-deep.arch3d'));
   const edge = (a: string, b: string) => m.edges.find((e) => e.from.node === a && e.to.node === b)!;
 
   it('depths and parents', () => {
@@ -63,7 +63,7 @@ describe('nested-deep', () => {
 });
 
 describe('container-links', () => {
-  const m = model(fixture('container-links.arch'));
+  const m = model(fixture('container-links.arch3d'));
   it('container-to-container link has no ports', () => {
     const e = m.edges.find((x) => x.from.node === 'Frontend')!;
     expect(e).toMatchObject({ to: { node: 'Backend' }, label: 'REST', lca: null });
@@ -99,7 +99,7 @@ describe('ports', () => {
   });
 
   it('declared ports carry their interface type', () => {
-    const m = model(fixture('typed-ports.arch'));
+    const m = model(fixture('typed-ports.arch3d'));
     expect(m.nodes.Gateway.ports[0]).toEqual({ id: 'Gateway.orders', name: 'orders', dir: 'out', iface: 'REST', implicit: false });
     const w = m.diagnostics.find((d) => d.code === 'W201')!;
     expect(w.severity).toBe('warning');
@@ -128,7 +128,7 @@ describe('invalid links', () => {
 
 describe('determinism', () => {
   it('building twice gives deep-equal output; ids follow source order', () => {
-    const p = parse(fixture('northwind.arch'));
+    const p = parse(fixture('northwind.arch3d'));
     const a = buildModel(p);
     expect(buildModel(p)).toEqual(a);
     expect(a.edges.map((e) => e.id)).toEqual(a.edges.map((_, i) => `e${i}`));
@@ -136,7 +136,7 @@ describe('determinism', () => {
   });
 
   it('does not mutate the parse result', () => {
-    const p = parse(fixture('nested-deep.arch'));
+    const p = parse(fixture('nested-deep.arch3d'));
     const before = JSON.stringify(p);
     buildModel(p);
     expect(JSON.stringify(p)).toBe(before);

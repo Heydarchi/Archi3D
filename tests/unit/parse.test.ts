@@ -30,7 +30,7 @@ describe('error fixtures', () => {
   }
 
   it('continues after an error (bad-line: B and the link survive)', () => {
-    const r = parse(fixture('errors/bad-line.arch'));
+    const r = parse(fixture('errors/bad-line.arch3d'));
     expect(nodes(r.items).map((n) => n.name)).toEqual(['A', 'B']);
     expect(edges(r.items)).toHaveLength(1);
     expect(r.diagnostics[0].loc.col).toBe(1);

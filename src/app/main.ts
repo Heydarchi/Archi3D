@@ -41,7 +41,7 @@ async function main(): Promise<void> {
   } else {
     const fixtureName = fixtureParam ?? defaultFixture;
     initial = getFixture(fixtureName);
-    document.getElementById('file-name')!.textContent = `${fixtureName}.arch`;
+    document.getElementById('file-name')!.textContent = `${fixtureName}.arch3d`;
   }
   const busy = document.getElementById('busy')!;
   let fileMode: FileMode | null = null;

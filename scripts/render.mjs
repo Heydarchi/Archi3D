@@ -1,6 +1,6 @@
 // Render a model to a PNG with headless Chrome — Archi3D as a command-line rendering tool.
 //
-//   node scripts/render.mjs <model.arch|.mmd|.d2> [options]
+//   node scripts/render.mjs <model.arch3d|.mmd|.d2> [options]
 //
 //   --out <file.png>          output (default: next to the model, .png)
 //   --view scene|svg2d        3D view (default) or the flat 2D layout
@@ -32,7 +32,7 @@ export function parseArgs(argv) {
     if (value === undefined) throw new Error(`Missing value for ${a}`);
     opts[key] = ['width', 'height', 'scale', 'k'].includes(key) ? Number(value) : value;
   }
-  if (!rest[0]) throw new Error('Usage: node scripts/render.mjs <model.arch|.mmd|.d2> [--out file.png] [options]');
+  if (!rest[0]) throw new Error('Usage: node scripts/render.mjs <model.arch3d|.mmd|.d2> [--out file.png] [options]');
   opts.model = resolve(rest[0]);
   opts.out = resolve(opts.out ?? opts.model.replace(/\.[^.]+$/, '') + '.png');
   return opts;
