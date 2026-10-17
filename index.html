@@ -11,6 +11,8 @@
       #editor header { font: 600 12px system-ui, sans-serif; color: #52606d; padding: 8px 12px; border-bottom: 1px solid #e4e7eb; display: flex; justify-content: space-between; }
       #editor .cm-host { flex: 1; min-height: 0; }
       #view { position: relative; min-width: 0; overflow: hidden; }
+      .app.editor-hidden { grid-template-columns: 1fr; }
+      .app.editor-hidden #editor { display: none; }
       .bar { position: absolute; top: 12px; right: 12px; display: flex; gap: 8px; z-index: 2; }
       .bar button { font: 12px system-ui, sans-serif; padding: 6px 10px; border-radius: 6px; border: 1px solid #bcccdc; background: #fff; cursor: pointer; }
       #status, #import-note { font-weight: 400; color: #7b8794; }
@@ -28,6 +30,7 @@
       @keyframes spin { to { transform: rotate(360deg); } }
       @media (max-width: 760px) {
         .app { grid-template-columns: 1fr; grid-template-rows: 1fr 42vh; }
+        .app.editor-hidden { grid-template-rows: 1fr; }
         #view { grid-row: 1; }
         #editor { grid-row: 2; border-right: 0; border-top: 1px solid #d9e2ec; border-radius: 12px 12px 0 0; box-shadow: 0 -4px 16px rgba(31,41,51,.08); }
       }
@@ -46,6 +49,7 @@
       <main id="view">
         <div id="busy" class="busy" role="status" hidden>Laying out…</div>
         <div class="bar">
+          <button id="toggle-editor" type="button" aria-pressed="true">Hide editor</button>
           <button id="bundling" type="button">Bundling: off</button>
           <button id="semantic-zoom" type="button">Semantic zoom: on</button>
           <button id="edge-mode" type="button">Edges: ortho</button>
