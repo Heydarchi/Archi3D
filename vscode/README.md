@@ -1,24 +1,28 @@
 # Archi3D for VS Code
 
-Live 3D preview of software architecture models while you type.
+See your software architecture in 3D, next to the file you are editing.
 
-![The AOSP camera stack with CameraDeviceHal selected](images/hal-selected.png)
+![AOSP camera stack with CameraDeviceHal selected](images/hal-selected.png)
 
-- **Open 3D Preview to the Side** — the editor title button, `Ctrl+K V` (`Cmd+K V` on macOS), or the
-  command palette. The preview follows the document as you type and keeps the camera where you left it.
-- **Click a block** to jump to where it is defined; double-click to fly in.
-- **Problems** — parse and model errors/warnings for `.arch3d` and Mermaid `architecture-beta` (`.mmd`) files
-  show up as squiggles and in the Problems panel.
-- **Save 3D Preview as PNG…** and **Export Standalone HTML…** (one file that works offline).
-- Syntax colouring for `.arch3d`.
+## What it does
 
-Works offline: everything, including the layout engine and the font, ships inside the extension.
+- Open the preview with the button in the editor title, with `Ctrl+K V` (`Cmd+K V` on Mac) or from
+  the command palette ("Archi3D: Open 3D Preview to the Side").
+- The preview updates while you type and the camera stays where you left it.
+- Click a block to go to the line where it is defined. Double click to fly in.
+- Errors and warnings show up in the editor and in the Problems panel. This works for `.arch3d`
+  files and for Mermaid `architecture-beta` files (`.mmd`).
+- Save the view as PNG ("Archi3D: Save 3D Preview as PNG...").
+- Export one HTML file that works offline ("Archi3D: Export Standalone HTML...").
+- Syntax colors for `.arch3d`.
 
-D2 files are not previewed yet (use the Archi3D app's Import).
+Everything works offline. The layout engine and the font are inside the extension.
 
-Example models (an Android app, the AOSP camera stack, …) and the language guide:
-https://github.com/Heydarchi/Archi3D
+D2 files are not supported in the preview yet. You can import them in the Archi3D web app.
 
-License: MIT. Third-party licences: `THIRD_PARTY_NOTICES.md`.
+Examples (an Android app, the AOSP camera stack and more) and the guide for the language are in the
+repo: https://github.com/Heydarchi/Archi3D
+
+License: MIT. Licenses of the libraries inside: `THIRD_PARTY_NOTICES.md`.
 
 ![The preview in a dark theme](images/preview-dark.png)
