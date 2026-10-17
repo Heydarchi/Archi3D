@@ -7,6 +7,8 @@ import { createInfoPanel } from './infoPanel';
 import { createLayoutClient } from './layoutClient';
 import { createStore } from './store';
 import { importText } from './importFile';
+import { startFileMode, type FileMode } from './fileMode';
+import { openModelFile, STARTER_MODEL } from './fileSync';
 import { afterPaint, installTestHooks, isTestMode, markBusy, markReady } from './testHooks';
 
 async function main(): Promise<void> {
@@ -29,13 +31,33 @@ async function main(): Promise<void> {
   view.on('pick', select);
   view.on('dblpick', flyTo);
 
-  const fixtureName = new URLSearchParams(window.location.search).get('fixture') ?? defaultFixture;
-  document.getElementById('file-name')!.textContent = `${fixtureName}.arch`;
+  // What to open: ?fixture=<name>, else the file given to "npm run dev -- <file>", else the default model.
+  const fixtureParam = new URLSearchParams(window.location.search).get('fixture');
+  const file = fixtureParam ? null : await openModelFile();
+  let initial: string;
+  if (file) {
+    initial = file.saveAs !== file.path ? (await importText(file.name, file.text)).source : file.text || STARTER_MODEL;
+    document.getElementById('file-name')!.textContent = file.name;
+  } else {
+    const fixtureName = fixtureParam ?? defaultFixture;
+    initial = getFixture(fixtureName);
+    document.getElementById('file-name')!.textContent = `${fixtureName}.arch`;
+  }
   const busy = document.getElementById('busy')!;
-  const editor = createEditor(document.querySelector<HTMLElement>('#editor .cm-host')!, getFixture(fixtureName), (text) => {
+  let fileMode: FileMode | null = null;
+  const editor = createEditor(document.querySelector<HTMLElement>('#editor .cm-host')!, initial, (text) => {
     markBusy();
     store.setSource(text);
-  });
+    fileMode?.changed();
+  }, () => void fileMode?.save());
+  if (file) {
+    fileMode = startFileMode(file, editor, {
+      name: document.getElementById('file-name')!,
+      save: document.getElementById('save') as HTMLButtonElement,
+      note: document.getElementById('import-note')!,
+      banner: document.getElementById('file-banner')!,
+    });
+  }
 
   let shownScene: SceneSpec | null = null;
   let shownModel: unknown = null;
@@ -109,6 +131,7 @@ async function main(): Promise<void> {
     screenPos: (id: string) => view.screenPos(id),
     state: () => ({
       elkSource: (globalThis as { __archiElkSource?: string }).__archiElkSource ?? 'module',
+      file: fileMode?.state() ?? null,
       revision: store.get().revision, idle: store.idle(), inSync: store.get().source === editor.text(), selected: view.selected(), camera: view.cameraState(),
       diagnostics: store.get().model?.diagnostics.map((d) => `${d.code}@${d.loc.line}`) ?? [],
     }),

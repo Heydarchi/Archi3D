@@ -16,6 +16,11 @@
       #status, #import-note { font-weight: 400; color: #7b8794; }
       button.link { all: unset; cursor: pointer; color: #486581; font-weight: 400; margin-left: 6px; }
       button.link:hover { text-decoration: underline; }
+      button.save { font: 600 11px system-ui, sans-serif; margin-left: 8px; padding: 2px 10px; border-radius: 4px; border: 1px solid #486581; background: #486581; color: #fff; cursor: pointer; }
+      button.save:disabled { background: #fff; color: #9aa5b1; border-color: #d9e2ec; cursor: default; }
+      .file-banner { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; padding: 8px 12px; background: #fff8e6; border-bottom: 1px solid #f0d9a3; font: 12px system-ui, sans-serif; color: #5c4813; }
+      .file-banner[hidden] { display: none; }
+      .file-banner button { font: 12px system-ui, sans-serif; padding: 3px 8px; border-radius: 4px; border: 1px solid #c99a2e; background: #fff; cursor: pointer; }
       .busy { position: absolute; left: 50%; top: 14px; transform: translateX(-50%); z-index: 2; display: flex; align-items: center; gap: 8px;
         font: 12px system-ui, sans-serif; color: #334e68; background: rgba(255,255,255,.92); border: 1px solid #d9e2ec; border-radius: 999px; padding: 5px 12px; }
       .busy::before { content: ''; width: 10px; height: 10px; border-radius: 50%; border: 2px solid #9fb3c8; border-top-color: #334e68; animation: spin .8s linear infinite; }
@@ -32,9 +37,10 @@
     <div class="app">
       <section id="editor" aria-label="Model source">
         <header>
-          <span><span id="file-name">northwind.arch</span> <button id="import" type="button" class="link">Import…</button><input id="import-file" type="file" accept=".arch,.mmd,.mermaid,.d2,.txt" hidden /></span>
+          <span><span id="file-name">northwind.arch</span> <button id="import" type="button" class="link">Import…</button><input id="import-file" type="file" accept=".arch,.mmd,.mermaid,.d2,.txt" hidden /><button id="save" type="button" class="save" hidden title="Save (Ctrl/Cmd+S)">Save</button></span>
           <span><span id="import-note"></span> <span id="status"></span></span>
         </header>
+        <div id="file-banner" class="file-banner" role="alert" hidden></div>
         <div class="cm-host"></div>
       </section>
       <main id="view">
