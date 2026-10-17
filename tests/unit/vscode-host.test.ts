@@ -7,27 +7,28 @@ import { exportStandalone } from '../../scripts/export-standalone.mjs';
 import { fixture } from './helpers';
 
 describe('analyze', () => {
-  it('.arch: diagnostics and definition locations', () => {
-    const a = analyze('/w/shop.arch', 'component A\nA -> Missing');
+  it('.arch3d: diagnostics and definition locations', () => {
+    const a = analyze('/w/shop.arch3d', 'component A\nA -> Missing');
     expect(a.format).toBe('arch');
-    expect(a.arch).toBe('component A\nA -> Missing');
+    expect(a.archText).toBe('component A\nA -> Missing');
     expect(a.diagnostics.map((d) => [d.code, d.loc.line])).toEqual([['E102', 2]]);
     expect(a.locations.A).toEqual({ line: 1, col: 11, endCol: 12 });
   });
-  it('Mermaid: converted to .arch for the preview, locations point into the Mermaid file', () => {
+  it('Mermaid: converted to .arch3d for the preview, locations point into the Mermaid file', () => {
     const src = readFileSync(join(import.meta.dirname, '..', '..', 'examples', '05-mermaid.mmd'), 'utf8');
     const a = analyze('/w/x.mmd', src);
     expect(a.format).toBe('mermaid');
-    expect(a.arch).toContain('group shop {');
+    expect(a.archText).toContain('group shop {');
     expect(a.locations.api.line).toBe(src.split('\n').findIndex((l) => l.includes('service api')) + 1);
   });
   it('D2 is reported as not previewable (no crash)', () => {
     expect(analyze('/w/x.d2', 'a -> b').unsupported).toMatch(/D2/);
   });
   it('isModelFile', () => {
-    expect(isModelFile('/a/b.arch', 'plaintext')).toBe(true);
+    expect(isModelFile('/a/b.arch3d', 'plaintext')).toBe(true);
     expect(isModelFile('/a/b.mmd', 'plaintext')).toBe(true);
-    expect(isModelFile('/a/b.txt', 'arch')).toBe(true);
+    expect(isModelFile('/a/b.txt', 'arch3d')).toBe(true);
+    expect(isModelFile('/a/old.arch', 'plaintext')).toBe(false); // VS Code claims only .arch3d
     expect(isModelFile('/a/b.ts', 'typescript')).toBe(false);
   });
 });
@@ -52,7 +53,7 @@ describe('fillTemplate (the built standalone page)', () => {
   }, 300_000);
 
   it('replaces both placeholders exactly once', () => {
-    const html = fillTemplate(template, 'northwind', fixture('northwind.arch'));
+    const html = fillTemplate(template, 'northwind', fixture('northwind.arch3d'));
     expect(html).not.toContain(SOURCE_PLACEHOLDER);
     expect(html).not.toContain(NAME_PLACEHOLDER);
     expect(html).toContain('OrderAPI.events   =>');

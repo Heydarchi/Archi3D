@@ -1,4 +1,4 @@
-// Import: any supported format → .arch text for the editor (plus the adapter's warnings).
+// Import: any supported format → .arch3d text for the editor (plus the adapter's warnings).
 import { fromD2Diagram } from '../core/adapters/d2';
 import { detectFormat, type SourceFormat } from '../core/adapters/detect';
 import { fromMermaid } from '../core/adapters/mermaid';

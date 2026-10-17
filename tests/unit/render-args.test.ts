@@ -4,11 +4,11 @@ import { harnessQuery, parseArgs } from '../../scripts/render.mjs';
 
 describe('render command arguments', () => {
   it('defaults: iso 3D picture next to the model, everything open', () => {
-    const o = parseArgs(['models/shop.arch']);
+    const o = parseArgs(['models/shop.arch3d']);
     expect(o.out).toMatch(/models\/shop\.png$/);
     expect(o).toMatchObject({ view: 'scene', cam: 'iso', width: 1600, height: 1000, scale: 1, lod: 'off', bundle: false });
     const q = new URLSearchParams(harnessQuery(o));
-    expect(Object.fromEntries(q)).toEqual({ test: '1', view: 'scene', fixture: 'shop.arch', cam: 'iso', edges: 'ortho', lod: 'off', panel: 'off' });
+    expect(Object.fromEntries(q)).toEqual({ test: '1', view: 'scene', fixture: 'shop.arch3d', cam: 'iso', edges: 'ortho', lod: 'off', panel: 'off' });
   });
 
   it('options map to harness parameters', () => {
@@ -20,8 +20,8 @@ describe('render command arguments', () => {
   });
 
   it('svg2d ignores camera options; missing model or value is an error', () => {
-    expect(Object.fromEntries(new URLSearchParams(harnessQuery(parseArgs(['m.arch', '--view', 'svg2d', '--cam', 'far']))))).toEqual({ test: '1', view: 'svg2d', fixture: 'm.arch' });
+    expect(Object.fromEntries(new URLSearchParams(harnessQuery(parseArgs(['m.arch3d', '--view', 'svg2d', '--cam', 'far']))))).toEqual({ test: '1', view: 'svg2d', fixture: 'm.arch3d' });
     expect(() => parseArgs([])).toThrow(/Usage/);
-    expect(() => parseArgs(['m.arch', '--out'])).toThrow(/Missing value/);
+    expect(() => parseArgs(['m.arch3d', '--out'])).toThrow(/Missing value/);
   });
 });

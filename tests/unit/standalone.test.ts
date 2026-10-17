@@ -57,7 +57,7 @@ describe('standalone export', () => {
   it('embeds the model', () => {
     // The minifier may re-quote the string, so look for distinctive lines rather than the exact literal.
     for (const line of ['OrderAPI.events   => EventBus.publish : OrderPlaced', 'component AuthService  in: login   out: users']) {
-      expect(fixture('northwind.arch')).toContain(line);
+      expect(fixture('northwind.arch3d')).toContain(line);
       expect(offline).toContain(line);
     }
   });

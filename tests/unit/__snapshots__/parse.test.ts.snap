@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`valid fixtures > container-links.arch parses with no errors 1`] = `
+exports[`valid fixtures > container-links.arch3d parses with no errors 1`] = `
 [
   {
     "children": [
@@ -154,7 +154,7 @@ exports[`valid fixtures > container-links.arch parses with no errors 1`] = `
 ]
 `;
 
-exports[`valid fixtures > nested-deep.arch parses with no errors 1`] = `
+exports[`valid fixtures > nested-deep.arch3d parses with no errors 1`] = `
 [
   {
     "children": [
@@ -534,7 +534,7 @@ exports[`valid fixtures > nested-deep.arch parses with no errors 1`] = `
 ]
 `;
 
-exports[`valid fixtures > northwind.arch parses with no errors 1`] = `
+exports[`valid fixtures > northwind.arch3d parses with no errors 1`] = `
 [
   {
     "children": [],
@@ -1394,7 +1394,7 @@ exports[`valid fixtures > northwind.arch parses with no errors 1`] = `
 ]
 `;
 
-exports[`valid fixtures > tiny.arch parses with no errors 1`] = `
+exports[`valid fixtures > tiny.arch3d parses with no errors 1`] = `
 [
   {
     "children": [],
@@ -1532,7 +1532,7 @@ exports[`valid fixtures > tiny.arch parses with no errors 1`] = `
 ]
 `;
 
-exports[`valid fixtures > typed-ports.arch parses with no errors 1`] = `
+exports[`valid fixtures > typed-ports.arch3d parses with no errors 1`] = `
 [
   {
     "children": [],

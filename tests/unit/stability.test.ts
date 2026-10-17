@@ -13,7 +13,7 @@ const edits: Record<string, (s: string) => string> = {
 
 for (const [name, edit] of Object.entries(edits)) {
   it(`adding one component (${name}) moves unrelated components < 15% of the model width`, async () => {
-    const src = fixture('northwind.arch');
+    const src = fixture('northwind.arch3d');
     const before = buildModel(parse(src));
     const a = await layout(before);
     const b = await layout(buildModel(parse(edit(src))), {}, a);

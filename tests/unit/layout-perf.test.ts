@@ -6,7 +6,7 @@ import { buildModel } from '../../src/core/model/build';
 import { fixture } from './helpers';
 
 it('northwind lays out in under 1 s (first call, cold)', async () => {
-  const m = buildModel(parse(fixture('northwind.arch')));
+  const m = buildModel(parse(fixture('northwind.arch3d')));
   const t0 = performance.now();
   await layout(m);
   const ms = performance.now() - t0;

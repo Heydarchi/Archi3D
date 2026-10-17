@@ -14,11 +14,11 @@ describe('generator', () => {
     expect(generateArch({ seed: 7, components: 200 })).toBe(generateArch({ seed: 7, components: 200 }));
     expect(generateArch({ seed: 7, components: 200 })).not.toBe(generateArch({ seed: 8, components: 200 }));
   });
-  it('fixtures/gen-1000.arch is what the generator makes for seed 42', () => {
-    expect(fixture('gen-1000.arch')).toBe(generateArch({ seed: 42, components: 1000 }));
+  it('fixtures/gen-1000.arch3d is what the generator makes for seed 42', () => {
+    expect(fixture('gen-1000.arch3d')).toBe(generateArch({ seed: 42, components: 1000 }));
   });
   it('makes a valid model with exactly 1000 components, links mostly within a system', () => {
-    const m = buildModel(parse(fixture('gen-1000.arch')));
+    const m = buildModel(parse(fixture('gen-1000.arch3d')));
     expect(m.diagnostics).toEqual([]);
     const nodes = Object.values(m.nodes);
     expect(nodes.filter((n) => !n.container)).toHaveLength(1000);
@@ -30,7 +30,7 @@ describe('generator', () => {
 });
 
 describe('gen-1000 at scale', () => {
-  const model = buildModel(parse(fixture('gen-1000.arch')));
+  const model = buildModel(parse(fixture('gen-1000.arch3d')));
 
   it('lays out in under 8 s in Node', async () => {
     const t0 = performance.now();
@@ -60,7 +60,7 @@ describe('gen-1000 at scale', () => {
 
 describe('label budget', () => {
   it('at most 150 labels, nearest first', async () => {
-    const model = buildModel(parse(fixture('gen-1000.arch')));
+    const model = buildModel(parse(fixture('gen-1000.arch3d')));
     const scene = lift(model, await layout(model));
     const cam = focusCamera(scene, 'Sys1', 4, 800);
     const all = lod(scene, model, cam, undefined, { enabled: false });
@@ -82,7 +82,7 @@ describe('label budget', () => {
 describe('draw calls', () => {
   it('the view for gen-1000 uses fewer than 60 draw calls', async () => {
     const { buildSceneObjects, countDrawCalls } = await import('../../src/render/build');
-    const model = buildModel(parse(fixture('gen-1000.arch')));
+    const model = buildModel(parse(fixture('gen-1000.arch3d')));
     const scene = lift(model, await layout(model));
     const objects = buildSceneObjects(scene, undefined, model);
     const n = countDrawCalls(objects.root);
