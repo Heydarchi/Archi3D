@@ -4,13 +4,15 @@
 
 <h1 align="center">Archi3D</h1>
 
-<p align="center">Software architecture as a 3D view you can orbit, zoom into and click through.</p>
+<p align="center">See your software architecture in 3D.</p>
 
-Archi3D turns a short text description of a software system — its components, their interfaces
-(ports) and the links between them — into a 3D view you can orbit, zoom into and click through.
-Containers are stacked as levels, so the nesting is visible at a glance.
+You describe your system in a small text file: components, their ports and the links between
+them. Archi3D shows it in 3D. Containers are drawn as levels on top of each other, so you can see
+the nesting. You can rotate, zoom in and click on things.
 
-![The AOSP camera stack, rendered by Archi3D](examples/07-aosp-camera.png)
+![AOSP camera stack in Archi3D](examples/07-aosp-camera.png)
+
+A model looks like this:
 
 ```
 system Shop {
@@ -25,51 +27,51 @@ Orders.db  -> OrderDB.db
 Orders.pay -> Payments.charge : HTTPS
 ```
 
-## What you can do
+## Features
 
-- **Edit and explore** in the browser app: live 3D view, errors underlined as you type,
-  click to select, double-click to fly in, semantic zoom for large models.
-- **Import** Mermaid `architecture-beta` and D2 files.
-- **Share** a model as one offline HTML file (`npm run export`).
-- **Render PNGs** from the command line (`npm run render -- model.arch3d`).
-- **Preview in VS Code** with the extension in [`vscode/`](vscode).
+- Edit the model in the browser and see the 3D view update while you type. Errors are underlined.
+- Click to select, double click to fly in. Big models close their containers when you zoom out.
+- Import Mermaid `architecture-beta` and D2 files.
+- Export one HTML file that works offline (`npm run export`).
+- Render a PNG from the command line (`npm run render -- model.arch3d`).
+- VS Code extension with a live preview, in [`vscode/`](vscode).
 
-## Quick start
+## Getting started
 
-Node.js 20 or newer:
+You need Node.js 20 or newer.
 
 ```sh
 npm ci
-npm run dev                        # http://localhost:5173
-npm run dev -- my-system.arch3d      # edit your own file; Save writes it back
+npm run dev                          # open http://localhost:5173
+npm run dev -- my-system.arch3d      # open your own file, Save writes it back
 ```
 
 ## VS Code extension
 
-**Archi3D for VS Code** (version 0.1.0) shows a live 3D preview beside your `.arch3d` file,
-marks errors as you type, and exports PNG or a single offline HTML file. Get it from the VS Code
-Marketplace (search "Archi3D"), or download the `.vsix` from
-[Releases](https://github.com/Heydarchi/Archi3D/releases) and install it with
-`code --install-extension archi3d-0.1.0.vsix`. Details: [vscode/README.md](vscode/README.md).
+The extension (version 0.1.0) shows the 3D preview next to your `.arch3d` file, shows the errors
+while you type and can save the view as PNG or as an offline HTML file. Install it from the
+Marketplace (search for "Archi3D") or take the `.vsix` from
+[Releases](https://github.com/Heydarchi/Archi3D/releases):
+`code --install-extension archi3d-0.1.0.vsix`. More in [vscode/README.md](vscode/README.md).
 
-## Documentation
+## Docs
 
-- [User guide](docs/USER_GUIDE.md) — the app, the `.arch3d` language, examples (incl. an Android app
-  and the AOSP camera stack), import, export, every script, WSL, VS Code.
-- [Deployment](docs/DEPLOY.md) — hosting it on a web domain.
+- [User guide](docs/USER_GUIDE.md): how to use the app, the language, examples (also an Android
+  app and the AOSP camera stack), import/export, all scripts, WSL and VS Code.
+- [Deployment](docs/DEPLOY.md): put it on your own domain.
 - [Grammar](docs/GRAMMAR.md) and [architecture](docs/ARCHITECTURE.md).
-- [Build plan](docs/PLAN.md) — how it was built, step by step.
-- Contributing (people and agents): [AGENTS.md](AGENTS.md) and [CLAUDE.md](CLAUDE.md).
+- [Build plan](docs/PLAN.md): the steps I followed to build it.
+- Rules for contributors and AI agents: [AGENTS.md](AGENTS.md) and [CLAUDE.md](CLAUDE.md).
 
 ## Tests
 
 ```sh
 npm test                               # unit tests
-npm run lint                           # ESLint + TypeScript
-PW_CHANNEL=chrome npm run test:visual  # screenshot tests (installed Chrome)
+npm run lint                           # ESLint and TypeScript
+PW_CHANNEL=chrome npm run test:visual  # screenshot tests with your installed Chrome
 ```
 
 ## License
 
-[MIT](LICENSE). Bundled libraries keep their own licences (MIT, EPL-2.0 for ELK,
-MPL-2.0 for D2, SIL OFL-1.1 for the Inter font).
+[MIT](LICENSE). The bundled libraries have their own licenses (MIT, EPL-2.0 for ELK, MPL-2.0 for
+D2, SIL OFL-1.1 for the Inter font). See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
