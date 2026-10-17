@@ -232,7 +232,7 @@ export async function renderIcons(outDir) {
 }
 
 /** The extension's icon. */
-export const EXTENSION_ICON = 'bridge';
+export const EXTENSION_ICON = 'float-arc-light';
 
 if (process.argv[1] && import.meta.url.endsWith(process.argv[1].split('/').pop())) {
   if (process.argv.includes('--extension')) {
