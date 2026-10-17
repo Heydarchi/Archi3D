@@ -1,0 +1,39 @@
+# Northwind Shop — the same system as fixtures/northwind.arch
+Customer: {shape: person}
+Northwind: {
+  Storefront: {
+    WebApp
+    BFF
+  }
+  Identity: {
+    AuthService
+    UserDB: {shape: cylinder}
+  }
+  Ordering: {
+    OrderAPI
+    OrderDB: {shape: cylinder}
+    Fulfilment
+  }
+  Catalog: {
+    CatalogAPI
+    ProductDB: {shape: cylinder}
+    SearchIndex
+  }
+  EventBus: {shape: queue}
+}
+PaymentGateway
+Carrier
+
+Customer -> Northwind.Storefront.WebApp
+Northwind.Storefront.WebApp -> Northwind.Storefront.BFF: REST
+Northwind.Storefront.BFF -> Northwind.Identity.AuthService
+Northwind.Identity.AuthService -> Northwind.Identity.UserDB
+Northwind.Storefront.BFF -> Northwind.Ordering.OrderAPI: REST
+Northwind.Storefront.BFF -> Northwind.Catalog.CatalogAPI: gRPC
+Northwind.Ordering.OrderAPI -> Northwind.Ordering.OrderDB
+Northwind.Ordering.OrderAPI -> Northwind.EventBus: OrderPlaced {style.stroke-dash: 3}
+Northwind.Ordering.OrderAPI -> PaymentGateway
+Northwind.EventBus -> Northwind.Ordering.Fulfilment {style.stroke-dash: 3}
+Northwind.Ordering.Fulfilment -> Carrier
+Northwind.Catalog.CatalogAPI -> Northwind.Catalog.ProductDB
+Northwind.Catalog.CatalogAPI -> Northwind.Catalog.SearchIndex

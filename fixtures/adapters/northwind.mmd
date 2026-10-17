@@ -1,0 +1,38 @@
+architecture-beta
+    %% Northwind Shop — the same system as fixtures/northwind.arch
+    service Customer(internet)[Customer]
+
+    group Northwind(cloud)[Northwind]
+    group Storefront(cloud)[Storefront] in Northwind
+    group Identity(cloud)[Identity] in Northwind
+    group Ordering(cloud)[Ordering] in Northwind
+    group Catalog(cloud)[Catalog] in Northwind
+
+    service WebApp(internet)[Web app] in Storefront
+    service BFF(server)[BFF] in Storefront
+    service AuthService(server)[Auth service] in Identity
+    service UserDB(database)[Users] in Identity
+    service OrderAPI(server)[Order API] in Ordering
+    service OrderDB(database)[Orders] in Ordering
+    service Fulfilment(server)[Fulfilment] in Ordering
+    service CatalogAPI(server)[Catalog API] in Catalog
+    service ProductDB(database)[Products] in Catalog
+    service SearchIndex(disk)[Search index] in Catalog
+    service EventBus(server)[Event bus] in Northwind
+
+    service PaymentGateway(internet)[Payment gateway]
+    service Carrier(internet)[Carrier]
+
+    Customer:R --> L:WebApp
+    WebApp:R --> L:BFF
+    BFF:R --> L:AuthService
+    AuthService:R --> L:UserDB
+    BFF:R --> L:OrderAPI
+    BFF:B --> T:CatalogAPI
+    OrderAPI:R --> L:OrderDB
+    OrderAPI:B --> T:EventBus
+    OrderAPI:R --> L:PaymentGateway
+    EventBus:R --> L:Fulfilment
+    Fulfilment:R --> L:Carrier
+    CatalogAPI:R --> L:ProductDB
+    CatalogAPI:B --> T:SearchIndex
