@@ -1,0 +1,1381 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`valid fixtures > container-links.arch model snapshot 1`] = `
+{
+  "diagnostics": [],
+  "edges": [
+    {
+      "async": false,
+      "from": {
+        "node": "Frontend",
+      },
+      "id": "e0",
+      "label": "REST",
+      "lca": null,
+      "to": {
+        "node": "Backend",
+      },
+    },
+    {
+      "async": false,
+      "from": {
+        "node": "Core",
+        "port": "Core._out",
+      },
+      "id": "e1",
+      "lca": "Backend",
+      "to": {
+        "node": "Main",
+        "port": "Main._in",
+      },
+    },
+    {
+      "async": false,
+      "from": {
+        "node": "Core",
+        "port": "Core._out",
+      },
+      "id": "e2",
+      "label": "push",
+      "lca": null,
+      "to": {
+        "node": "App",
+        "port": "App._in",
+      },
+    },
+  ],
+  "nodes": {
+    "App": {
+      "children": [],
+      "container": false,
+      "depth": 1,
+      "id": "App",
+      "kind": "ui",
+      "loc": {
+        "col": 6,
+        "endCol": 9,
+        "line": 3,
+      },
+      "parent": "Frontend",
+      "ports": [
+        {
+          "dir": "in",
+          "id": "App._in",
+          "implicit": true,
+          "name": "_in",
+        },
+      ],
+      "shape": "box",
+    },
+    "Backend": {
+      "children": [
+        "Core",
+        "Main",
+      ],
+      "container": true,
+      "depth": 0,
+      "id": "Backend",
+      "kind": "container",
+      "loc": {
+        "col": 11,
+        "endCol": 18,
+        "line": 5,
+      },
+      "parent": null,
+      "ports": [],
+      "shape": "box",
+    },
+    "Core": {
+      "children": [],
+      "container": false,
+      "depth": 1,
+      "id": "Core",
+      "kind": "service",
+      "loc": {
+        "col": 11,
+        "endCol": 15,
+        "line": 6,
+      },
+      "parent": "Backend",
+      "ports": [
+        {
+          "dir": "out",
+          "id": "Core._out",
+          "implicit": true,
+          "name": "_out",
+        },
+      ],
+      "shape": "box",
+    },
+    "Frontend": {
+      "children": [
+        "App",
+      ],
+      "container": true,
+      "depth": 0,
+      "id": "Frontend",
+      "kind": "container",
+      "loc": {
+        "col": 11,
+        "endCol": 19,
+        "line": 2,
+      },
+      "parent": null,
+      "ports": [],
+      "shape": "box",
+    },
+    "Main": {
+      "children": [],
+      "container": false,
+      "depth": 1,
+      "id": "Main",
+      "kind": "database",
+      "loc": {
+        "col": 12,
+        "endCol": 16,
+        "line": 7,
+      },
+      "parent": "Backend",
+      "ports": [
+        {
+          "dir": "in",
+          "id": "Main._in",
+          "implicit": true,
+          "name": "_in",
+        },
+      ],
+      "shape": "db",
+    },
+  },
+  "roots": [
+    "Frontend",
+    "Backend",
+  ],
+}
+`;
+
+exports[`valid fixtures > nested-deep.arch model snapshot 1`] = `
+{
+  "diagnostics": [],
+  "edges": [
+    {
+      "async": false,
+      "from": {
+        "node": "Merchant",
+        "port": "Merchant.charge",
+      },
+      "id": "e0",
+      "lca": null,
+      "to": {
+        "node": "Invoicer",
+        "port": "Invoicer.bill",
+      },
+    },
+    {
+      "async": false,
+      "from": {
+        "node": "Invoicer",
+        "port": "Invoicer.ledger",
+      },
+      "id": "e1",
+      "lca": "Billing",
+      "to": {
+        "node": "Ledger",
+        "port": "Ledger.post",
+      },
+    },
+    {
+      "async": true,
+      "from": {
+        "node": "Invoicer",
+        "port": "Invoicer.notify",
+      },
+      "id": "e2",
+      "label": "InvoiceIssued",
+      "lca": "Platform",
+      "to": {
+        "node": "Bus",
+        "port": "Bus.publish",
+      },
+    },
+    {
+      "async": true,
+      "from": {
+        "node": "Bus",
+        "port": "Bus.deliver",
+      },
+      "id": "e3",
+      "lca": "Messaging",
+      "to": {
+        "node": "Mailer",
+        "port": "Mailer.send",
+      },
+    },
+    {
+      "async": false,
+      "from": {
+        "node": "Invoicer",
+        "port": "Invoicer.ledger",
+      },
+      "id": "e4",
+      "label": "check",
+      "lca": "Payments",
+      "to": {
+        "node": "Scorer",
+        "port": "Scorer.score",
+      },
+    },
+  ],
+  "nodes": {
+    "Billing": {
+      "children": [
+        "Invoicer",
+        "Ledger",
+      ],
+      "container": true,
+      "depth": 2,
+      "id": "Billing",
+      "kind": "container",
+      "loc": {
+        "col": 15,
+        "endCol": 22,
+        "line": 4,
+      },
+      "parent": "Payments",
+      "ports": [],
+      "shape": "box",
+    },
+    "Bus": {
+      "children": [],
+      "container": false,
+      "depth": 2,
+      "id": "Bus",
+      "kind": "queue",
+      "loc": {
+        "col": 11,
+        "endCol": 14,
+        "line": 13,
+      },
+      "parent": "Messaging",
+      "ports": [
+        {
+          "dir": "in",
+          "id": "Bus.publish",
+          "implicit": false,
+          "name": "publish",
+        },
+        {
+          "dir": "out",
+          "id": "Bus.deliver",
+          "implicit": false,
+          "name": "deliver",
+        },
+      ],
+      "shape": "queue",
+    },
+    "Invoicer": {
+      "children": [],
+      "container": false,
+      "depth": 3,
+      "id": "Invoicer",
+      "kind": "component",
+      "loc": {
+        "col": 17,
+        "endCol": 25,
+        "line": 5,
+      },
+      "parent": "Billing",
+      "ports": [
+        {
+          "dir": "in",
+          "id": "Invoicer.bill",
+          "implicit": false,
+          "name": "bill",
+        },
+        {
+          "dir": "out",
+          "id": "Invoicer.ledger",
+          "implicit": false,
+          "name": "ledger",
+        },
+        {
+          "dir": "out",
+          "id": "Invoicer.notify",
+          "implicit": false,
+          "name": "notify",
+        },
+      ],
+      "shape": "box",
+    },
+    "Ledger": {
+      "children": [],
+      "container": false,
+      "depth": 3,
+      "id": "Ledger",
+      "kind": "component",
+      "loc": {
+        "col": 17,
+        "endCol": 23,
+        "line": 6,
+      },
+      "parent": "Billing",
+      "ports": [
+        {
+          "dir": "in",
+          "id": "Ledger.post",
+          "implicit": false,
+          "name": "post",
+        },
+      ],
+      "shape": "box",
+    },
+    "Mailer": {
+      "children": [],
+      "container": false,
+      "depth": 2,
+      "id": "Mailer",
+      "kind": "component",
+      "loc": {
+        "col": 15,
+        "endCol": 21,
+        "line": 14,
+      },
+      "parent": "Messaging",
+      "ports": [
+        {
+          "dir": "in",
+          "id": "Mailer.send",
+          "implicit": false,
+          "name": "send",
+        },
+      ],
+      "shape": "box",
+    },
+    "Merchant": {
+      "children": [],
+      "container": false,
+      "depth": 0,
+      "id": "Merchant",
+      "kind": "external",
+      "loc": {
+        "col": 10,
+        "endCol": 18,
+        "line": 17,
+      },
+      "parent": null,
+      "ports": [
+        {
+          "dir": "out",
+          "id": "Merchant.charge",
+          "implicit": false,
+          "name": "charge",
+        },
+      ],
+      "shape": "ext",
+    },
+    "Messaging": {
+      "children": [
+        "Bus",
+        "Mailer",
+      ],
+      "container": true,
+      "depth": 1,
+      "id": "Messaging",
+      "kind": "domain",
+      "loc": {
+        "col": 10,
+        "endCol": 19,
+        "line": 12,
+      },
+      "parent": "Platform",
+      "ports": [],
+      "shape": "box",
+    },
+    "Payments": {
+      "children": [
+        "Billing",
+        "Risk",
+      ],
+      "container": true,
+      "depth": 1,
+      "id": "Payments",
+      "kind": "domain",
+      "loc": {
+        "col": 10,
+        "endCol": 18,
+        "line": 3,
+      },
+      "parent": "Platform",
+      "ports": [],
+      "shape": "box",
+    },
+    "Platform": {
+      "children": [
+        "Payments",
+        "Messaging",
+      ],
+      "container": true,
+      "depth": 0,
+      "id": "Platform",
+      "kind": "system",
+      "loc": {
+        "col": 8,
+        "endCol": 16,
+        "line": 2,
+      },
+      "parent": null,
+      "ports": [],
+      "shape": "box",
+    },
+    "Risk": {
+      "children": [
+        "Scorer",
+      ],
+      "container": true,
+      "depth": 2,
+      "id": "Risk",
+      "kind": "container",
+      "loc": {
+        "col": 15,
+        "endCol": 19,
+        "line": 8,
+      },
+      "parent": "Payments",
+      "ports": [],
+      "shape": "box",
+    },
+    "Scorer": {
+      "children": [],
+      "container": false,
+      "depth": 3,
+      "id": "Scorer",
+      "kind": "component",
+      "loc": {
+        "col": 17,
+        "endCol": 23,
+        "line": 9,
+      },
+      "parent": "Risk",
+      "ports": [
+        {
+          "dir": "in",
+          "id": "Scorer.score",
+          "implicit": false,
+          "name": "score",
+        },
+      ],
+      "shape": "box",
+    },
+  },
+  "roots": [
+    "Platform",
+    "Merchant",
+  ],
+}
+`;
+
+exports[`valid fixtures > northwind.arch model snapshot 1`] = `
+{
+  "diagnostics": [],
+  "edges": [
+    {
+      "async": false,
+      "from": {
+        "node": "Customer",
+        "port": "Customer.browse",
+      },
+      "id": "e0",
+      "lca": null,
+      "to": {
+        "node": "WebApp",
+        "port": "WebApp.browse",
+      },
+    },
+    {
+      "async": false,
+      "from": {
+        "node": "WebApp",
+        "port": "WebApp.api",
+      },
+      "id": "e1",
+      "label": "REST",
+      "lca": "Storefront",
+      "to": {
+        "node": "BFF",
+        "port": "BFF.api",
+      },
+    },
+    {
+      "async": false,
+      "from": {
+        "node": "BFF",
+        "port": "BFF.login",
+      },
+      "id": "e2",
+      "lca": "Northwind",
+      "to": {
+        "node": "AuthService",
+        "port": "AuthService.login",
+      },
+    },
+    {
+      "async": false,
+      "from": {
+        "node": "AuthService",
+        "port": "AuthService.users",
+      },
+      "id": "e3",
+      "lca": "Identity",
+      "to": {
+        "node": "UserDB",
+        "port": "UserDB.users",
+      },
+    },
+    {
+      "async": false,
+      "from": {
+        "node": "BFF",
+        "port": "BFF.orders",
+      },
+      "id": "e4",
+      "label": "REST",
+      "lca": "Northwind",
+      "to": {
+        "node": "OrderAPI",
+        "port": "OrderAPI.orders",
+      },
+    },
+    {
+      "async": false,
+      "from": {
+        "node": "BFF",
+        "port": "BFF.catalog",
+      },
+      "id": "e5",
+      "label": "gRPC",
+      "lca": "Northwind",
+      "to": {
+        "node": "CatalogAPI",
+        "port": "CatalogAPI.catalog",
+      },
+    },
+    {
+      "async": false,
+      "from": {
+        "node": "OrderAPI",
+        "port": "OrderAPI.db",
+      },
+      "id": "e6",
+      "lca": "Ordering",
+      "to": {
+        "node": "OrderDB",
+        "port": "OrderDB.db",
+      },
+    },
+    {
+      "async": true,
+      "from": {
+        "node": "OrderAPI",
+        "port": "OrderAPI.events",
+      },
+      "id": "e7",
+      "label": "OrderPlaced",
+      "lca": "Northwind",
+      "to": {
+        "node": "EventBus",
+        "port": "EventBus.publish",
+      },
+    },
+    {
+      "async": false,
+      "from": {
+        "node": "OrderAPI",
+        "port": "OrderAPI.pay",
+      },
+      "id": "e8",
+      "lca": null,
+      "to": {
+        "node": "PaymentGateway",
+        "port": "PaymentGateway.charge",
+      },
+    },
+    {
+      "async": true,
+      "from": {
+        "node": "EventBus",
+        "port": "EventBus.work",
+      },
+      "id": "e9",
+      "lca": "Northwind",
+      "to": {
+        "node": "Fulfilment",
+        "port": "Fulfilment.work",
+      },
+    },
+    {
+      "async": false,
+      "from": {
+        "node": "Fulfilment",
+        "port": "Fulfilment.ship",
+      },
+      "id": "e10",
+      "lca": null,
+      "to": {
+        "node": "Carrier",
+        "port": "Carrier.label",
+      },
+    },
+    {
+      "async": false,
+      "from": {
+        "node": "CatalogAPI",
+        "port": "CatalogAPI.db",
+      },
+      "id": "e11",
+      "lca": "Catalog",
+      "to": {
+        "node": "ProductDB",
+        "port": "ProductDB.db",
+      },
+    },
+    {
+      "async": false,
+      "from": {
+        "node": "CatalogAPI",
+        "port": "CatalogAPI.search",
+      },
+      "id": "e12",
+      "lca": "Catalog",
+      "to": {
+        "node": "SearchIndex",
+        "port": "SearchIndex.query",
+      },
+    },
+  ],
+  "nodes": {
+    "AuthService": {
+      "children": [],
+      "container": false,
+      "depth": 2,
+      "id": "AuthService",
+      "kind": "component",
+      "loc": {
+        "col": 15,
+        "endCol": 26,
+        "line": 11,
+      },
+      "parent": "Identity",
+      "ports": [
+        {
+          "dir": "in",
+          "id": "AuthService.login",
+          "implicit": false,
+          "name": "login",
+        },
+        {
+          "dir": "out",
+          "id": "AuthService.users",
+          "implicit": false,
+          "name": "users",
+        },
+      ],
+      "shape": "box",
+    },
+    "BFF": {
+      "children": [],
+      "container": false,
+      "depth": 2,
+      "id": "BFF",
+      "kind": "component",
+      "loc": {
+        "col": 15,
+        "endCol": 18,
+        "line": 8,
+      },
+      "parent": "Storefront",
+      "ports": [
+        {
+          "dir": "in",
+          "id": "BFF.api",
+          "implicit": false,
+          "name": "api",
+        },
+        {
+          "dir": "out",
+          "id": "BFF.orders",
+          "implicit": false,
+          "name": "orders",
+        },
+        {
+          "dir": "out",
+          "id": "BFF.catalog",
+          "implicit": false,
+          "name": "catalog",
+        },
+        {
+          "dir": "out",
+          "id": "BFF.login",
+          "implicit": false,
+          "name": "login",
+        },
+      ],
+      "shape": "box",
+    },
+    "Carrier": {
+      "children": [],
+      "container": false,
+      "depth": 0,
+      "id": "Carrier",
+      "kind": "external",
+      "loc": {
+        "col": 10,
+        "endCol": 17,
+        "line": 27,
+      },
+      "parent": null,
+      "ports": [
+        {
+          "dir": "in",
+          "id": "Carrier.label",
+          "implicit": false,
+          "name": "label",
+        },
+      ],
+      "shape": "ext",
+    },
+    "Catalog": {
+      "children": [
+        "CatalogAPI",
+        "ProductDB",
+        "SearchIndex",
+      ],
+      "container": true,
+      "depth": 1,
+      "id": "Catalog",
+      "kind": "container",
+      "loc": {
+        "col": 13,
+        "endCol": 20,
+        "line": 19,
+      },
+      "parent": "Northwind",
+      "ports": [],
+      "shape": "box",
+    },
+    "CatalogAPI": {
+      "children": [],
+      "container": false,
+      "depth": 2,
+      "id": "CatalogAPI",
+      "kind": "component",
+      "loc": {
+        "col": 15,
+        "endCol": 25,
+        "line": 20,
+      },
+      "parent": "Catalog",
+      "ports": [
+        {
+          "dir": "in",
+          "id": "CatalogAPI.catalog",
+          "implicit": false,
+          "name": "catalog",
+        },
+        {
+          "dir": "out",
+          "id": "CatalogAPI.db",
+          "implicit": false,
+          "name": "db",
+        },
+        {
+          "dir": "out",
+          "id": "CatalogAPI.search",
+          "implicit": false,
+          "name": "search",
+        },
+      ],
+      "shape": "box",
+    },
+    "Customer": {
+      "children": [],
+      "container": false,
+      "depth": 0,
+      "id": "Customer",
+      "kind": "external",
+      "loc": {
+        "col": 10,
+        "endCol": 18,
+        "line": 4,
+      },
+      "parent": null,
+      "ports": [
+        {
+          "dir": "out",
+          "id": "Customer.browse",
+          "implicit": false,
+          "name": "browse",
+        },
+      ],
+      "shape": "ext",
+    },
+    "EventBus": {
+      "children": [],
+      "container": false,
+      "depth": 1,
+      "id": "EventBus",
+      "kind": "queue",
+      "loc": {
+        "col": 9,
+        "endCol": 17,
+        "line": 24,
+      },
+      "parent": "Northwind",
+      "ports": [
+        {
+          "dir": "in",
+          "id": "EventBus.publish",
+          "implicit": false,
+          "name": "publish",
+        },
+        {
+          "dir": "out",
+          "id": "EventBus.work",
+          "implicit": false,
+          "name": "work",
+        },
+      ],
+      "shape": "queue",
+    },
+    "Fulfilment": {
+      "children": [],
+      "container": false,
+      "depth": 2,
+      "id": "Fulfilment",
+      "kind": "component",
+      "loc": {
+        "col": 15,
+        "endCol": 25,
+        "line": 17,
+      },
+      "parent": "Ordering",
+      "ports": [
+        {
+          "dir": "in",
+          "id": "Fulfilment.work",
+          "implicit": false,
+          "name": "work",
+        },
+        {
+          "dir": "out",
+          "id": "Fulfilment.ship",
+          "implicit": false,
+          "name": "ship",
+        },
+      ],
+      "shape": "box",
+    },
+    "Identity": {
+      "children": [
+        "AuthService",
+        "UserDB",
+      ],
+      "container": true,
+      "depth": 1,
+      "id": "Identity",
+      "kind": "container",
+      "loc": {
+        "col": 13,
+        "endCol": 21,
+        "line": 10,
+      },
+      "parent": "Northwind",
+      "ports": [],
+      "shape": "box",
+    },
+    "Northwind": {
+      "children": [
+        "Storefront",
+        "Identity",
+        "Ordering",
+        "Catalog",
+        "EventBus",
+      ],
+      "container": true,
+      "depth": 0,
+      "id": "Northwind",
+      "kind": "system",
+      "loc": {
+        "col": 8,
+        "endCol": 17,
+        "line": 5,
+      },
+      "parent": null,
+      "ports": [],
+      "shape": "box",
+    },
+    "OrderAPI": {
+      "children": [],
+      "container": false,
+      "depth": 2,
+      "id": "OrderAPI",
+      "kind": "component",
+      "loc": {
+        "col": 15,
+        "endCol": 23,
+        "line": 15,
+      },
+      "parent": "Ordering",
+      "ports": [
+        {
+          "dir": "in",
+          "id": "OrderAPI.orders",
+          "implicit": false,
+          "name": "orders",
+        },
+        {
+          "dir": "out",
+          "id": "OrderAPI.db",
+          "implicit": false,
+          "name": "db",
+        },
+        {
+          "dir": "out",
+          "id": "OrderAPI.events",
+          "implicit": false,
+          "name": "events",
+        },
+        {
+          "dir": "out",
+          "id": "OrderAPI.pay",
+          "implicit": false,
+          "name": "pay",
+        },
+      ],
+      "shape": "box",
+    },
+    "OrderDB": {
+      "children": [],
+      "container": false,
+      "depth": 2,
+      "id": "OrderDB",
+      "kind": "database",
+      "loc": {
+        "col": 14,
+        "endCol": 21,
+        "line": 16,
+      },
+      "parent": "Ordering",
+      "ports": [
+        {
+          "dir": "in",
+          "id": "OrderDB.db",
+          "implicit": false,
+          "name": "db",
+        },
+      ],
+      "shape": "db",
+    },
+    "Ordering": {
+      "children": [
+        "OrderAPI",
+        "OrderDB",
+        "Fulfilment",
+      ],
+      "container": true,
+      "depth": 1,
+      "id": "Ordering",
+      "kind": "container",
+      "loc": {
+        "col": 13,
+        "endCol": 21,
+        "line": 14,
+      },
+      "parent": "Northwind",
+      "ports": [],
+      "shape": "box",
+    },
+    "PaymentGateway": {
+      "children": [],
+      "container": false,
+      "depth": 0,
+      "id": "PaymentGateway",
+      "kind": "external",
+      "loc": {
+        "col": 10,
+        "endCol": 24,
+        "line": 26,
+      },
+      "parent": null,
+      "ports": [
+        {
+          "dir": "in",
+          "id": "PaymentGateway.charge",
+          "implicit": false,
+          "name": "charge",
+        },
+      ],
+      "shape": "ext",
+    },
+    "ProductDB": {
+      "children": [],
+      "container": false,
+      "depth": 2,
+      "id": "ProductDB",
+      "kind": "database",
+      "loc": {
+        "col": 14,
+        "endCol": 23,
+        "line": 21,
+      },
+      "parent": "Catalog",
+      "ports": [
+        {
+          "dir": "in",
+          "id": "ProductDB.db",
+          "implicit": false,
+          "name": "db",
+        },
+      ],
+      "shape": "db",
+    },
+    "SearchIndex": {
+      "children": [],
+      "container": false,
+      "depth": 2,
+      "id": "SearchIndex",
+      "kind": "component",
+      "loc": {
+        "col": 15,
+        "endCol": 26,
+        "line": 22,
+      },
+      "parent": "Catalog",
+      "ports": [
+        {
+          "dir": "in",
+          "id": "SearchIndex.query",
+          "implicit": false,
+          "name": "query",
+        },
+      ],
+      "shape": "box",
+    },
+    "Storefront": {
+      "children": [
+        "WebApp",
+        "BFF",
+      ],
+      "container": true,
+      "depth": 1,
+      "id": "Storefront",
+      "kind": "container",
+      "loc": {
+        "col": 13,
+        "endCol": 23,
+        "line": 6,
+      },
+      "parent": "Northwind",
+      "ports": [],
+      "shape": "box",
+    },
+    "UserDB": {
+      "children": [],
+      "container": false,
+      "depth": 2,
+      "id": "UserDB",
+      "kind": "database",
+      "loc": {
+        "col": 14,
+        "endCol": 20,
+        "line": 12,
+      },
+      "parent": "Identity",
+      "ports": [
+        {
+          "dir": "in",
+          "id": "UserDB.users",
+          "implicit": false,
+          "name": "users",
+        },
+      ],
+      "shape": "db",
+    },
+    "WebApp": {
+      "children": [],
+      "container": false,
+      "depth": 2,
+      "id": "WebApp",
+      "kind": "ui",
+      "loc": {
+        "col": 8,
+        "endCol": 14,
+        "line": 7,
+      },
+      "parent": "Storefront",
+      "ports": [
+        {
+          "dir": "in",
+          "id": "WebApp.browse",
+          "implicit": false,
+          "name": "browse",
+        },
+        {
+          "dir": "out",
+          "id": "WebApp.api",
+          "implicit": false,
+          "name": "api",
+        },
+      ],
+      "shape": "box",
+    },
+  },
+  "roots": [
+    "Customer",
+    "Northwind",
+    "PaymentGateway",
+    "Carrier",
+  ],
+}
+`;
+
+exports[`valid fixtures > tiny.arch model snapshot 1`] = `
+{
+  "diagnostics": [],
+  "edges": [
+    {
+      "async": false,
+      "from": {
+        "node": "Web",
+        "port": "Web.api",
+      },
+      "id": "e0",
+      "label": "HTTPS",
+      "lca": null,
+      "to": {
+        "node": "Api",
+        "port": "Api.api",
+      },
+    },
+    {
+      "async": false,
+      "from": {
+        "node": "Api",
+        "port": "Api.db",
+      },
+      "id": "e1",
+      "lca": null,
+      "to": {
+        "node": "Store",
+        "port": "Store.db",
+      },
+    },
+  ],
+  "nodes": {
+    "Api": {
+      "children": [],
+      "container": false,
+      "depth": 0,
+      "id": "Api",
+      "kind": "service",
+      "loc": {
+        "col": 9,
+        "endCol": 12,
+        "line": 3,
+      },
+      "parent": null,
+      "ports": [
+        {
+          "dir": "in",
+          "id": "Api.api",
+          "implicit": false,
+          "name": "api",
+        },
+        {
+          "dir": "out",
+          "id": "Api.db",
+          "implicit": false,
+          "name": "db",
+        },
+      ],
+      "shape": "box",
+    },
+    "Store": {
+      "children": [],
+      "container": false,
+      "depth": 0,
+      "id": "Store",
+      "kind": "database",
+      "loc": {
+        "col": 10,
+        "endCol": 15,
+        "line": 4,
+      },
+      "parent": null,
+      "ports": [
+        {
+          "dir": "in",
+          "id": "Store.db",
+          "implicit": false,
+          "name": "db",
+        },
+      ],
+      "shape": "db",
+    },
+    "Web": {
+      "children": [],
+      "container": false,
+      "depth": 0,
+      "id": "Web",
+      "kind": "ui",
+      "loc": {
+        "col": 4,
+        "endCol": 7,
+        "line": 2,
+      },
+      "parent": null,
+      "ports": [
+        {
+          "dir": "out",
+          "id": "Web.api",
+          "implicit": false,
+          "name": "api",
+        },
+      ],
+      "shape": "box",
+    },
+  },
+  "roots": [
+    "Web",
+    "Api",
+    "Store",
+  ],
+}
+`;
+
+exports[`valid fixtures > typed-ports.arch model snapshot 1`] = `
+{
+  "diagnostics": [
+    {
+      "code": "W201",
+      "loc": {
+        "col": 1,
+        "endCol": 31,
+        "line": 7,
+      },
+      "message": "Interface types differ: Gateway.search is gRPC, Search.query is GraphQL.",
+      "severity": "warning",
+    },
+  ],
+  "edges": [
+    {
+      "async": false,
+      "from": {
+        "node": "Gateway",
+        "port": "Gateway.orders",
+      },
+      "id": "e0",
+      "lca": null,
+      "to": {
+        "node": "Orders",
+        "port": "Orders.orders",
+      },
+    },
+    {
+      "async": false,
+      "from": {
+        "node": "Gateway",
+        "port": "Gateway.search",
+      },
+      "id": "e1",
+      "lca": null,
+      "to": {
+        "node": "Search",
+        "port": "Search.query",
+      },
+    },
+  ],
+  "nodes": {
+    "Gateway": {
+      "children": [],
+      "container": false,
+      "depth": 0,
+      "id": "Gateway",
+      "kind": "service",
+      "loc": {
+        "col": 9,
+        "endCol": 16,
+        "line": 2,
+      },
+      "parent": null,
+      "ports": [
+        {
+          "dir": "out",
+          "id": "Gateway.orders",
+          "iface": "REST",
+          "implicit": false,
+          "name": "orders",
+        },
+        {
+          "dir": "out",
+          "id": "Gateway.search",
+          "iface": "gRPC",
+          "implicit": false,
+          "name": "search",
+        },
+      ],
+      "shape": "box",
+    },
+    "Orders": {
+      "children": [],
+      "container": false,
+      "depth": 0,
+      "id": "Orders",
+      "kind": "service",
+      "loc": {
+        "col": 9,
+        "endCol": 15,
+        "line": 3,
+      },
+      "parent": null,
+      "ports": [
+        {
+          "dir": "in",
+          "id": "Orders.orders",
+          "iface": "REST",
+          "implicit": false,
+          "name": "orders",
+        },
+      ],
+      "shape": "box",
+    },
+    "Search": {
+      "children": [],
+      "container": false,
+      "depth": 0,
+      "id": "Search",
+      "kind": "service",
+      "loc": {
+        "col": 9,
+        "endCol": 15,
+        "line": 4,
+      },
+      "parent": null,
+      "ports": [
+        {
+          "dir": "in",
+          "id": "Search.query",
+          "iface": "GraphQL",
+          "implicit": false,
+          "name": "query",
+        },
+      ],
+      "shape": "box",
+    },
+  },
+  "roots": [
+    "Gateway",
+    "Orders",
+    "Search",
+  ],
+}
+`;
