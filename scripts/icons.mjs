@@ -1,6 +1,7 @@
 // Draws Archi3D icon candidates as SVG (isometric, the app's colours) and renders them to PNG.
 //   node scripts/icons.mjs [outDir]          → <outDir>/icon-<n>.svg/.png and sheet.png
 //   node scripts/icons.mjs --extension       → vscode/icon.png + vscode/icon.svg (EXTENSION_ICON)
+//   node scripts/icons.mjs --social          → docs/images/social-preview.png (GitHub link preview)
 import { copyFileSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { chromium } from '@playwright/test';
@@ -235,7 +236,26 @@ export async function renderIcons(outDir) {
 export const EXTENSION_ICON = 'float-arc-light';
 
 if (process.argv[1] && import.meta.url.endsWith(process.argv[1].split('/').pop())) {
-  if (process.argv.includes('--extension')) {
+  if (process.argv.includes('--social')) {
+    // docs/images/social-preview.png: GitHub's link preview (1280×640), uploaded in the repo settings.
+    const browser = await chromium.launch({ channel: process.env.PW_CHANNEL || undefined });
+    const page = await browser.newPage({ viewport: { width: 1280, height: 640 }, deviceScaleFactor: 1 });
+    await page.setContent(`<html><body style="margin:0">${icons[EXTENSION_ICON]()}</body></html>`);
+    const svg = await page.evaluate(FIT);
+    await page.setContent(`<html><head><style>
+      body{margin:0;width:1280px;height:640px;display:flex;align-items:center;gap:56px;padding:0 96px;box-sizing:border-box;
+        background:linear-gradient(135deg,#f7f9fb 0%,#e3eaf1 100%);font-family:system-ui,-apple-system,'Segoe UI',sans-serif;color:#1f3a56}
+      .icon svg{width:340px;height:340px;filter:drop-shadow(0 12px 24px rgba(31,58,86,.18))}
+      h1{font-size:96px;margin:0 0 12px;letter-spacing:-2px} p{font-size:34px;margin:0 0 28px;color:#486581;line-height:1.3}
+      code{font:600 24px ui-monospace,Menlo,monospace;background:#1f3a56;color:#fff;padding:10px 16px;border-radius:10px}
+    </style></head><body><div class="icon">${svg}</div><div><h1>Archi3D</h1>
+      <p>Software architecture as a 3D view<br>you can orbit, zoom into and click through.</p>
+      <code>Orders.db -&gt; OrderDB.db</code></div></body></html>`);
+    mkdirSync(resolve('docs', 'images'), { recursive: true });
+    await page.screenshot({ path: resolve('docs', 'images', 'social-preview.png') });
+    await browser.close();
+    console.log('docs/images/social-preview.png');
+  } else if (process.argv.includes('--extension')) {
     // vscode/icon.png (+ icon.svg, the source) from the chosen design.
     const tmp = resolve('test-results', 'icon-build');
     process.env.ICONS = EXTENSION_ICON;
