@@ -5,7 +5,7 @@ input and output, so each can be tested alone and swapped without touching the
 others.
 
 ```
- .arch text ──► dsl/parse ──► model/build ──► layout/elk ──► scene/lift ──► render/three
+ .arch3d text ──► dsl/parse ──► model/build ──► layout/elk ──► scene/lift ──► render/three
    (string)     AstFile +     ArchModel       Layout2D       SceneSpec      WebGL view
                 Diagnostics                                                    ▲
  Mermaid / LikeC4 / D2 ──► adapters/* ──────┘ (produce ArchModel directly)     │
@@ -43,7 +43,7 @@ export interface Loc { line: number; col: number; endCol: number }
 export interface Diagnostic { code: string; severity: 'error' | 'warning'; message: string; loc: Loc }
 
 // ---------- dsl ----------
-export type PortSide = 'N' | 'E' | 'S' | 'W';           // set by adapters (Mermaid sides); unset in .arch
+export type PortSide = 'N' | 'E' | 'S' | 'W';           // set by adapters (Mermaid sides); unset in .arch3d
 export interface PortDecl { name: string; iface?: string; side?: PortSide; loc: Loc }
 export interface AstNode {
   type: 'node'; kind: string; name: string; container: boolean;
@@ -145,7 +145,7 @@ Colours come from one palette object so light and dark themes are a single swap.
 - `store.ts`: a tiny observable store `{ source, parsed, model, layout, scene, selection, settings }`.
   Setting `source` triggers parse → model synchronously and layout in the worker; the
   newest request wins (older results are dropped).
-- `editor.ts`: CodeMirror 6 with a small stream-language mode for `.arch`; diagnostics
+- `editor.ts`: CodeMirror 6 with a small stream-language mode for `.arch3d`; diagnostics
   shown with `@codemirror/lint`.
 - `worker.ts`: runs `layout()` off the main thread.
 - `testHooks.ts`: when the URL has `?test=1`, exposes `window.__archi`
@@ -164,7 +164,7 @@ Colours come from one palette object so light and dark themes are a single swap.
 archi3d/
   CLAUDE.md               rules for Claude Code
   docs/                   ARCHITECTURE.md, PLAN.md, GRAMMAR.md
-  fixtures/               *.arch test models, errors/ with expected.json
+  fixtures/               *.arch3d test models, errors/ with expected.json
   reference/              prototype from the research phase (read-only)
   src/core/               pure: dsl, model, layout, scene, lod, adapters, types.ts
   src/render/             three.js view

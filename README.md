@@ -25,7 +25,7 @@ Orders.pay -> Payments.charge : HTTPS
   click to select, double-click to fly in, semantic zoom for large models.
 - **Import** Mermaid `architecture-beta` and D2 files.
 - **Share** a model as one offline HTML file (`npm run export`).
-- **Render PNGs** from the command line (`npm run render -- model.arch`).
+- **Render PNGs** from the command line (`npm run render -- model.arch3d`).
 - **Preview in VS Code** with the extension in [`vscode/`](vscode).
 
 ## Quick start
@@ -35,12 +35,12 @@ Node.js 20 or newer:
 ```sh
 npm ci
 npm run dev                        # http://localhost:5173
-npm run dev -- my-system.arch      # edit your own file; Save writes it back
+npm run dev -- my-system.arch3d      # edit your own file; Save writes it back
 ```
 
 ## Documentation
 
-- [User guide](docs/USER_GUIDE.md) — the app, the `.arch` language, examples (incl. an Android app
+- [User guide](docs/USER_GUIDE.md) — the app, the `.arch3d` language, examples (incl. an Android app
   and the AOSP camera stack), import, export, every script, WSL, VS Code.
 - [Deployment](docs/DEPLOY.md) — hosting it on a web domain.
 - [Grammar](docs/GRAMMAR.md) and [architecture](docs/ARCHITECTURE.md).
