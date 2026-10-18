@@ -2,7 +2,7 @@
 import CameraControls from 'camera-controls';
 import * as THREE from 'three';
 import { lidSpecs, lidTitleAnchor } from '../core/lod/lids';
-import { LABEL_BUDGET, lod } from '../core/lod/lod';
+import { LABEL_BUDGET, lod, type ZoomRule } from '../core/lod/lod';
 import type { ArchModel, CameraState, Id, LodResult, Pt, SceneSpec, V3 } from '../core/types';
 import defaultFontUrl from '../../vendor/fonts/inter-latin-400-normal.woff?url';
 import { SceneRoot } from './build';
@@ -45,6 +45,8 @@ export interface View {
   labelMode(): LabelMode;
   /** Semantic zoom on (default) or off ("all open"). */
   setSemanticZoom(enabled: boolean): void;
+  /** Which rule opens containers (see core/lod). */
+  setZoomRule(rule: ZoomRule): void;
   /** Hierarchical edge bundling for links between closed containers (off by default). */
   setBundling(enabled: boolean): void;
   lodState(): LodResult | null;
@@ -93,6 +95,7 @@ export function createView(canvas: HTMLCanvasElement, opts: ViewOptions = {}): V
   let presenter: Presenter | null = null;
   let lodResult: LodResult | null = null;
   let semantic = true;
+  let zoomRule: ZoomRule = 'size';
   let bundling = false;
   let lastDraw = 0;
   let lidTitles = new Map<Id, V3>();
@@ -117,7 +120,7 @@ export function createView(canvas: HTMLCanvasElement, opts: ViewOptions = {}): V
     const now = performance.now();
     const dt = lastDraw ? now - lastDraw : 0;
     lastDraw = now;
-    lodResult = lod(current.scene, current.model, cameraState(), lodResult ?? undefined, { selected, enabled: semantic, maxLabels: LABEL_BUDGET });
+    lodResult = lod(current.scene, current.model, cameraState(), lodResult ?? undefined, { selected, enabled: semantic, maxLabels: LABEL_BUDGET, rule: zoomRule });
     labels.setVisible(lodResult.visibleLabels);
     for (const [id, at] of lidTitles) labels.setAnchor(id, lodResult.containers[id] === 'closed' ? at : null);
     const shown = presenter.apply(lodResult, selected, dt, test, bundling);
@@ -234,6 +237,7 @@ export function createView(canvas: HTMLCanvasElement, opts: ViewOptions = {}): V
     select(id) { selected = id && current?.model.nodes[id] ? id : null; render(); },
     selected: () => selected,
     setSemanticZoom(enabled) { semantic = enabled; render(); },
+    setZoomRule(rule) { zoomRule = rule; lodResult = null; render(); },
     setBundling(enabled) { bundling = enabled; render(); },
     lodState: () => lodResult,
     snapshot() {

@@ -1,5 +1,6 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 import { lod } from '../../src/core/lod/lod';
+import { ELEMENT_BUDGET } from '../../src/core/lod/readable';
 import { focusCamera } from '../../src/core/lod/focus';
 import { lift } from '../../src/core/scene/lift';
 import type { ArchModel, CameraState, SceneSpec } from '../../src/core/types';
@@ -132,4 +133,24 @@ describe('narrow views', () => {
     // In a half-width pane the camera has to stand twice as far back to fit the width.
     expect(lod(s, m, { ...cam, aspect: 0.4 }).containers.Platform).toBe('open');
   });
+});
+
+describe('zoom rule "readable"', () => {
+  const open = (r: ReturnType<typeof lod>) => Object.entries(r.containers).filter(([, v]) => v === 'open').map(([k]) => k).sort();
+
+  it('opens containers from further away than the size rule', () => {
+    expect(open(lod(s, m, at('Platform', 3)))).toEqual([]);
+    expect(open(lod(s, m, at('Platform', 3), undefined, { rule: 'readable' }))).toEqual(['Platform']);
+    expect(open(lod(s, m, at('Platform', 2)))).toEqual(['Platform']);
+    expect(open(lod(s, m, at('Platform', 2), undefined, { rule: 'readable' }))).toEqual(['Billing', 'Messaging', 'Payments', 'Platform', 'Risk']);
+  });
+
+  it('never puts more than the budget on screen', async () => {
+    const { model, layout } = await laidOut('gen-1000');
+    const big = lift(model, layout);
+    const r = lod(big, model, focusCamera(big, model.roots[0], 3, 800), undefined, { rule: 'readable' });
+    const onScreen = Object.values(model.nodes).filter((n) => !n.container || r.containers[n.id] === 'closed')
+      .filter((n) => n.parent === null || r.containers[n.parent] === 'open').length;
+    expect(onScreen).toBeLessThanOrEqual(ELEMENT_BUDGET);
+  }, 60_000);
 });

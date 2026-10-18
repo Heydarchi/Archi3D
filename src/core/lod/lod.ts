@@ -3,6 +3,7 @@
 import type { ArchModel, CameraState, ContainerState, Id, LodResult, SceneSpec, V3 } from '../types';
 import { standIn } from './aggregate';
 import { footprintDiagonal } from './focus';
+import { readableContainers } from './readable';
 
 export const CLOSE_RATIO = 3.0;
 export const OPEN_RATIO = 2.6;
@@ -20,7 +21,11 @@ export interface LodOptions {
   enabled?: boolean;
   /** Label budget, nearest to the camera first (default LABEL_BUDGET). */
   maxLabels?: number;
+  /** 'size': open a container when it fills about half the view. 'readable': when its inside is readable (readable.ts). */
+  rule?: ZoomRule;
 }
+
+export type ZoomRule = 'size' | 'readable';
 
 function nearest(scene: SceneSpec, ids: Set<string>, cam: CameraState, max: number): Set<string> {
   if (ids.size <= max) return ids;
@@ -66,6 +71,7 @@ export function lod(scene: SceneSpec, model: ArchModel, cam: CameraState, prev?:
     for (const c of n.children) visit(c, state === 'open');
   };
   for (const r of model.roots) visit(r, true);
+  if (opts.rule === 'readable') Object.assign(containers, readableContainers(scene, model, cam, prev, opts.selected));
 
   const shown = (id: Id): boolean => {
     for (let p = model.nodes[id]?.parent ?? null; p !== null; p = model.nodes[p].parent) {
