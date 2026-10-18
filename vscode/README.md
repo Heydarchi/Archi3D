@@ -20,6 +20,15 @@ Install: search for "Archi3D" in the Extensions view, or run `code --install-ext
 - Element shapes for `user`, `ui`, `app`, `service`, `library`, `driver`, `kernel`, `device`,
   `database`, `cache`, `storage`, `queue`, `topic` and `external`, and six link kinds:
   `->` call, `=>` message, `~>` event, `<=>` session, `>>` stream, `<>` shared.
+- Layers: `layer Apps { ... }` blocks are drawn as floors, the first one on top. Close to a floor,
+  the floors above it fade so they don't cover it.
+- Colours: `[color: #2e7d6b]` on an element or link, `style kind driver [color: slate]` for many,
+  and a Colour button to colour by layer, container or tag.
+- Containers open as soon as what is inside is readable. Keys `+` and `-` show more or less.
+
+The language reference is in
+[GRAMMAR.md](https://github.com/Heydarchi/Archi3D/blob/main/docs/GRAMMAR.md), all keywords on one
+page in [KEYWORDS.md](https://github.com/Heydarchi/Archi3D/blob/main/docs/KEYWORDS.md).
 
 Everything works offline. The layout engine and the font are inside the extension.
 

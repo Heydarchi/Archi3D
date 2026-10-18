@@ -45,7 +45,11 @@ The same short list works for Android, AOSP and Linux. See the [user guide](docs
 ## Features
 
 - Edit the model in the browser and see the 3D view update while you type. Errors are underlined.
-- Click to select, double click to fly in. Big models close their containers when you zoom out.
+- Click to select, double click to fly in. Containers open as soon as what is inside is readable,
+  so you keep the big picture while you zoom.
+- Put systems on layers (floors) with `layer` blocks: apps on top, the kernel at the bottom.
+- Your own colours (`[color: #2e7d6b]`, `style kind driver [color: slate]`), or colour by layer,
+  container or tag with one button.
 - Hide the editor (button or key `E`) to give the 3D view the whole window.
 - Import Mermaid `architecture-beta` and D2 files.
 - Export one HTML file that works offline (`npm run export`).
@@ -84,7 +88,8 @@ You can also take the `.vsix` (version 0.2.0) from
 - [User guide](docs/USER_GUIDE.md): how to use the app, the language, examples (an Android
   app, the AOSP camera stack, a Linux desktop and a legend), import/export, all scripts, WSL and VS Code.
 - [Deployment](docs/DEPLOY.md): put it on your own domain.
-- [Grammar](docs/GRAMMAR.md) and [architecture](docs/ARCHITECTURE.md).
+- [Language reference](docs/GRAMMAR.md), [all keywords on one page](docs/KEYWORDS.md) and
+  [architecture](docs/ARCHITECTURE.md).
 - [Build plan](docs/PLAN.md): the steps I followed to build it.
 - Rules for contributors and AI agents: [AGENTS.md](AGENTS.md) and [CLAUDE.md](CLAUDE.md).
 

@@ -137,7 +137,8 @@ Buttons on the top right:
 
 ## 3. The language
 
-One statement per line. `#` or `//` starts a comment. The full grammar is in [GRAMMAR.md](GRAMMAR.md).
+One statement per line. `#` or `//` starts a comment. The full reference is in
+[GRAMMAR.md](GRAMMAR.md), all keywords on one page are in [KEYWORDS.md](KEYWORDS.md).
 
 The files use the extension `.arch3d`. I picked this name because no other tool uses it, so editors
 don't confuse it with something else. Old files with `.arch` still work in the app and the command
