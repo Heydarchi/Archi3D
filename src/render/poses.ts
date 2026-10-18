@@ -3,9 +3,11 @@ import * as THREE from 'three';
 import { lidSpecs } from '../core/lod/lids';
 import type { ArchModel, CameraState, Id, SceneSpec, V3 } from '../core/types';
 
-export type PoseName = 'far' | 'mid' | 'near' | 'iso';
+export type PoseName = 'far' | 'mid' | 'near' | 'iso' | 'stack';
 export const FOV = 40;
 const FAR_ELEVATION = 50, ISO_ELEVATION = 45, ISO_AZIMUTH = 45;
+/** Low and from the side, to see floors (layers) above each other. */
+const STACK_ELEVATION = 18, STACK_AZIMUTH = 30;
 
 const deg = THREE.MathUtils.degToRad;
 
@@ -68,6 +70,7 @@ export function cameraPose(pose: PoseName, scene: SceneSpec, aspect: number, vie
     case 'far': return place(c, far, farDist, viewportH);
     case 'mid': return place(c, far, farDist * 0.4, viewportH);
     case 'iso': return place(c, iso, Math.max(fitBoxDistance(c, size, iso, aspect), 10), viewportH);
+    case 'stack': { const d = direction(STACK_ELEVATION, STACK_AZIMUTH); return place(c, d, Math.max(fitBoxDistance(c, size, d, aspect), 10), viewportH); }
     case 'near': {
       const block = [...scene.blocks].sort((a, b) =>
         Math.hypot(a.center.x - c.x, a.center.z - c.z) - Math.hypot(b.center.x - c.x, b.center.z - c.z) || a.id.localeCompare(b.id))[0];
