@@ -10,3 +10,10 @@ describe('detail keys', () => {
     expect(nextDetail('a', 1)).toBeNull();
   });
 });
+
+describe('colour by button', () => {
+  it('cycles kind → layer → container → tag → kind', async () => {
+    const { nextColorBy } = await import('../../src/app/colorByControl');
+    expect(['kind', 'layer', 'container', 'tag'].map((b) => nextColorBy(b as 'kind'))).toEqual(['layer', 'container', 'tag', 'kind']);
+  });
+});

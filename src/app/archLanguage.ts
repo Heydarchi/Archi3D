@@ -1,7 +1,7 @@
 // CodeMirror stream-language mode for .arch3d: kinds, names, titles, ports, arrows and link words, labels, comments.
 import { StreamLanguage, type StringStream } from '@codemirror/language';
 
-interface State { pos: 'start' | 'kind' | 'node' | 'ports' | 'source' | 'edge' | 'label' }
+interface State { pos: 'start' | 'kind' | 'node' | 'ports' | 'source' | 'edge' | 'label' | 'style'; brackets: boolean }
 
 const IDENT = /^[A-Za-z_][A-Za-z0-9_]*(?:-(?!->|>)[A-Za-z0-9_]+)*/;
 const ARROW = /^(<=>|-->|->|=>|~>|>>|<>|<-)/;
@@ -11,10 +11,25 @@ const LINK_AHEAD = /^\s*(\.|<=>|-->|->|=>|~>|>>|<>|<-)|^\s+(call|message|event|s
 
 export const archLanguage = StreamLanguage.define<State>({
   name: 'arch',
-  startState: () => ({ pos: 'start' }),
+  startState: () => ({ pos: 'start', brackets: false }),
   token(stream: StringStream, state: State): string | null {
-    if (stream.sol()) state.pos = 'start';
+    if (stream.sol()) { state.pos = 'start'; state.brackets = false; }
     if (stream.eatSpace()) return null;
+    // [color: #2e7d6b, dark: teal, tag: vendor]: # is a colour in here, not a comment.
+    if (stream.eat('[')) { state.brackets = true; return 'bracket'; }
+    if (state.brackets) {
+      if (stream.eat(']')) { state.brackets = false; return 'bracket'; }
+      if (stream.match(/^#[0-9a-zA-Z]+/)) return 'atom';
+      if (stream.match(/^(color|dark|tag)(?=\s*:)/)) return 'attributeName';
+      if (stream.match(/^[A-Za-z_][A-Za-z0-9_-]*/)) return 'attributeValue';
+      stream.next();
+      return 'punctuation';
+    }
+    if (state.pos === 'start' && stream.match(/^style(?=\s+(kind|tag|link)\s)/)) { state.pos = 'style'; return 'keyword'; }
+    if (state.pos === 'style') {
+      if (stream.match(/^(kind|tag|link)\b/)) return 'keyword';
+      if (stream.match(IDENT)) return 'typeName';
+    }
     if (state.pos !== 'label' && stream.match(/^"(?:[^"\\]|\\.)*"?/)) return 'string';
     if (stream.match('#') || stream.match('//')) { stream.skipToEnd(); return 'comment'; }
     if (state.pos === 'label') {
