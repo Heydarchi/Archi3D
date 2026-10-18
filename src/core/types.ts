@@ -57,8 +57,11 @@ export interface Layout2D {
 
 // ---------- scene ----------
 export interface V3 { x: number; y: number; z: number }   // y is up
-export interface PlateSpec { id: Id; depth: number; center: V3; size: V3 }
-export interface BlockSpec { id: Id; shape: Shape; center: V3; size: V3 }
+/** floor: the layer this stands on, when the model has layers. */
+export interface PlateSpec { id: Id; depth: number; center: V3; size: V3; floor?: Id }
+export interface BlockSpec { id: Id; shape: Shape; center: V3; size: V3; floor?: Id }
+/** A layer drawn as a floor: from y (its base) up to top (where the next floor starts), first written on top. */
+export interface FloorSpec { id: Id; index: number; y: number; top: number; center: V3; size: V3 }
 export interface PortSpec  { id: PortId; owner: Id; dir: 'in' | 'out'; pos: V3 }
 export interface EdgeSpec  { id: string; points: V3[]; kind: LinkKind; async: boolean; label?: string; labelAt?: V3 }
 /** alt: a second place for a container title, used when the first one would cover another label. */
@@ -67,6 +70,8 @@ export interface SceneOptions { levelGap: number; blockHeight: number; edgeMode:
 export interface SceneSpec {
   plates: PlateSpec[]; blocks: BlockSpec[]; ports: PortSpec[]; edges: EdgeSpec[]; labels: LabelSpec[];
   bounds: { min: V3; max: V3 };
+  /** Only when the model has layers (top-level containers of kind "layer"). */
+  floors?: FloorSpec[];
 }
 
 // ---------- lod (semantic zoom) ----------
@@ -79,4 +84,6 @@ export interface LodResult {
   visibleEdges: Set<string>;
   /** Container titles moved to their `alt` place for this camera. */
   movedLabels?: Record<string, V3>;
+  /** Floors above the one you look at, faded out so they don't cover it. */
+  fadedFloors?: Set<Id>;
 }

@@ -760,6 +760,359 @@ exports[`valid fixtures > kinds.arch3d parses with no errors 1`] = `
 ]
 `;
 
+exports[`valid fixtures > layers.arch3d parses with no errors 1`] = `
+[
+  {
+    "children": [],
+    "container": false,
+    "ins": [],
+    "kind": "user",
+    "loc": {
+      "col": 6,
+      "endCol": 12,
+      "line": 2,
+    },
+    "name": "Person",
+    "outs": [],
+    "title": "User",
+    "type": "node",
+  },
+  {
+    "children": [
+      {
+        "children": [],
+        "container": false,
+        "ins": [],
+        "kind": "app",
+        "loc": {
+          "col": 7,
+          "endCol": 12,
+          "line": 5,
+        },
+        "name": "Phone",
+        "outs": [
+          {
+            "loc": {
+              "col": 25,
+              "endCol": 29,
+              "line": 5,
+            },
+            "name": "call",
+          },
+        ],
+        "type": "node",
+      },
+      {
+        "children": [
+          {
+            "children": [],
+            "container": false,
+            "ins": [
+              {
+                "loc": {
+                  "col": 24,
+                  "endCol": 28,
+                  "line": 7,
+                },
+                "name": "show",
+              },
+            ],
+            "kind": "ui",
+            "loc": {
+              "col": 8,
+              "endCol": 14,
+              "line": 7,
+            },
+            "name": "Screen",
+            "outs": [],
+            "type": "node",
+          },
+        ],
+        "container": true,
+        "ins": [],
+        "kind": "system",
+        "loc": {
+          "col": 10,
+          "endCol": 15,
+          "line": 6,
+        },
+        "name": "Shelf",
+        "outs": [],
+        "type": "node",
+      },
+    ],
+    "container": true,
+    "ins": [],
+    "kind": "layer",
+    "loc": {
+      "col": 7,
+      "endCol": 10,
+      "line": 4,
+    },
+    "name": "Top",
+    "outs": [],
+    "title": "Apps",
+    "type": "node",
+  },
+  {
+    "children": [
+      {
+        "children": [],
+        "container": false,
+        "ins": [
+          {
+            "loc": {
+              "col": 24,
+              "endCol": 28,
+              "line": 11,
+            },
+            "name": "call",
+          },
+        ],
+        "kind": "service",
+        "loc": {
+          "col": 11,
+          "endCol": 14,
+          "line": 11,
+        },
+        "name": "Api",
+        "outs": [
+          {
+            "loc": {
+              "col": 36,
+              "endCol": 40,
+              "line": 11,
+            },
+            "name": "read",
+          },
+          {
+            "loc": {
+              "col": 42,
+              "endCol": 46,
+              "line": 11,
+            },
+            "name": "show",
+          },
+        ],
+        "type": "node",
+      },
+      {
+        "children": [],
+        "container": false,
+        "ins": [
+          {
+            "loc": {
+              "col": 24,
+              "endCol": 27,
+              "line": 12,
+            },
+            "name": "job",
+          },
+        ],
+        "kind": "service",
+        "loc": {
+          "col": 11,
+          "endCol": 17,
+          "line": 12,
+        },
+        "name": "Worker",
+        "outs": [],
+        "type": "node",
+      },
+    ],
+    "container": true,
+    "ins": [],
+    "kind": "layer",
+    "loc": {
+      "col": 7,
+      "endCol": 13,
+      "line": 10,
+    },
+    "name": "Middle",
+    "outs": [],
+    "title": "Services",
+    "type": "node",
+  },
+  {
+    "children": [
+      {
+        "children": [],
+        "container": false,
+        "ins": [
+          {
+            "loc": {
+              "col": 24,
+              "endCol": 28,
+              "line": 15,
+            },
+            "name": "read",
+          },
+        ],
+        "kind": "driver",
+        "loc": {
+          "col": 10,
+          "endCol": 14,
+          "line": 15,
+        },
+        "name": "Disk",
+        "outs": [],
+        "type": "node",
+      },
+    ],
+    "container": true,
+    "ins": [],
+    "kind": "layer",
+    "loc": {
+      "col": 7,
+      "endCol": 13,
+      "line": 14,
+    },
+    "name": "Bottom",
+    "outs": [],
+    "title": "Kernel",
+    "type": "node",
+  },
+  {
+    "async": false,
+    "from": {
+      "loc": {
+        "col": 1,
+        "endCol": 7,
+        "line": 18,
+      },
+      "name": "Person",
+    },
+    "kind": "call",
+    "label": "tap",
+    "loc": {
+      "col": 1,
+      "endCol": 22,
+      "line": 18,
+    },
+    "to": {
+      "loc": {
+        "col": 11,
+        "endCol": 16,
+        "line": 18,
+      },
+      "name": "Phone",
+    },
+    "type": "edge",
+  },
+  {
+    "async": false,
+    "from": {
+      "loc": {
+        "col": 1,
+        "endCol": 11,
+        "line": 19,
+      },
+      "name": "Phone",
+      "port": "call",
+    },
+    "kind": "call",
+    "loc": {
+      "col": 1,
+      "endCol": 23,
+      "line": 19,
+    },
+    "to": {
+      "loc": {
+        "col": 15,
+        "endCol": 23,
+        "line": 19,
+      },
+      "name": "Api",
+      "port": "call",
+    },
+    "type": "edge",
+  },
+  {
+    "async": false,
+    "from": {
+      "loc": {
+        "col": 1,
+        "endCol": 9,
+        "line": 20,
+      },
+      "name": "Api",
+      "port": "read",
+    },
+    "kind": "call",
+    "loc": {
+      "col": 1,
+      "endCol": 22,
+      "line": 20,
+    },
+    "to": {
+      "loc": {
+        "col": 13,
+        "endCol": 22,
+        "line": 20,
+      },
+      "name": "Disk",
+      "port": "read",
+    },
+    "type": "edge",
+  },
+  {
+    "async": false,
+    "from": {
+      "loc": {
+        "col": 1,
+        "endCol": 9,
+        "line": 21,
+      },
+      "name": "Api",
+      "port": "show",
+    },
+    "kind": "call",
+    "loc": {
+      "col": 1,
+      "endCol": 24,
+      "line": 21,
+    },
+    "to": {
+      "loc": {
+        "col": 13,
+        "endCol": 24,
+        "line": 21,
+      },
+      "name": "Screen",
+      "port": "show",
+    },
+    "type": "edge",
+  },
+  {
+    "async": true,
+    "from": {
+      "loc": {
+        "col": 1,
+        "endCol": 4,
+        "line": 22,
+      },
+      "name": "Api",
+    },
+    "kind": "message",
+    "loc": {
+      "col": 1,
+      "endCol": 18,
+      "line": 22,
+    },
+    "to": {
+      "loc": {
+        "col": 8,
+        "endCol": 18,
+        "line": 22,
+      },
+      "name": "Worker",
+      "port": "job",
+    },
+    "type": "edge",
+  },
+]
+`;
+
 exports[`valid fixtures > nested-deep.arch3d parses with no errors 1`] = `
 [
   {

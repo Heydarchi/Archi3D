@@ -1,4 +1,4 @@
-// Layers (prototype): top-level containers of kind "layer" become floors stacked on top of each
+// Layers: top-level containers of kind "layer" become floors stacked on top of each
 // other, the first one written on top. Everything inside a layer is moved onto its floor; nesting
 // inside a floor rises in small steps. Elements outside every layer stand on the floor they link to most.
 import type { ArchModel, Id, Layout2D } from '../types';
@@ -15,9 +15,22 @@ export const BESIDE_GAP = 40;
 
 export interface Floor { layer: Id; index: number; y: number; dx: number; dz: number; extraDepth: number }
 
-/** The floor of every node, or null when the model has no layers. */
-export function floorsOf(model: ArchModel, layout: Layout2D, blockHeight: number): Map<Id, Floor> | null {
-  const layers = model.roots.filter((id) => model.nodes[id].kind.toLowerCase() === LAYER_KIND && layout.boxes[id]);
+export interface Floors {
+  /** The floor every node stands on (its layer, or for an element outside all layers the floor it links to most). */
+  byNode: Map<Id, Floor>;
+  /** Top layer first; y is the base of the floor, top where the next one starts. */
+  bands: { layer: Id; index: number; y: number; top: number }[];
+}
+
+/** Is this node a layer (a top-level container of kind "layer")? */
+export const isLayer = (model: ArchModel, id: Id) => {
+  const n = model.nodes[id];
+  return n.parent === null && n.container && n.kind.toLowerCase() === LAYER_KIND;
+};
+
+/** Floors for a laid-out model, or null when it has no layers. */
+export function floorsOf(model: ArchModel, layout: Layout2D, blockHeight: number): Floors | null {
+  const layers = model.roots.filter((id) => isLayer(model, id) && layout.boxes[id]);
   if (!layers.length) return null;
   const cx = layout.bounds.x + layout.bounds.w / 2, cy = layout.bounds.y + layout.bounds.h / 2;
 
@@ -41,11 +54,13 @@ export function floorsOf(model: ArchModel, layout: Layout2D, blockHeight: number
   const gap = Math.max(FLOOR_GAP, deepest * FLOOR_GAP_PER_DEPTH);
   const floorHeight = (l: Id) => innerDepth(l) * NEST_STEP + blockHeight * 2.4 + gap;
   const floors = new Map<Id, Floor>();
+  const bands: Floors['bands'] = [];
   let y = 0;
   layers.slice().reverse().forEach((l, k) => {
     const b = layout.boxes[l];
     const f: Floor = { layer: l, index: layers.length - 1 - k, y, dx: cx - (b.x + b.w / 2), dz: cy - (b.y + b.h / 2), extraDepth: 0 };
     floors.set(l, f);
+    bands.unshift({ layer: l, index: f.index, y, top: y + floorHeight(l) });
     y += floorHeight(l);
   });
   const out = new Map<Id, Floor>();
@@ -64,5 +79,5 @@ export function floorsOf(model: ArchModel, layout: Layout2D, blockHeight: number
     while (model.nodes[root].parent !== null) root = model.nodes[root].parent!;
     out.set(id, root === l ? f : out.get(root) ?? placeBeside(root, f));
   }
-  return out;
+  return { byNode: out, bands };
 }

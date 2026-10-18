@@ -88,7 +88,10 @@ const views: Record<string, ViewFn> = {
       select: (id: string | null) => { select(id); view.render(); },
       flyTo,
       screenPos: (id: string) => view.screenPos(id),
-      state: () => ({ camera: view.cameraState(), labelMode: view.labelMode(), containers: view.lodState()?.containers, selected: view.selected() }),
+      state: () => ({
+        camera: view.cameraState(), labelMode: view.labelMode(), containers: view.lodState()?.containers, selected: view.selected(),
+        fadedFloors: [...(view.lodState()?.fadedFloors ?? [])],
+      }),
     });
   },
   svg2d: async (root, p) => {

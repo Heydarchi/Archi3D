@@ -89,8 +89,10 @@ export declare function layout(model: ArchModel, opts?: Partial<LayoutOptions>, 
 
 // ---------- scene ----------
 export interface V3 { x: number; y: number; z: number }   // y is up
-export interface PlateSpec { id: Id; depth: number; center: V3; size: V3 }
-export interface BlockSpec { id: Id; shape: Shape; center: V3; size: V3 }
+export interface PlateSpec { id: Id; depth: number; center: V3; size: V3; floor?: Id }   // floor: its layer
+export interface BlockSpec { id: Id; shape: Shape; center: V3; size: V3; floor?: Id }
+// Layers (scene/floors.ts): a top-level container of kind "layer" is a floor from y to top, first written on top.
+export interface FloorSpec { id: Id; index: number; y: number; top: number; center: V3; size: V3 }
 export interface PortSpec  { id: PortId; owner: Id; dir: 'in' | 'out'; pos: V3 }
 export interface EdgeSpec  { id: string; points: V3[]; kind: LinkKind; async: boolean; label?: string; labelAt?: V3 }
 export interface LabelSpec { id: string; text: string; anchor: V3; role: 'container' | 'component' | 'port' | 'edge' }
@@ -98,6 +100,7 @@ export interface SceneOptions { levelGap: number; blockHeight: number; edgeMode:
 export interface SceneSpec {
   plates: PlateSpec[]; blocks: BlockSpec[]; ports: PortSpec[]; edges: EdgeSpec[]; labels: LabelSpec[];
   bounds: { min: V3; max: V3 };
+  floors?: FloorSpec[];               // only when the model has layers
 }
 export declare function lift(model: ArchModel, layout: Layout2D, opts?: Partial<SceneOptions>): SceneSpec;
 
@@ -108,6 +111,8 @@ export interface LodResult {
   containers: Record<Id, ContainerState>;
   visibleLabels: Set<string>;
   visibleEdges: Set<string>;
+  movedLabels?: Record<string, V3>;   // container titles moved to LabelSpec.alt (lod/declutter.ts)
+  fadedFloors?: Set<Id>;              // floors above the one you look at (lod/floorFade.ts); drawn as outlines only
 }
 // rule 'readable' (default, lod/readable.ts): a container opens when its smallest child would be at least
 // 45 px wide (closes below 38 px), biggest first, at most 150 things on screen; a selected container is

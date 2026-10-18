@@ -15,14 +15,21 @@ import { elementOf } from './shapes';
 
 export const LID_FADE_MS = 150;
 export const DIM_OPACITY = 0.15;
+/** Floors above the one you look at (layers) are hidden but keep faint outlines, so they cover nothing
+ * (a see-through mesh would still hide what is behind it in the depth buffer). This is how light the outlines are. */
+export const FADE_OPACITY = 0.08;
 
 export interface Presented { animating: boolean; dimLabels: Set<string> | null; changed: boolean }
 
 export class Presenter {
   private lidAlpha = new Map<string, number>();
   private key = '';
+  /** The floor (layer) each plate and block stands on. */
+  private floorOf: Map<string, string | undefined>;
 
-  constructor(private o: SceneObjects, private model: ArchModel, private pal: Palette, private scene: SceneSpec) {}
+  constructor(private o: SceneObjects, private model: ArchModel, private pal: Palette, private scene: SceneSpec) {
+    this.floorOf = new Map([...scene.plates, ...scene.blocks].map((x) => [x.id, x.floor]));
+  }
 
   /** Where an aggregated link attaches: the top centre of a lid or block. */
   private anchor(id: Id): V3 {
@@ -37,6 +44,8 @@ export class Presenter {
     const { o, model, pal } = this;
     // Lids fade every frame until they reach their target.
     let animating = false;
+    const fadedFloors = r.fadedFloors ?? new Set<string>();
+    const faded = (id: Id) => fadedFloors.has(this.floorOf.get(id) ?? '');
     for (const id of o.lids.ids) {
       const target = r.containers[id] === 'closed' ? 1 : 0;
       const prev = this.lidAlpha.get(id) ?? 0;
@@ -46,11 +55,11 @@ export class Presenter {
       if (next !== prev || !this.lidAlpha.has(id)) {
         this.lidAlpha.set(id, next);
         o.lids.setOpacity(id, next);
-        o.lids.setShown(id, next > 0.001);
+        o.lids.setShown(id, next > 0.001 && !faded(id));
       }
     }
 
-    const key = `${selected}|${bundled}|${Object.entries(r.containers).map(([k, v]) => `${k}:${v[0]}`).join(',')}`;
+    const key = `${selected}|${bundled}|${[...fadedFloors].join(',')}|${Object.entries(r.containers).map(([k, v]) => `${k}:${v[0]}`).join(',')}`;
     if (key === this.key) return { animating, dimLabels: null, changed: false };
     this.key = key;
 
@@ -60,15 +69,17 @@ export class Presenter {
     const dimmed = new Set<string>();
     const shown = (id: Id) => nodeShown(model, r, id);
 
+    // The lid loop above only runs while a lid fades; a floor can fade out without that.
+    for (const id of o.lids.ids) o.lids.setShown(id, (this.lidAlpha.get(id) ?? 0) > 0.001 && !faded(id));
     for (const id of o.plates.ids) {
-      o.plates.setShown(id, r.containers[id] !== 'hidden');
+      o.plates.setShown(id, r.containers[id] !== 'hidden' && !faded(id));
       const base = o.plates.baseColor(id)!;
       o.plates.setColor(id, hl && id === selected ? base.clone().lerp(accent, 0.25) : base);
     }
     for (const set of o.bodies) {
       for (const part of set.ids) {
         const id = elementOf(part);
-        set.setShown(part, shown(id));
+        set.setShown(part, shown(id) && !faded(id));
         const on = !hl || hl.nodes.has(id);
         set.setOpacity(part, on ? 1 : DIM_OPACITY);
         const base = set.baseColor(part)!;
@@ -81,16 +92,20 @@ export class Presenter {
       o.ports.setShown(id, model.nodes[owner]?.container ? r.containers[owner] !== 'hidden' : shown(owner));
       const on = !hl || hl.nodes.has(owner);
       o.ports.setOpacity(id, on ? 1 : DIM_OPACITY);
+      if (faded(owner)) o.ports.setShown(id, false);
       if (!on) dimmed.add(id);
     }
 
     const edgeColor = new THREE.Color(pal.edge);
     const dimEdge = edgeColor.clone().lerp(bg, 1 - DIM_OPACITY);
+    const fadeEdge = edgeColor.clone().lerp(bg, 1 - FADE_OPACITY);
+    const edgeOf = new Map(model.edges.map((e) => [e.id, e]));
+    const edgeFaded = (id: string) => { const e = edgeOf.get(id); return !!e && faded(e.from.node) && faded(e.to.node); };
     const { direct, aggregates } = splitEdges(model, r);
     o.edges.update(
       direct,
-      (id) => (!hl ? edgeColor : hl.edges.has(id) ? accent : dimEdge),
-      (id) => (!hl || hl.edges.has(id) ? 1 : DIM_OPACITY),
+      (id) => (edgeFaded(id) ? fadeEdge : !hl ? edgeColor : hl.edges.has(id) ? accent : dimEdge),
+      (id) => (edgeFaded(id) ? FADE_OPACITY : !hl || hl.edges.has(id) ? 1 : DIM_OPACITY),
       aggregates.map((a) => {
         const mine = !!hl && a.ids.some((id) => hl.edges.has(id));
         const from = this.anchor(a.from), to = this.anchor(a.to);
@@ -104,9 +119,14 @@ export class Presenter {
 
     const outline = new THREE.Color(pal.outline);
     const dimOutline = outline.clone().lerp(bg, 1 - DIM_OPACITY);
+    const fadeOutline = outline.clone().lerp(bg, 1 - FADE_OPACITY);
     o.outlines.update(
       (id) => (id.startsWith('lid:') ? r.containers[id.slice(4)] === 'closed' : shown(elementOf(id))),
-      (id) => (hl && !id.startsWith('lid:') && !hl.nodes.has(elementOf(id)) ? dimOutline : outline),
+      (id) => {
+        const el = id.startsWith('lid:') ? id.slice(4) : elementOf(id);
+        if (faded(el)) return fadeOutline;
+        return hl && !id.startsWith('lid:') && !hl.nodes.has(el) ? dimOutline : outline;
+      },
     );
     return { animating, dimLabels: hl ? dimmed : null, changed: true };
   }

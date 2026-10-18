@@ -769,6 +769,317 @@ exports[`valid fixtures > kinds.arch3d model snapshot 1`] = `
 }
 `;
 
+exports[`valid fixtures > layers.arch3d model snapshot 1`] = `
+{
+  "diagnostics": [],
+  "edges": [
+    {
+      "async": false,
+      "from": {
+        "node": "Person",
+        "port": "Person._out",
+      },
+      "id": "e0",
+      "kind": "call",
+      "label": "tap",
+      "lca": null,
+      "to": {
+        "node": "Phone",
+        "port": "Phone._in",
+      },
+    },
+    {
+      "async": false,
+      "from": {
+        "node": "Phone",
+        "port": "Phone.call",
+      },
+      "id": "e1",
+      "kind": "call",
+      "lca": null,
+      "to": {
+        "node": "Api",
+        "port": "Api.call",
+      },
+    },
+    {
+      "async": false,
+      "from": {
+        "node": "Api",
+        "port": "Api.read",
+      },
+      "id": "e2",
+      "kind": "call",
+      "lca": null,
+      "to": {
+        "node": "Disk",
+        "port": "Disk.read",
+      },
+    },
+    {
+      "async": false,
+      "from": {
+        "node": "Api",
+        "port": "Api.show",
+      },
+      "id": "e3",
+      "kind": "call",
+      "lca": null,
+      "to": {
+        "node": "Screen",
+        "port": "Screen.show",
+      },
+    },
+    {
+      "async": true,
+      "from": {
+        "node": "Api",
+        "port": "Api.read",
+      },
+      "id": "e4",
+      "kind": "message",
+      "lca": "Middle",
+      "to": {
+        "node": "Worker",
+        "port": "Worker.job",
+      },
+    },
+  ],
+  "nodes": {
+    "Api": {
+      "children": [],
+      "container": false,
+      "depth": 1,
+      "id": "Api",
+      "kind": "service",
+      "loc": {
+        "col": 11,
+        "endCol": 14,
+        "line": 11,
+      },
+      "parent": "Middle",
+      "ports": [
+        {
+          "dir": "in",
+          "id": "Api.call",
+          "implicit": false,
+          "name": "call",
+        },
+        {
+          "dir": "out",
+          "id": "Api.read",
+          "implicit": false,
+          "name": "read",
+        },
+        {
+          "dir": "out",
+          "id": "Api.show",
+          "implicit": false,
+          "name": "show",
+        },
+      ],
+      "shape": "box",
+    },
+    "Bottom": {
+      "children": [
+        "Disk",
+      ],
+      "container": true,
+      "depth": 0,
+      "id": "Bottom",
+      "kind": "layer",
+      "loc": {
+        "col": 7,
+        "endCol": 13,
+        "line": 14,
+      },
+      "parent": null,
+      "ports": [],
+      "shape": "box",
+      "title": "Kernel",
+    },
+    "Disk": {
+      "children": [],
+      "container": false,
+      "depth": 1,
+      "id": "Disk",
+      "kind": "driver",
+      "loc": {
+        "col": 10,
+        "endCol": 14,
+        "line": 15,
+      },
+      "parent": "Bottom",
+      "ports": [
+        {
+          "dir": "in",
+          "id": "Disk.read",
+          "implicit": false,
+          "name": "read",
+        },
+      ],
+      "shape": "chip",
+    },
+    "Middle": {
+      "children": [
+        "Api",
+        "Worker",
+      ],
+      "container": true,
+      "depth": 0,
+      "id": "Middle",
+      "kind": "layer",
+      "loc": {
+        "col": 7,
+        "endCol": 13,
+        "line": 10,
+      },
+      "parent": null,
+      "ports": [],
+      "shape": "box",
+      "title": "Services",
+    },
+    "Person": {
+      "children": [],
+      "container": false,
+      "depth": 0,
+      "id": "Person",
+      "kind": "user",
+      "loc": {
+        "col": 6,
+        "endCol": 12,
+        "line": 2,
+      },
+      "parent": null,
+      "ports": [
+        {
+          "dir": "out",
+          "id": "Person._out",
+          "implicit": true,
+          "name": "_out",
+        },
+      ],
+      "shape": "person",
+      "title": "User",
+    },
+    "Phone": {
+      "children": [],
+      "container": false,
+      "depth": 1,
+      "id": "Phone",
+      "kind": "app",
+      "loc": {
+        "col": 7,
+        "endCol": 12,
+        "line": 5,
+      },
+      "parent": "Top",
+      "ports": [
+        {
+          "dir": "out",
+          "id": "Phone.call",
+          "implicit": false,
+          "name": "call",
+        },
+        {
+          "dir": "in",
+          "id": "Phone._in",
+          "implicit": true,
+          "name": "_in",
+        },
+      ],
+      "shape": "phone",
+    },
+    "Screen": {
+      "children": [],
+      "container": false,
+      "depth": 2,
+      "id": "Screen",
+      "kind": "ui",
+      "loc": {
+        "col": 8,
+        "endCol": 14,
+        "line": 7,
+      },
+      "parent": "Shelf",
+      "ports": [
+        {
+          "dir": "in",
+          "id": "Screen.show",
+          "implicit": false,
+          "name": "show",
+        },
+      ],
+      "shape": "screen",
+    },
+    "Shelf": {
+      "children": [
+        "Screen",
+      ],
+      "container": true,
+      "depth": 1,
+      "id": "Shelf",
+      "kind": "system",
+      "loc": {
+        "col": 10,
+        "endCol": 15,
+        "line": 6,
+      },
+      "parent": "Top",
+      "ports": [],
+      "shape": "box",
+    },
+    "Top": {
+      "children": [
+        "Phone",
+        "Shelf",
+      ],
+      "container": true,
+      "depth": 0,
+      "id": "Top",
+      "kind": "layer",
+      "loc": {
+        "col": 7,
+        "endCol": 10,
+        "line": 4,
+      },
+      "parent": null,
+      "ports": [],
+      "shape": "box",
+      "title": "Apps",
+    },
+    "Worker": {
+      "children": [],
+      "container": false,
+      "depth": 1,
+      "id": "Worker",
+      "kind": "service",
+      "loc": {
+        "col": 11,
+        "endCol": 17,
+        "line": 12,
+      },
+      "parent": "Middle",
+      "ports": [
+        {
+          "dir": "in",
+          "id": "Worker.job",
+          "implicit": false,
+          "name": "job",
+        },
+      ],
+      "shape": "box",
+    },
+  },
+  "roots": [
+    "Person",
+    "Top",
+    "Middle",
+    "Bottom",
+  ],
+}
+`;
+
 exports[`valid fixtures > nested-deep.arch3d model snapshot 1`] = `
 {
   "diagnostics": [],
