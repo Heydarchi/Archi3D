@@ -1,4 +1,4 @@
-# Prototype: the AOSP camera stack on five layers (floors), top layer first. Not final syntax.
+# The AOSP camera stack on five layers (floors), top layer first: the same model as 07, with layers.
 
 user User "Phone user"           out: tap
 
