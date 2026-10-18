@@ -1,44 +1,125 @@
-# The `.arch3d` language (v1)
+# The `.arch3d` language
 
-Files use the extension `.arch3d`. It is a small language, one statement per line, for elements,
-their ports and the links between them. `#` or `//` starts a comment (not inside quotes).
+A `.arch3d` file describes a system: its elements, how they are grouped and how they talk to
+each other. Archi3D draws it in 3D.
 
-## Statements
+This page is the reference. For a short list of all keywords see [KEYWORDS.md](KEYWORDS.md), for
+how to use the app see the [user guide](USER_GUIDE.md).
 
-```
-kind Name ["Title"] [in: port, port ...] [out: port, port ...]   # an element
-kind Name ["Title"] [in: ...] [out: ...] {                       # a container (nests anything)
-}                                                                # closes the innermost container
-From[.port] arrow To[.port] [, To[.port] ...] [: label]          # a link (or several)
-From[.port] word  To[.port] [, To[.port] ...] [: label]          # the same with a word
-```
-
-For example:
+## A whole file first
 
 ```
-user     Person   "Phone user"
-app      Camera   "Camera app"    out: bind
-service  CamSvc   "CameraService" in: aidl
-Person  -> Camera : tap
-Camera.bind <=> CamSvc.aidl : AIDL
-CamSvc  ~> Gallery, Thumbnails : NEW_PICTURE
+# Camera on a phone
+
+style kind driver [color: slate]
+
+user User "Phone user"
+
+layer Apps "Applications" {
+  app Camera "Camera app"           out: open
+}
+layer Platform {
+  system CameraServer {
+    service CameraService           in: connect   out: hal, status
+  }
+  library Hal "Camera HAL" [tag: vendor]  in: session
+}
+layer Kernel "Linux kernel" {
+  driver V4L2 "V4L2 driver"         in: ioctl
+}
+
+User -> Camera : tap
+Camera.open -> CameraService.connect : openCamera()
+CameraService.status ~> Camera : onOpened
+CameraService.hal <=> Hal.session : HAL session
+Hal -> V4L2.ioctl [color: red] : VIDIOC_QBUF
 ```
 
-- **kind** decides the shape only. See the keyword table below. Any other word is allowed and is
-  drawn as a plain box, for example `component`, `system`, `container`, `group` or `domain`.
-- **Name** is `[A-Za-z_][A-Za-z0-9_-]*` and must be unique in the whole file. Links refer to
-  elements by name, never by path.
-- **Title** is optional text in double quotes, shown as the label instead of the name. It may have
-  spaces and `#`. Write `\"` for a quote and `\\` for a backslash. A title with no closing quote
-  is an E001 error.
-- **Ports** may carry an interface type: `in: http:REST, query:Search`. `in` is a provided
-  interface (drawn on the west side), `out` is a required interface (east).
-- **Links**: if a port is left out, the element's first port of the right direction is used. If it
-  has none, an anonymous port is made. A port named in a link but not declared is made
-  automatically (its direction comes from its side of the arrow).
-- **Several targets**: `A ~> B, C, D : label` is three links with the same kind and label.
-  `<-` reads right to left, so it takes only one target.
-- Links may target containers (no ports): `Ordering -> Identity : auth`.
+Line by line:
+
+| Line | What it is |
+|---|---|
+| `# Camera on a phone` | a comment |
+| `style kind driver [color: slate]` | a style line: every `driver` is slate |
+| `user User "Phone user"` | an element: kind `user`, name `User`, title `Phone user` |
+| `layer Apps "Applications" {` | a layer (a floor); the first one is on top |
+| `app Camera "Camera app"  out: open` | an element with one `out:` port called `open` |
+| `system CameraServer {` | a container inside the layer |
+| `library Hal "Camera HAL" [tag: vendor]` | an element with a tag |
+| `}` | closes the last opened container or layer |
+| `User -> Camera : tap` | a call from `User` to `Camera`, with the label `tap` |
+| `Camera.open -> CameraService.connect` | a call from port `open` to port `connect` |
+| `CameraService.status ~> Camera` | an event |
+| `CameraService.hal <=> Hal.session` | a session |
+| `Hal -> V4L2.ioctl [color: red] : VIDIOC_QBUF` | a call with its own colour and a label |
+
+## The rules in short
+
+- One statement per line. A line is one of six things: a comment, an element, a container, a `}`,
+  a link or a style line. Empty lines are fine.
+- Indentation doesn't matter. Indent containers so you can read them.
+- Names are unique in the whole file. Links always use the name, never a path.
+- Order doesn't matter: a link may come before the elements it uses.
+- A mistake doesn't stop the drawing. A line that can't be read is skipped and marked, the rest
+  is drawn.
+
+## Comments
+
+```
+# a comment
+// also a comment
+service Api   # a comment after a statement
+```
+
+`#` or `//` starts a comment to the end of the line. Not inside a `"title"`, and not inside `[ ]`,
+where `#` starts a colour like `#2e7d6b`.
+
+## Elements
+
+```
+kind Name ["Title"] [[attributes]] [in: port, port ...] [out: port, port ...]
+```
+
+```
+service  Api
+database Orders "Order database"   in: sql
+driver   V4L2 "V4L2 driver" [color: #2e7d6b]   in: ioctl   out: irq
+```
+
+- **kind** is the first word. It only decides the shape. The [element keywords](#element-keywords)
+  below have their own shapes. Any other word works too and is drawn as a plain box, for example
+  `component` or `daemon`.
+- **Name** is letters, digits, `_` and `-`, starting with a letter or `_`: `Api`, `order-db`,
+  `V4L2`.
+- **Title** (optional) is text in double quotes, shown as the label instead of the name. Use it
+  for long names with spaces: `"Order database"`. Write `\"` for a quote inside it.
+- **Attributes** (optional) are in `[ ]`, see [Colours](#colours).
+- **Ports** (optional) are the connection points. `in:` lists what the element provides (drawn on
+  the left), `out:` what it needs (on the right). A port can have a type after a colon:
+  `in: api:REST`. If two linked ports both have a type and the types differ, you get a warning.
+
+## Containers
+
+```
+kind Name ["Title"] [[attributes]] [in: ...] [out: ...] {
+  ...
+}
+```
+
+```
+system Shop {
+  service Orders
+  container Backend {
+    database OrderDB
+  }
+}
+```
+
+- An element with `{` at the end of its line is a container. Anything can go inside, also other
+  containers. Each level of nesting is drawn one step higher.
+- `}` on its own line closes the last opened container. Nothing else may be on the line after `{`.
+- Any word works as the kind of a container: `system`, `container`, `group`, `domain`... Only
+  `layer` is special, see [Layers](#layers).
 
 ## Element keywords
 
@@ -61,31 +142,30 @@ A short list on purpose. The same words work for Android apps, AOSP and plain Li
 | `topic` | a pipe | broadcast, Flow | broadcast Intents, event log | D-Bus signals, MQTT topic |
 | `external` | a see-through box | your backend server | a vendor part outside AOSP | a remote host |
 
-## Layers
-
-A top-level container with the kind `layer` is a floor. Each layer gets its own height, in the
-order you write them: the first layer is on top. Everything inside a layer stands on its floor,
-and links between two floors go straight up or down.
+## Links
 
 ```
-layer Apps "Applications" {        # top floor
-  system Apps { ... }
-}
-layer Framework "Java framework" {
-  system Framework { ... }
-  system SystemServer { ... }      # a floor can hold several systems
-}
-layer Kernel "Linux kernel" {      # bottom floor
-  system Kernel { ... }
-}
+From[.port] arrow To[.port] [, To[.port] ...] [[attributes]] [: label]
 ```
 
-- To change the order, move the blocks in the file.
-- A layer holds systems, containers and elements like any container. Keep your systems; the layer
-  only says where they stand.
-- An element outside every layer (a `user`, a `device`) stands next to the floor it links to most.
-- A `layer` inside a container, or without `{ }`, gets the warning W203 and is drawn as a normal
-  container or element.
+```
+Web -> Api                                 # a call, ports picked for you
+Web.api -> Api.http : REST                 # port to port, with a label
+Api => Mailer : WelcomeMail                # a message
+Bus ~> Mail, Sync, Audit : BOOT_COMPLETED  # one event, three links
+Camera.bind <=> CameraService.aidl         # a session
+Api event Bus                              # a word works instead of the arrow
+```
+
+- **Ports**: `Api.http` is the port `http` of `Api`. Without a port, the element's first port of
+  the right side is used (an `out:` port for the sender, an `in:` port for the receiver). If it has
+  none, an unnamed one is made. A port used in a link but not declared is made for you.
+- **Several targets**: commas after the arrow make one link per target, all with the same kind,
+  label and colour.
+- **Label** (optional) is everything after the `:` to the end of the line.
+- **Containers** can be linked too: `Frontend -> Backend : HTTPS`.
+- `A <- B` is the same as `B -> A`. It takes one target only.
+- A word can stand for the arrow, see the next table.
 
 ## Link kinds
 
@@ -100,35 +180,95 @@ Six kinds. Pick by how the two sides talk, not by the technology.
 | `>>` | `stream` | data that keeps flowing | thick line with flow marks | camera frames, audio, sensor data | pipe, V4L2 buffers, ALSA |
 | `<>` | `shared` | both use the same memory or data | wide see-through band, squares at the ends | ashmem, gralloc buffers, a shared file | shared memory, `mmap` |
 
-`A <- B` is the same as `B -> A`. `message`, `event` and `stream` count as async (the `async` flag
-in the model). The word form is handy when you think in words: `App.x event Svc.y : DONE`.
-A node may still be called like a link word: `service event in: x` declares an element named `event`.
+## Layers
+
+```
+layer Name ["Title"] {
+  ...
+}
+```
+
+```
+layer Apps "Applications" {        # top floor
+  system Apps { ... }
+}
+layer Framework "Java framework" {
+  system Framework { ... }
+  system SystemServer { ... }      # a floor can hold several systems
+}
+layer Kernel "Linux kernel" {      # bottom floor
+  system Kernel { ... }
+}
+```
+
+- A top-level container with the kind `layer` is a floor. The first layer in the file is the top
+  floor, the next one is below it, and so on. To change the order, move the blocks.
+- Keep your systems and containers as they are and put them inside layers. A layer only says
+  where things stand in the stack.
+- Links between floors go straight up or down.
+- An element outside every layer (a `user`, a `device`) stands next to the floor it links to most.
+- A `layer` must be at the top level and have `{ }`. Otherwise you get W203 and it is drawn as a
+  normal container or element.
 
 ## Colours
 
-Three ways, from one element to many:
+There are three ways, from one element to many.
+
+**One element, container or link**, with `[ ]` after the name or title (for a link: after the
+targets, before the label):
 
 ```
-driver V4L2 "V4L2 driver" [color: #2e7d6b]              # one element
-system HAL [color: #fde7c8, dark: #3d3326] { ... }        # a container: its plate gets a tint
-CameraService -> Gralloc [color: red] : alloc             # a link: before its label
-
-style kind driver   [color: slate]                        # every driver
-style tag vendor    [color: #e8871e]                      # every element with [tag: vendor]
-style link event    [color: purple]                       # every event link
+driver V4L2 "V4L2 driver" [color: #2e7d6b]
+system HAL [color: #fde7c8, dark: #3d3326] { ... }     # a container gets a tinted plate
+CameraService -> Gralloc [color: red] : alloc
 ```
 
-- `color` is `#rrggbb` or `#rgb`, used exactly as written in the light and in the dark theme. Add
-  `dark: #…` for a different colour in the dark theme.
-- A name is a shortcut that changes with the theme: `red`, `orange`, `amber`, `green`, `teal`,
-  `blue`, `indigo`, `purple`, `pink`, `brown`, `slate`, `gray`.
-- `tag: name` gives an element a tag (more than one is fine: `[tag: vendor, tag: camera]`).
+**Many at once**, with a `style` line:
+
+```
+style kind driver   [color: slate]      # every driver
+style tag vendor    [color: #e8871e]    # everything with [tag: vendor]
+style link event    [color: purple]     # every event link
+```
+
+**Without writing anything**: the Colour button in the app colours by layer, by top container or
+by tag.
+
+The attributes in `[ ]`, separated by commas:
+
+| Attribute | Value | Means |
+|---|---|---|
+| `color` | `#rrggbb`, `#rgb` or a colour name | the colour |
+| `dark` | the same | the colour in the dark theme (without it: the same as `color`) |
+| `tag` | a name | a tag, can repeat: `[tag: vendor, tag: camera]` |
+
+- A `#rrggbb` colour is used exactly as written, in the light and in the dark theme.
+- The names change with the theme: `red`, `orange`, `amber`, `green`, `teal`, `blue`, `indigo`,
+  `purple`, `pink`, `brown`, `slate`, `gray`.
 - Which colour wins: the element's own, then a `style tag` (first tag first), then a `style kind`.
   For links: the link's own, then a `style link`.
-- Inside `[ ]` a `#` is a colour, not a comment. After the `]` it is a comment again.
-- An unknown attribute or a value that is not a colour gives the warning W204; the rest of the line counts.
 
-## EBNF
+## Messages
+
+A message shows the line and the place. Errors skip the line, warnings keep it.
+
+| Code | Kind | When | How to fix it |
+|---|---|---|---|
+| E001 | error | The line can't be read: a typo, a stray character, a title without its closing `"`, a `[` without `]`, a comma with nothing after it | Check the line against the forms on this page |
+| E002 | error | `}` with no open container | Remove the `}` or add the missing `{` |
+| E003 | error | A container is never closed (shown where it starts) | Add the `}` |
+| E101 | error | A name is used twice | Rename one of them, names are for the whole file |
+| E102 | error | A link uses a name that doesn't exist | Check the spelling, or add the element |
+| E103 | error | An element links to itself | Remove the link |
+| W201 | warning | Both ports of a link have a type and they differ | Make the types the same, or remove one |
+| W202 | warning | An `in:` port is used as a sender, or an `out:` port as a receiver | Swap the link, or move the port to the other list |
+| W203 | warning | A `layer` is inside a container or has no `{ }` | Put it at the top level with `{ }` |
+| W204 | warning | An unknown attribute in `[ ]`, or a value that is not a colour | Use `color`, `dark` or `tag`, and `#rrggbb`, `#rgb` or a colour name |
+| W301 | warning | (Mermaid import) a line that is not supported was skipped | Nothing to do, or draw that part in `.arch3d` |
+
+The codes don't change between versions, so tools and tests can rely on them.
+
+## For tool makers: the grammar (EBNF)
 
 ```
 file       = { line } ;
@@ -136,17 +276,17 @@ line       = ws [ statement ] [ comment ] newline ;
 statement  = close | node | edge | style ;
 close      = "}" { ws "}" } ;
 node       = kind ws name [ ws title ] [ ws attrs ] { ws portlist } [ ws "{" ] ;
+title      = '"' { char except '"' and "\" | "\" char } '"' ;
 attrs      = "[" [ attr { "," attr } ] "]" ;
 attr       = ("color" | "dark") ":" colour | "tag" ":" ident ;
 colour     = "#" hex hex hex [ hex hex hex ] | colourname ;
-style      = "style" ws ("kind" | "tag" | "link") ws ident ws attrs ;
-title      = '"' { char except '"' and "\" | "\" char } '"' ;
 portlist   = ("in:" | "out:") ws port { ws? "," ws? port } ;
 port       = ident [ ":" ident ] ;
 edge       = ref ws? link ws? ref { ws? "," ws? ref } [ ws attrs ] [ ws ":" ws label ] ;
 link       = arrow | ws linkword ws ;
 arrow      = "->" | "-->" | "=>" | "~>" | "<=>" | ">>" | "<>" | "<-" ;
 linkword   = "call" | "message" | "event" | "session" | "stream" | "shared" ;
+style      = "style" ws ("kind" | "tag" | "link") ws ident ws attrs ;
 ref        = ident [ "." ident ] ;
 kind       = ident ;  name = ident ;
 ident      = letter { letter | digit | "_" | "-" } ;
@@ -154,28 +294,11 @@ label      = { any character except newline } ;
 comment    = ("#" | "//") { any character except newline } ;   (not inside quotes or [ ])
 ```
 
-## Diagnostics (stable codes, tests assert on them)
+A node may be called like a link word: `service event in: x` declares an element named `event`.
+A line `A event B` is a link.
 
-| Code | Severity | When |
-|---|---|---|
-| E001 | error | A line matches no statement (also: a title with no closing quote, a trailing comma) |
-| E002 | error | `}` with no open container |
-| E003 | error | Container not closed by end of file (reported on the line that opened it) |
-| E101 | error | Name defined twice |
-| E102 | error | Link refers to an unknown name |
-| E103 | error | Link from a component to itself |
-| W201 | warning | Both ends of a link have port types and they differ |
-| W202 | warning | A port declared `in` is used as a link source, or `out` as a target |
-| W203 | warning | A `layer` is inside a container or has no `{ }`; it is drawn as a normal container or element |
-| W204 | warning | Unknown attribute in `[ ]`, or a value that is not a colour (#rrggbb, #rgb or a colour name) |
-| W301 | warning | Import adapters (Mermaid): a line the adapter does not support is skipped |
+## Not in the language yet
 
-Every diagnostic carries `line` (1-based), `col` (1-based) and `endCol`.
-Errors never stop parsing: the parser recovers at the next line and the model is
-built from everything that is valid, so the 3D view keeps working while you type.
-
-## Planned (not v1)
-
-- Delegation: `port => Child.port` inside a container, to pass a container's
-  interface through to the component that implements it.
-- Tags and metadata: `component X [team: payments, tech: Go]`.
+- Delegation: `port => Child.port` inside a container, to pass a container's interface through to
+  the element that implements it.
+- More attributes, for example `[team: payments]`.
