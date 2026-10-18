@@ -40,7 +40,7 @@ Orders     ~> Events : OrderPlaced
 
 The keyword (`user`, `app`, `service`, `database`, `topic`...) picks the shape, and the arrow picks
 how the link looks: `->` call, `=>` message, `~>` event, `<=>` session, `>>` stream, `<>` shared.
-The same short list works for Android, AOSP and Linux. See the [user guide](docs/USER_GUIDE.md#3-the-language).
+The same short list works for Android, AOSP and Linux. The [user guide](docs/USER_GUIDE.md#2-your-first-model) builds a first model with you in five steps.
 
 ## Features
 
@@ -85,11 +85,13 @@ You can also take the `.vsix` (version 0.3.0) from
 
 ## Docs
 
-- [User guide](docs/USER_GUIDE.md): how to use the app, the language, examples (an Android
-  app, the AOSP camera stack, a Linux desktop and a legend), import/export, all scripts, WSL and VS Code.
+- [User guide](docs/USER_GUIDE.md): start in VS Code, your first model in five steps, the view,
+  modelling tips, examples (an Android app, the AOSP camera stack, a Linux desktop), sharing and
+  exporting, the web app and WSL.
 - [Deployment](docs/DEPLOY.md): put it on your own domain.
 - [Language reference](docs/GRAMMAR.md), [all keywords on one page](docs/KEYWORDS.md) and
   [architecture](docs/ARCHITECTURE.md).
+- [Working on Archi3D](docs/DEVELOPING.md): setup, tests, scripts, URL parameters, the extension.
 - [Build plan](docs/PLAN.md): the steps I followed to build it.
 - Rules for contributors and AI agents: [AGENTS.md](AGENTS.md) and [CLAUDE.md](CLAUDE.md).
 
