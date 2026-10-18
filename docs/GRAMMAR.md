@@ -104,18 +104,46 @@ Six kinds. Pick by how the two sides talk, not by the technology.
 in the model). The word form is handy when you think in words: `App.x event Svc.y : DONE`.
 A node may still be called like a link word: `service event in: x` declares an element named `event`.
 
+## Colours
+
+Three ways, from one element to many:
+
+```
+driver V4L2 "V4L2 driver" [color: #2e7d6b]              # one element
+system HAL [color: #fde7c8, dark: #3d3326] { ... }        # a container: its plate gets a tint
+CameraService -> Gralloc [color: red] : alloc             # a link: before its label
+
+style kind driver   [color: slate]                        # every driver
+style tag vendor    [color: #e8871e]                      # every element with [tag: vendor]
+style link event    [color: purple]                       # every event link
+```
+
+- `color` is `#rrggbb` or `#rgb`, used exactly as written in the light and in the dark theme. Add
+  `dark: #…` for a different colour in the dark theme.
+- A name is a shortcut that changes with the theme: `red`, `orange`, `amber`, `green`, `teal`,
+  `blue`, `indigo`, `purple`, `pink`, `brown`, `slate`, `gray`.
+- `tag: name` gives an element a tag (more than one is fine: `[tag: vendor, tag: camera]`).
+- Which colour wins: the element's own, then a `style tag` (first tag first), then a `style kind`.
+  For links: the link's own, then a `style link`.
+- Inside `[ ]` a `#` is a colour, not a comment. After the `]` it is a comment again.
+- An unknown attribute or a value that is not a colour gives the warning W204; the rest of the line counts.
+
 ## EBNF
 
 ```
 file       = { line } ;
 line       = ws [ statement ] [ comment ] newline ;
-statement  = close | node | edge ;
+statement  = close | node | edge | style ;
 close      = "}" { ws "}" } ;
-node       = kind ws name [ ws title ] { ws portlist } [ ws "{" ] ;
+node       = kind ws name [ ws title ] [ ws attrs ] { ws portlist } [ ws "{" ] ;
+attrs      = "[" [ attr { "," attr } ] "]" ;
+attr       = ("color" | "dark") ":" colour | "tag" ":" ident ;
+colour     = "#" hex hex hex [ hex hex hex ] | colourname ;
+style      = "style" ws ("kind" | "tag" | "link") ws ident ws attrs ;
 title      = '"' { char except '"' and "\" | "\" char } '"' ;
 portlist   = ("in:" | "out:") ws port { ws? "," ws? port } ;
 port       = ident [ ":" ident ] ;
-edge       = ref ws? link ws? ref { ws? "," ws? ref } [ ws ":" ws label ] ;
+edge       = ref ws? link ws? ref { ws? "," ws? ref } [ ws attrs ] [ ws ":" ws label ] ;
 link       = arrow | ws linkword ws ;
 arrow      = "->" | "-->" | "=>" | "~>" | "<=>" | ">>" | "<>" | "<-" ;
 linkword   = "call" | "message" | "event" | "session" | "stream" | "shared" ;
@@ -123,7 +151,7 @@ ref        = ident [ "." ident ] ;
 kind       = ident ;  name = ident ;
 ident      = letter { letter | digit | "_" | "-" } ;
 label      = { any character except newline } ;
-comment    = ("#" | "//") { any character except newline } ;
+comment    = ("#" | "//") { any character except newline } ;   (not inside quotes or [ ])
 ```
 
 ## Diagnostics (stable codes, tests assert on them)
@@ -139,6 +167,7 @@ comment    = ("#" | "//") { any character except newline } ;
 | W201 | warning | Both ends of a link have port types and they differ |
 | W202 | warning | A port declared `in` is used as a link source, or `out` as a target |
 | W203 | warning | A `layer` is inside a container or has no `{ }`; it is drawn as a normal container or element |
+| W204 | warning | Unknown attribute in `[ ]`, or a value that is not a colour (#rrggbb, #rgb or a colour name) |
 | W301 | warning | Import adapters (Mermaid): a line the adapter does not support is skipped |
 
 Every diagnostic carries `line` (1-based), `col` (1-based) and `endCol`.
@@ -150,4 +179,3 @@ built from everything that is valid, so the 3D view keeps working while you type
 - Delegation: `port => Child.port` inside a container, to pass a container's
   interface through to the component that implements it.
 - Tags and metadata: `component X [team: payments, tech: Go]`.
-- Your own colours per element or kind.

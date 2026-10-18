@@ -130,6 +130,7 @@ Buttons on the top right:
 | Semantic zoom: on/off | On: from far away the containers close (you see a box) and the links inside them are drawn as one arc between two containers. A container opens as soon as what is inside it is big enough to read, the biggest ones first, so the screen doesn't get too full. Port and link labels only show when there is enough space. Off: everything open. |
 | Edges: ortho/arc | Links with right angles, or as arcs. |
 | Hide editor / Show editor | The 3D view takes the whole window. Key `E` does the same. |
+| Colour: kind/layer/container/tag | Kind is the normal look with your own colours. Layer, container and tag colour every element by its group and show a small legend. |
 | Bundling: off/on | Links between closed containers follow the nesting tree and are bundled together (hierarchical edge bundling). Links of the selected element are not bundled. |
 
 ---
@@ -218,6 +219,33 @@ The full table with the Android, AOSP and Linux mapping is in [GRAMMAR.md](GRAMM
 - Links can go to containers too: `Frontend -> Backend : REST`.
 - Links use names, not paths: `OrderDB`, not `Shop.Backend.OrderDB`.
 
+### Colours
+
+Give an element, a container or a link its own colour, or colour many at once:
+
+```
+driver V4L2 "V4L2 driver" [color: #2e7d6b]
+system Phone [color: #dbe9f6, dark: #2a3d52] { ... }   # a container gets a tinted plate
+Camera -> CameraService [color: #3a7bd5] : openCamera()
+
+style kind driver   [color: slate]      # every driver
+style tag vendor    [color: #e8871e]    # everything with [tag: vendor]
+style link event    [color: purple]     # every event link
+```
+
+- `#rrggbb` (or `#rgb`) is used exactly as written, in the light and in the dark theme. If you want
+  another colour for the dark theme, add `dark: #…`.
+- Names are shortcuts that change with the theme: red, orange, amber, green, teal, blue, indigo,
+  purple, pink, brown, slate, gray.
+- `[tag: vendor]` gives an element a tag. You can have more than one.
+- The element's own colour wins over a `style tag`, and that wins over a `style kind`.
+- Inside `[ ]` the `#` is part of the colour, so `# comments` still work after the `]`.
+- When something is selected it gets a bit lighter and an orange outline, so it never clashes with
+  your colours.
+
+The **Colour** button (top right) colours by layer, by top container or by tag, without changing
+the file, and shows a legend.
+
 ### Layers
 
 Put your systems on floors with `layer` blocks. The first layer you write is the top floor:
@@ -255,6 +283,7 @@ layer Kernel "Linux kernel" {
 | W201 | Both ports have a type and the types are different |
 | W202 | An `in` port is used as link source, or an `out` port as target |
 | W203 | A `layer` is inside a container or has no `{ }`, so it is not a floor |
+| W204 | Unknown attribute in `[ ]`, or a value that is not a colour |
 | W301 | (Import) a Mermaid line that is not supported was skipped |
 
 ---
@@ -402,6 +431,15 @@ PipeWire            <> UVC : dmabuf
 
 ![Linux desktop, PipeWire selected](../examples/08-linux-desktop.png)
 
+### Colours
+
+[`examples/11-colours.arch3d`](../examples/11-colours.arch3d) uses all three ways: own colours,
+`style kind`, `style tag` and `style link`.
+
+| Light | Dark |
+|---|---|
+| ![Colours](../examples/11-colours.png) | ![Colours, dark theme](../examples/11-colours-dark.png) |
+
 ### AOSP camera stack on layers
 
 [`examples/10-aosp-layers.arch3d`](../examples/10-aosp-layers.arch3d) is the same model as the AOSP
@@ -429,6 +467,8 @@ npm run render -- examples/07-aosp-camera.arch3d --view svg2d --out examples/07-
 npm run render -- examples/08-linux-desktop.arch3d --focus UserSpace --k 0.75 --select PipeWire --panel
 npm run render -- examples/09-legend.arch3d --focus Device --k 1.35
 npm run render -- examples/10-aosp-layers.arch3d --cam far --lod on
+npm run render -- examples/11-colours.arch3d --cam iso
+npm run render -- examples/11-colours.arch3d --cam iso --theme dark --out examples/11-colours-dark.png
 npm run render -- examples/10-aosp-layers.arch3d --focus NativeLayer --k 1.1 --lod on --select CameraService --panel --out examples/10-aosp-layers-native.png
 ```
 
@@ -531,6 +571,8 @@ Harness (`harness.html`, one view per page, useful for screenshots and debugging
 | `edges` | `ortho`, `arc` |
 | `gap` | space between levels (default 60) |
 | `lod=off`, `bundle=on`, `select=<id>`, `theme=dark`, `font=<url>` | what the name says |
+| `colorby=layer`, `container` or `tag` | colour by group, with the legend |
+| `zoom=size`, `detail=1.5` | the first zoom rule; more or less detail |
 
 Example: `http://localhost:5173/harness.html?view=scene&fixture=nested-deep&cam=iso&edges=arc`
 

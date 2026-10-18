@@ -1,5 +1,394 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`valid fixtures > colours.arch3d model snapshot 1`] = `
+{
+  "diagnostics": [],
+  "edges": [
+    {
+      "async": false,
+      "from": {
+        "node": "User",
+        "port": "User._out",
+      },
+      "id": "e0",
+      "kind": "call",
+      "label": "tap",
+      "lca": null,
+      "to": {
+        "node": "Camera",
+        "port": "Camera._in",
+      },
+    },
+    {
+      "async": false,
+      "color": {
+        "dark": "#3a7bd5",
+        "light": "#3a7bd5",
+      },
+      "from": {
+        "node": "Camera",
+        "port": "Camera.open",
+      },
+      "id": "e1",
+      "kind": "call",
+      "label": "openCamera()",
+      "lca": "Phone",
+      "to": {
+        "node": "CameraService",
+        "port": "CameraService.connect",
+      },
+    },
+    {
+      "async": false,
+      "from": {
+        "node": "CameraService",
+        "port": "CameraService.hal",
+      },
+      "id": "e2",
+      "kind": "session",
+      "label": "HAL session",
+      "lca": "Phone",
+      "to": {
+        "node": "Hal",
+        "port": "Hal.session",
+      },
+    },
+    {
+      "async": true,
+      "color": {
+        "dark": "#b48aeb",
+        "light": "#8e5bc9",
+      },
+      "from": {
+        "node": "CameraService",
+        "port": "CameraService.status",
+      },
+      "id": "e3",
+      "kind": "event",
+      "label": "onOpened",
+      "lca": "Phone",
+      "to": {
+        "node": "Camera",
+        "port": "Camera._in",
+      },
+    },
+    {
+      "async": false,
+      "from": {
+        "node": "Hal",
+        "port": "Hal.ioctl",
+      },
+      "id": "e4",
+      "kind": "call",
+      "lca": "Phone",
+      "to": {
+        "node": "V4L2",
+        "port": "V4L2.ioctl",
+      },
+    },
+    {
+      "async": false,
+      "from": {
+        "node": "Hal",
+        "port": "Hal.ioctl",
+      },
+      "id": "e5",
+      "kind": "call",
+      "lca": "Phone",
+      "to": {
+        "node": "Isp",
+        "port": "Isp.tune",
+      },
+    },
+    {
+      "async": true,
+      "from": {
+        "node": "Sensor",
+        "port": "Sensor.frames",
+      },
+      "id": "e6",
+      "kind": "stream",
+      "label": "MIPI",
+      "lca": null,
+      "to": {
+        "node": "Csi",
+        "port": "Csi.frames",
+      },
+    },
+  ],
+  "nodes": {
+    "Camera": {
+      "children": [],
+      "container": false,
+      "depth": 1,
+      "id": "Camera",
+      "kind": "app",
+      "loc": {
+        "col": 7,
+        "endCol": 13,
+        "line": 11,
+      },
+      "parent": "Phone",
+      "ports": [
+        {
+          "dir": "out",
+          "id": "Camera.open",
+          "implicit": false,
+          "name": "open",
+        },
+        {
+          "dir": "in",
+          "id": "Camera._in",
+          "implicit": true,
+          "name": "_in",
+        },
+      ],
+      "shape": "phone",
+      "title": "Camera app",
+    },
+    "CameraService": {
+      "children": [],
+      "color": {
+        "dark": "#2bc0c0",
+        "light": "#14a3a3",
+      },
+      "container": false,
+      "depth": 1,
+      "id": "CameraService",
+      "kind": "service",
+      "loc": {
+        "col": 11,
+        "endCol": 24,
+        "line": 12,
+      },
+      "parent": "Phone",
+      "ports": [
+        {
+          "dir": "in",
+          "id": "CameraService.connect",
+          "implicit": false,
+          "name": "connect",
+        },
+        {
+          "dir": "out",
+          "id": "CameraService.hal",
+          "implicit": false,
+          "name": "hal",
+        },
+        {
+          "dir": "out",
+          "id": "CameraService.status",
+          "implicit": false,
+          "name": "status",
+        },
+      ],
+      "shape": "box",
+    },
+    "Csi": {
+      "children": [],
+      "color": {
+        "dark": "#8796a3",
+        "light": "#5d6873",
+      },
+      "container": false,
+      "depth": 1,
+      "id": "Csi",
+      "kind": "driver",
+      "loc": {
+        "col": 10,
+        "endCol": 13,
+        "line": 16,
+      },
+      "parent": "Phone",
+      "ports": [
+        {
+          "dir": "in",
+          "id": "Csi.frames",
+          "implicit": false,
+          "name": "frames",
+        },
+      ],
+      "shape": "chip",
+      "title": "CSI-2 receiver",
+    },
+    "Hal": {
+      "children": [],
+      "color": {
+        "dark": "#e8871e",
+        "light": "#e8871e",
+      },
+      "container": false,
+      "depth": 1,
+      "id": "Hal",
+      "kind": "library",
+      "loc": {
+        "col": 11,
+        "endCol": 14,
+        "line": 13,
+      },
+      "parent": "Phone",
+      "ports": [
+        {
+          "dir": "in",
+          "id": "Hal.session",
+          "implicit": false,
+          "name": "session",
+        },
+        {
+          "dir": "out",
+          "id": "Hal.ioctl",
+          "implicit": false,
+          "name": "ioctl",
+        },
+      ],
+      "shape": "library",
+      "tags": [
+        "vendor",
+      ],
+      "title": "Camera HAL",
+    },
+    "Isp": {
+      "children": [],
+      "color": {
+        "dark": "#e07fa0",
+        "light": "#c75d7e",
+      },
+      "container": false,
+      "depth": 1,
+      "id": "Isp",
+      "kind": "library",
+      "loc": {
+        "col": 11,
+        "endCol": 14,
+        "line": 14,
+      },
+      "parent": "Phone",
+      "ports": [
+        {
+          "dir": "in",
+          "id": "Isp.tune",
+          "implicit": false,
+          "name": "tune",
+        },
+      ],
+      "shape": "library",
+      "tags": [
+        "vendor",
+      ],
+      "title": "ISP tuning",
+    },
+    "Phone": {
+      "children": [
+        "Camera",
+        "CameraService",
+        "Hal",
+        "Isp",
+        "V4L2",
+        "Csi",
+      ],
+      "color": {
+        "dark": "#2a3d52",
+        "light": "#dbe9f6",
+      },
+      "container": true,
+      "depth": 0,
+      "id": "Phone",
+      "kind": "system",
+      "loc": {
+        "col": 8,
+        "endCol": 13,
+        "line": 10,
+      },
+      "parent": null,
+      "ports": [],
+      "shape": "box",
+    },
+    "Sensor": {
+      "children": [],
+      "color": {
+        "dark": "#f2c75c",
+        "light": "#d9a520",
+      },
+      "container": false,
+      "depth": 0,
+      "id": "Sensor",
+      "kind": "device",
+      "loc": {
+        "col": 8,
+        "endCol": 14,
+        "line": 18,
+      },
+      "parent": null,
+      "ports": [
+        {
+          "dir": "out",
+          "id": "Sensor.frames",
+          "implicit": false,
+          "name": "frames",
+        },
+      ],
+      "shape": "device",
+      "title": "Image sensor",
+    },
+    "User": {
+      "children": [],
+      "container": false,
+      "depth": 0,
+      "id": "User",
+      "kind": "user",
+      "loc": {
+        "col": 6,
+        "endCol": 10,
+        "line": 8,
+      },
+      "parent": null,
+      "ports": [
+        {
+          "dir": "out",
+          "id": "User._out",
+          "implicit": true,
+          "name": "_out",
+        },
+      ],
+      "shape": "person",
+      "title": "Phone user",
+    },
+    "V4L2": {
+      "children": [],
+      "color": {
+        "dark": "#8796a3",
+        "light": "#5d6873",
+      },
+      "container": false,
+      "depth": 1,
+      "id": "V4L2",
+      "kind": "driver",
+      "loc": {
+        "col": 10,
+        "endCol": 14,
+        "line": 15,
+      },
+      "parent": "Phone",
+      "ports": [
+        {
+          "dir": "in",
+          "id": "V4L2.ioctl",
+          "implicit": false,
+          "name": "ioctl",
+        },
+      ],
+      "shape": "chip",
+      "title": "V4L2 driver",
+    },
+  },
+  "roots": [
+    "User",
+    "Phone",
+    "Sensor",
+  ],
+}
+`;
+
 exports[`valid fixtures > container-links.arch3d model snapshot 1`] = `
 {
   "diagnostics": [],
