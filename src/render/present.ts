@@ -15,6 +15,9 @@ import { elementOf } from './shapes';
 
 export const LID_FADE_MS = 150;
 export const DIM_OPACITY = 0.15;
+/** A selected element (and everything inside a selected container) gets this much lighter and an
+ * accent outline, instead of an orange tint that would clash with your own colours. */
+export const SELECT_LIGHTEN = 0.3;
 /** Floors above the one you look at (layers) are hidden but keep faint outlines, so they cover nothing
  * (a see-through mesh would still hide what is behind it in the depth buffer). This is how light the outlines are. */
 export const FADE_OPACITY = 0.08;
@@ -65,6 +68,7 @@ export class Presenter {
 
     const hl = selected && model.nodes[selected] ? highlightSet(model, selected) : null;
     const accent = new THREE.Color(pal.accent);
+    const white = new THREE.Color(0xffffff);
     const bg = new THREE.Color(pal.background);
     const dimmed = new Set<string>();
     const shown = (id: Id) => nodeShown(model, r, id);
@@ -83,7 +87,7 @@ export class Presenter {
         const on = !hl || hl.nodes.has(id);
         set.setOpacity(part, on ? 1 : DIM_OPACITY);
         const base = set.baseColor(part)!;
-        set.setColor(part, hl && isInside(model, id, selected!) ? base.clone().lerp(accent, 0.35) : base);
+        set.setColor(part, hl && isInside(model, id, selected!) ? base.clone().lerp(white, SELECT_LIGHTEN) : base);
         if (!on) dimmed.add(id);
       }
     }
@@ -96,22 +100,23 @@ export class Presenter {
       if (!on) dimmed.add(id);
     }
 
-    const edgeColor = new THREE.Color(pal.edge);
-    const dimEdge = edgeColor.clone().lerp(bg, 1 - DIM_OPACITY);
-    const fadeEdge = edgeColor.clone().lerp(bg, 1 - FADE_OPACITY);
+    const edgeColor = (id: string) => o.edges.baseColor(id);
+    const dimEdge = (id: string) => edgeColor(id).lerp(bg, 1 - DIM_OPACITY);
+    const fadeEdge = (id: string) => edgeColor(id).lerp(bg, 1 - FADE_OPACITY);
+    const plainEdge = new THREE.Color(pal.edge);
     const edgeOf = new Map(model.edges.map((e) => [e.id, e]));
     const edgeFaded = (id: string) => { const e = edgeOf.get(id); return !!e && faded(e.from.node) && faded(e.to.node); };
     const { direct, aggregates } = splitEdges(model, r);
     o.edges.update(
       direct,
-      (id) => (edgeFaded(id) ? fadeEdge : !hl ? edgeColor : hl.edges.has(id) ? accent : dimEdge),
+      (id) => (edgeFaded(id) ? fadeEdge(id) : !hl ? edgeColor(id) : hl.edges.has(id) ? accent : dimEdge(id)),
       (id) => (edgeFaded(id) ? FADE_OPACITY : !hl || hl.edges.has(id) ? 1 : DIM_OPACITY),
       aggregates.map((a) => {
         const mine = !!hl && a.ids.some((id) => hl.edges.has(id));
         const from = this.anchor(a.from), to = this.anchor(a.to);
         return {
           points: bundled && !mine ? bundlePath(this.scene, model, a.from, a.to, from, to) : arcPath(from, to),
-          color: !hl ? edgeColor : mine ? accent : dimEdge,
+          color: !hl ? plainEdge : mine ? accent : plainEdge.clone().lerp(bg, 1 - DIM_OPACITY),
         };
       }),
     );
@@ -125,6 +130,7 @@ export class Presenter {
       (id) => {
         const el = id.startsWith('lid:') ? id.slice(4) : elementOf(id);
         if (faded(el)) return fadeOutline;
+        if (hl && !id.startsWith('lid:') && isInside(model, el, selected!)) return accent;
         return hl && !id.startsWith('lid:') && !hl.nodes.has(el) ? dimOutline : outline;
       },
     );

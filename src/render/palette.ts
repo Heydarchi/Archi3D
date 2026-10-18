@@ -2,6 +2,8 @@
 import type { Shape } from '../core/types';
 
 export interface Palette {
+  /** Which side of a user colour (ColorPair) to use. */
+  name: 'light' | 'dark';
   background: number; grid: number; ink: number;
   plates: number[]; plateOpacity: number;
   block: Record<Shape, number>; outline: number;
@@ -10,6 +12,7 @@ export interface Palette {
 }
 
 export const LIGHT: Palette = {
+  name: 'light',
   background: 0xeef1f5, grid: 0xd5dce4, ink: 0x1f2933,
   plates: [0xb9c7d2, 0xcad6de, 0xd8e1e7, 0xe3eaef], plateOpacity: 0.92,
   block: {
@@ -22,6 +25,7 @@ export const LIGHT: Palette = {
 };
 
 export const DARK: Palette = {
+  name: 'dark',
   background: 0x141b21, grid: 0x26313a, ink: 0xe4e7eb,
   plates: [0x1d2932, 0x24323c, 0x2c3c47, 0x344652], plateOpacity: 0.92,
   block: {

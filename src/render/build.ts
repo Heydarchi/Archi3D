@@ -4,7 +4,8 @@
 // edge batches, arrowheads and the ground grid.
 import * as THREE from 'three';
 import { lidSpecs } from '../core/lod/lids';
-import type { ArchModel, SceneSpec } from '../core/types';
+import { colorGroups, type ColorBy, type ColorGroups } from '../core/model/colorBy';
+import type { ArchModel, ColorPair, Id, SceneSpec } from '../core/types';
 import { EdgeBatch } from './edges';
 import { boxMatrix, InstanceSet } from './instances';
 import { OutlineBatch } from './outlines';
@@ -27,6 +28,8 @@ export interface SceneObjects {
   outlines: OutlineBatch;
   labels: THREE.Group;
   ground: THREE.Object3D;
+  /** Groups and their colours when colouring by layer, container or tag (null: the normal look). */
+  legend: ColorGroups['legend'] | null;
 }
 
 export const PORT_RADIUS = 4.5;
@@ -42,11 +45,26 @@ function ground(scene: SceneSpec, pal: Palette): THREE.GridHelper {
   return grid;
 }
 
-export function buildSceneObjects(scene: SceneSpec, pal: Palette = LIGHT, model?: ArchModel): SceneObjects {
+/** How much of your colour goes into a container's plate (the rest is the normal plate colour). */
+export const PLATE_TINT = 0.5;
+
+export function buildSceneObjects(scene: SceneSpec, pal: Palette = LIGHT, model?: ArchModel, colorBy: ColorBy = 'kind'): SceneObjects {
   const color = (hex: number) => new THREE.Color(hex);
+  // Your colour for an element: its group colour when colouring by group, else its own [color: …].
+  const groups = model ? colorGroups(model, colorBy) : null;
+  const own = (id: Id, spec?: ColorPair): THREE.Color | null => {
+    const pair = groups ? groups.colorOf[id] : spec;
+    return pair ? new THREE.Color(pair[pal.name]) : null;
+  };
+  const plateColor = (id: Id, depth: number, spec?: ColorPair) => {
+    const base = color(pal.plates[depth % pal.plates.length]);
+    const c = own(id, spec);
+    return c ? base.lerp(c, PLATE_TINT) : base;
+  };
+  const specOf = new Map(scene.plates.map((p) => [p.id, p.color]));
   const plates = new InstanceSet('plates', new THREE.BoxGeometry(1, 1, 1),
     new THREE.MeshStandardMaterial({ roughness: 0.9 }),
-    scene.plates.map((p) => ({ id: p.id, matrix: boxMatrix(p.center, p.size), color: color(pal.plates[p.depth % pal.plates.length]), opacity: pal.plateOpacity })));
+    scene.plates.map((p) => ({ id: p.id, matrix: boxMatrix(p.center, p.size), color: plateColor(p.id, p.depth, p.color), opacity: pal.plateOpacity })));
 
   const depthOf = new Map(scene.plates.map((p) => [p.id, p.depth]));
   const lidList = model ? lidSpecs(scene, model) : [];
@@ -54,15 +72,15 @@ export function buildSceneObjects(scene: SceneSpec, pal: Palette = LIGHT, model?
     new THREE.MeshStandardMaterial({ roughness: 0.7 }),
     lidList.map((l) => ({
       id: l.id, matrix: boxMatrix(l.center, l.size), opacity: 0.96,
-      color: color(pal.plates[(depthOf.get(l.id) ?? 0) % pal.plates.length]).lerp(color(pal.ink), 0.08),
+      color: plateColor(l.id, depthOf.get(l.id) ?? 0, specOf.get(l.id)).lerp(color(pal.ink), 0.08),
     })));
   for (const l of lidList) { lids.setShown(l.id, false); lids.setOpacity(l.id, 0); }
 
-  const parts = scene.blocks.flatMap((b) => blockParts(b).map((p) => ({ ...p, shape: b.shape })));
+  const parts = scene.blocks.flatMap((b) => blockParts(b).map((p) => ({ ...p, shape: b.shape, own: own(b.id, b.color) })));
   const bodies = BODIES.map((body: Body) => new InstanceSet(meshName(body), bodyGeometry(body),
     new THREE.MeshStandardMaterial({ roughness: 0.55, metalness: 0.05 }),
     parts.filter((p) => p.body === body).map((p) => ({
-      id: p.id, matrix: p.matrix, color: color(pal.block[p.shape]), opacity: p.shape === 'ext' ? EXT_OPACITY : 1,
+      id: p.id, matrix: p.matrix, color: p.own ?? color(pal.block[p.shape]), opacity: p.shape === 'ext' ? EXT_OPACITY : 1,
     }))));
   const [blocks, cylinders] = bodies;
 
@@ -88,7 +106,7 @@ export function buildSceneObjects(scene: SceneSpec, pal: Palette = LIGHT, model?
   const root = new THREE.Group();
   root.name = 'archi';
   root.add(grid, plates.mesh, ...bodies.map((set) => set.mesh), ports.mesh, outlines.lines, edges.group, lids.mesh, labels);
-  return { root, plates, lids, blocks, cylinders, bodies, ports, edges, outlines, labels, ground: grid };
+  return { root, plates, lids, blocks, cylinders, bodies, ports, edges, outlines, labels, ground: grid, legend: groups?.legend ?? null };
 }
 
 /** Free every geometry and material under `obj`. */
@@ -106,9 +124,9 @@ export class SceneRoot {
   objects: SceneObjects | null = null;
   constructor(private palette: Palette = LIGHT) {}
 
-  setScene(scene: SceneSpec, model?: ArchModel): SceneObjects {
+  setScene(scene: SceneSpec, model?: ArchModel, colorBy: ColorBy = 'kind'): SceneObjects {
     this.clear();
-    this.objects = buildSceneObjects(scene, this.palette, model);
+    this.objects = buildSceneObjects(scene, this.palette, model, colorBy);
     this.group.add(this.objects.root);
     return this.objects;
   }

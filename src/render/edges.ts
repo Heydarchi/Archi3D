@@ -98,11 +98,13 @@ export class EdgeBatch {
   /** Squares at both ends of a shared link: "<id>[a" and "<id>[b". */
   readonly markers: InstanceSet;
   private readonly specs: EdgeSpec[];
+  private readonly base: Map<string, THREE.Color>;
   private key = '';
 
   constructor(edges: EdgeSpec[], private pal: Palette) {
     this.specs = edges;
     const color = new THREE.Color(pal.edge);
+    this.base = new Map(edges.map((e) => [e.id, new THREE.Color(e.color ? e.color[pal.name] : pal.edge)]));
     const item = (id: string, matrix: THREE.Matrix4) => ({ id, matrix, color, opacity: 0.95 });
     const arrowAt = (id: string, points: V3[]) => {
       const t = arrowTransform(points);
@@ -121,10 +123,12 @@ export class EdgeBatch {
     this.group.name = 'edges';
     this.group.add(...LINK_KINDS.map((k) => this.lines[k]), this.aggregate, this.arrows.mesh, this.flow.mesh, this.markers.mesh);
     this.aggregate.visible = false;
-    this.update(new Set(edges.map((e) => e.id)), () => new THREE.Color(pal.edge));
+    this.update(new Set(edges.map((e) => e.id)), (id) => this.baseColor(id));
   }
 
   get ids(): string[] { return this.specs.map((e) => e.id); }
+  /** A link's own colour ([color: …] or a link style), else the palette's link colour. */
+  baseColor(id: string): THREE.Color { return this.base.get(id)?.clone() ?? new THREE.Color(this.pal.edge); }
   /** Solid batch (calls) and dashed batch (messages), the names used before link kinds. */
   get solid(): LineSegments2 { return this.lines.call; }
   get dashed(): LineSegments2 { return this.lines.message; }
