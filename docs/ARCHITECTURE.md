@@ -109,7 +109,11 @@ export interface LodResult {
   visibleLabels: Set<string>;
   visibleEdges: Set<string>;
 }
-export interface LodOptions { selected?: Id | null; enabled?: boolean; maxLabels?: number }   // enabled=false: "all open"
+// rule 'readable' (default, lod/readable.ts): a container opens when its smallest child would be at least
+// 45 px wide (closes below 38 px), biggest first, at most 150 things on screen; a selected container is
+// always open. rule 'size' (the first version): opens when the camera is within 2.6 footprint diagonals.
+export interface LodOptions { selected?: Id | null; enabled?: boolean; maxLabels?: number; rule?: 'readable' | 'size'; detail?: number }
+// enabled=false: "all open"; detail scales the 45/38 px and the budget (keys + and -)
 export declare function lod(scene: SceneSpec, model: ArchModel, cam: CameraState, prev?: LodResult, opts?: LodOptions): LodResult;
 ```
 
@@ -134,6 +138,8 @@ interface View {
   ready(): Promise<void>;                               // labels synced, frame drawn
   labelMode(): 'troika' | 'css2d';
   setSemanticZoom(enabled: boolean): void;              // false = "all open"
+  setZoomRule(rule: 'readable' | 'size'): void;         // see lod; harness ?zoom=size
+  setDetail(detail: number): number;                    // 0.4 … 2.5, keys + - 0; harness ?detail=1.5
   lodState(): LodResult | null;
 }
 ```

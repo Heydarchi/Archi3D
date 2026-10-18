@@ -21,8 +21,10 @@ export interface LodOptions {
   enabled?: boolean;
   /** Label budget, nearest to the camera first (default LABEL_BUDGET). */
   maxLabels?: number;
-  /** 'size': open a container when it fills about half the view. 'readable': when its inside is readable (readable.ts). */
+  /** 'readable' (default): open a container when its inside is readable (readable.ts). 'size': when it fills about half the view. */
   rule?: ZoomRule;
+  /** More (above 1) or less (below 1) detail at the same distance. Only for the 'readable' rule. */
+  detail?: number;
 }
 
 export type ZoomRule = 'size' | 'readable';
@@ -71,7 +73,7 @@ export function lod(scene: SceneSpec, model: ArchModel, cam: CameraState, prev?:
     for (const c of n.children) visit(c, state === 'open');
   };
   for (const r of model.roots) visit(r, true);
-  if (opts.rule === 'readable') Object.assign(containers, readableContainers(scene, model, cam, prev, opts.selected));
+  if (opts.rule !== 'size') Object.assign(containers, readableContainers(scene, model, cam, prev, opts.selected, opts.detail));
 
   const shown = (id: Id): boolean => {
     for (let p = model.nodes[id]?.parent ?? null; p !== null; p = model.nodes[p].parent) {

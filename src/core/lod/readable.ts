@@ -1,6 +1,7 @@
 // Semantic zoom rule "readable": a container opens when what is inside it would be readable
 // (its smallest child at least READABLE_PX.open pixels wide), not when the container itself is big.
 // To keep the overview calm, containers open biggest first until ELEMENT_BUDGET things are on screen.
+// A selected container is always open, so a click on a closed one opens it where it is.
 import type { ArchModel, CameraState, ContainerState, Id, LodResult, SceneSpec, V3 } from '../types';
 
 /** Smallest child width in pixels to open a container, and to keep it open (hysteresis). */
@@ -11,7 +12,7 @@ export const ELEMENT_BUDGET = 150;
 const dist = (a: V3, b: V3) => Math.hypot(a.x - b.x, a.y - b.y, a.z - b.z);
 
 export function readableContainers(
-  scene: SceneSpec, model: ArchModel, cam: CameraState, prev: LodResult | undefined, selected: Id | null | undefined,
+  scene: SceneSpec, model: ArchModel, cam: CameraState, prev: LodResult | undefined, selected: Id | null | undefined, detail = 1,
 ): Record<Id, ContainerState> {
   // Pixels per world unit at a point; a narrow view is limited by its width.
   const perPx = (2 * Math.tan((cam.fovDeg * Math.PI) / 360)) / Math.max(1, cam.viewportH);
@@ -32,6 +33,11 @@ export function readableContainers(
   };
   const sizePx = (id: Id) => { const p = plates.get(id)!; return px(Math.hypot(p.size.x, p.size.z), p.center); };
 
+  const isAncestorOf = (id: Id, other: Id | null | undefined): boolean => {
+    for (let p = other ? model.nodes[other]?.parent ?? null : null; p !== null; p = model.nodes[p].parent) if (p === id) return true;
+    return false;
+  };
+
   const containers: Record<Id, ContainerState> = {};
   for (const p of scene.plates) containers[p.id] = 'hidden';
   let onScreen = model.roots.length;
@@ -41,10 +47,10 @@ export function readableContainers(
     frontier.sort((a, b) => sizePx(b) - sizePx(a) || (a < b ? -1 : 1));
     const id = frontier.shift()!;
     const kids = model.nodes[id].children;
-    const need = prev?.containers[id] === 'open' ? READABLE_PX.close : READABLE_PX.open;
+    const need = (prev?.containers[id] === 'open' ? READABLE_PX.close : READABLE_PX.open) / detail;
     const cost = kids.length - 1; // the lid goes, the children come
-    const readable = childPx(id) >= (selected === id ? need / 2 : need);
-    if (readable && onScreen + cost <= ELEMENT_BUDGET) {
+    const forced = selected === id || isAncestorOf(id, selected);
+    if (forced || (childPx(id) >= need && onScreen + cost <= ELEMENT_BUDGET * detail)) {
       containers[id] = 'open';
       onScreen += cost;
       frontier = frontier.concat(kids.filter((c) => model.nodes[c].container && plates.has(c)));

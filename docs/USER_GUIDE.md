@@ -104,6 +104,8 @@ npm run dev -- path/to/my-system.arch3d          # also possible: --port 5174, -
 | Fly in | double click | double tap |
 | Go back | click All (or a parent) in the breadcrumb of the info panel | |
 | Clear the selection | click on the empty ground | |
+| Open a closed container where it is | click on it (it stays open while it is selected) | tap |
+| More or less detail at the same distance | `+` and `-`, `0` back to normal | |
 
 What you see:
 
@@ -125,7 +127,7 @@ Buttons on the top right:
 
 | Button | What it does |
 |---|---|
-| Semantic zoom: on/off | On: from far away the containers close (you see a box) and the links inside them are drawn as one arc between two containers. They open when you come closer. Port and link labels only show when there is enough space. Off: everything open. |
+| Semantic zoom: on/off | On: from far away the containers close (you see a box) and the links inside them are drawn as one arc between two containers. A container opens as soon as what is inside it is big enough to read, the biggest ones first, so the screen doesn't get too full. Port and link labels only show when there is enough space. Off: everything open. |
 | Edges: ortho/arc | Links with right angles, or as arcs. |
 | Hide editor / Show editor | The 3D view takes the whole window. Key `E` does the same. |
 | Bundling: off/on | Links between closed containers follow the nesting tree and are bundled together (hierarchical edge bundling). Links of the selected element are not bundled. |

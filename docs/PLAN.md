@@ -394,6 +394,9 @@ closest, ports and edge labels appear.
 - near `Billing`: `Billing` open, its port labels visible.
 - Hysteresis: moving from ratio 2.9 to 2.7 and back to 2.9 doesn't change state.
 
+> Later (0.3.0): this ratio rule is now `rule: 'size'`. The default is `rule: 'readable'` in
+> `core/lod/readable.ts`: a container opens when what is inside it is readable, see ARCHITECTURE.md.
+
 **Pictures.** `artifacts/step-8/lod-nested-deep-{far,mid,near}.png`.
 
 **Done when.** The three pictures clearly show three levels of detail of the same model.
