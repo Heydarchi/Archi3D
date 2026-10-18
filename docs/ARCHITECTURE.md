@@ -95,7 +95,8 @@ export interface BlockSpec { id: Id; shape: Shape; center: V3; size: V3; floor?:
 export interface FloorSpec { id: Id; index: number; y: number; top: number; center: V3; size: V3 }
 export interface PortSpec  { id: PortId; owner: Id; dir: 'in' | 'out'; pos: V3 }
 export interface EdgeSpec  { id: string; points: V3[]; kind: LinkKind; async: boolean; label?: string; labelAt?: V3 }
-export interface LabelSpec { id: string; text: string; anchor: V3; role: 'container' | 'component' | 'port' | 'edge' }
+// alt: a second place for a container title, used when the first would cover an element label.
+export interface LabelSpec { id: string; text: string; anchor: V3; alt?: V3; role: 'container' | 'component' | 'port' | 'edge' }
 export interface SceneOptions { levelGap: number; blockHeight: number; edgeMode: 'ortho' | 'arc' }
 export interface SceneSpec {
   plates: PlateSpec[]; blocks: BlockSpec[]; ports: PortSpec[]; edges: EdgeSpec[]; labels: LabelSpec[];
