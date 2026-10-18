@@ -16,6 +16,10 @@ function item(it: AstItem): HTMLElement {
       it.label ? h('span', { class: 'lab' }, ` : ${it.label}`) : null,
       h('span', { class: 'lab' }, `  @${it.loc.line}`));
   }
+  if (it.type === 'style') {
+    return h('li', {}, h('span', { class: 'k' }, `style ${it.target} `), h('span', { class: 'n' }, it.name),
+      h('span', { class: 'lab' }, ` [color: ${it.attrs.color ?? '-'}]  @${it.loc.line}`));
+  }
   const li = h('li', {},
     h('span', { class: 'k' }, it.kind + ' '),
     h('span', { class: 'n' }, it.name),
