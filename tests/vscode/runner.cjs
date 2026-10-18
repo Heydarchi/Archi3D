@@ -25,7 +25,7 @@ exports.run = async function run() {
     const ext = vscode.extensions.all.find((e) => e.packageJSON.name === 'archi3d');
     check('extension is loaded', ext);
 
-    const ports = await vscode.workspace.openTextDocument(path.join(root, 'examples', '02-ports.arch3d'));
+    const ports = await vscode.workspace.openTextDocument(path.join(root, 'examples', '2-basics', 'ports.arch3d'));
     await vscode.window.showTextDocument(ports);
     check('.arch3d files get the "arch3d" language', ports.languageId === 'arch3d', ports.languageId);
     await until('activation', () => ext.isActive);
@@ -50,16 +50,16 @@ exports.run = async function run() {
     await until('problems cleared after the fix', () => vscode.languages.getDiagnostics(broken.uri).length === 0);
     check('problems update as you type', true);
 
-    const aosp = await vscode.workspace.openTextDocument(path.join(root, 'examples', '07-aosp-camera.arch3d'));
+    const aosp = await vscode.workspace.openTextDocument(path.join(root, 'examples', '3-systems', 'aosp-camera.arch3d'));
     await vscode.window.showTextDocument(aosp);
     await vscode.commands.executeCommand('archi3d.openPreview');
     const tab = await until('preview tab', () => webviewTabs().find((t) => t.label.startsWith('3D ·')));
-    check('preview opens beside the editor', tab.label === '3D · 07-aosp-camera.arch3d', tab.label);
+    check('preview opens beside the editor', tab.label === '3D · aosp-camera.arch3d', tab.label);
 
     // The preview follows the active model document.
-    const mmd = await vscode.workspace.openTextDocument(path.join(root, 'examples', '05-mermaid.mmd'));
+    const mmd = await vscode.workspace.openTextDocument(path.join(root, 'examples', '2-basics', 'mermaid.mmd'));
     await vscode.window.showTextDocument(mmd, vscode.ViewColumn.One);
-    await until('preview follows the Mermaid file', () => webviewTabs().find((t) => t.label === '3D · 05-mermaid.mmd'));
+    await until('preview follows the Mermaid file', () => webviewTabs().find((t) => t.label === '3D · mermaid.mmd'));
     check('preview follows the active .mmd document', true);
     check('Mermaid file has no problems', vscode.languages.getDiagnostics(mmd.uri).length === 0);
 
@@ -76,7 +76,7 @@ exports.run = async function run() {
     const mermaidShot = await png('in-vscode-mermaid.png');
     check('the preview drew a real frame', mermaidShot.length > 20_000, `${mermaidShot.length} bytes`);
     await vscode.window.showTextDocument(aosp, vscode.ViewColumn.One);
-    await until('preview follows back to AOSP', () => webviewTabs().find((t) => t.label === '3D · 07-aosp-camera.arch3d'));
+    await until('preview follows back to AOSP', () => webviewTabs().find((t) => t.label === '3D · aosp-camera.arch3d'));
     await png('in-vscode-aosp.png');
     check('preview is still open', webviewTabs().length === 1);
   } finally {

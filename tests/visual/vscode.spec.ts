@@ -44,7 +44,7 @@ test('webview: live updates, click reports the element, PNG capture, under the w
   test.setTimeout(120_000);
   const csp: string[] = [];
   await openWebview(page, csp);
-  await sendModel(page, 'examples/06-android-app.arch3d');
+  await sendModel(page, 'examples/3-systems/android-app.arch3d');
   expect(await page.evaluate(() => (window.__archi.state!() as { elkSource: string }).elkSource)).toBe('inline');
   // Labels must be drawn in WebGL (troika), or PNG captures would miss them.
   expect(await page.evaluate(() => (window.__archi.state!() as { labelMode: string }).labelMode)).toBe('troika');
@@ -52,12 +52,12 @@ test('webview: live updates, click reports the element, PNG capture, under the w
 
   // Typing in VS Code sends the whole text again; the camera stays.
   const cam = await page.evaluate(() => window.__archi.screenPos!('MainActivity'));
-  await sendModel(page, 'examples/06-android-app.arch3d');
+  await sendModel(page, 'examples/3-systems/android-app.arch3d');
   const again = await page.evaluate(() => window.__archi.screenPos!('MainActivity'));
   expect(Math.hypot(again!.x - cam!.x, again!.y - cam!.y)).toBeLessThan(1);
 
   // A Mermaid file, converted by the host.
-  await sendModel(page, 'examples/05-mermaid.mmd');
+  await sendModel(page, 'examples/2-basics/mermaid.mmd');
   const pos = await page.evaluate(() => window.__archi.screenPos!('api'));
   await page.mouse.click(pos!.x, pos!.y);
   expect((await outbox(page)).filter((m) => m.type === 'pick').at(-1)).toEqual({ type: 'pick', id: 'api' });
@@ -80,7 +80,7 @@ test('webview: the AOSP example, light theme host messages, select from the host
   test.setTimeout(120_000);
   const csp: string[] = [];
   await openWebview(page, csp);
-  await sendModel(page, 'examples/07-aosp-camera.arch3d');
+  await sendModel(page, 'examples/3-systems/aosp-camera.arch3d');
   await post(page, { type: 'select', id: 'CameraService' });
   await page.waitForFunction(() => (window.__archi.state!() as { selected: string }).selected === 'CameraService');
   await waitReady(page);
@@ -89,7 +89,7 @@ test('webview: the AOSP example, light theme host messages, select from the host
 });
 
 test('"Export Standalone HTML…": the filled template works offline from disk', async ({ page }) => {
-  const a = analyze('07-aosp-camera.arch3d', readFileSync('examples/07-aosp-camera.arch3d', 'utf8'));
+  const a = analyze('07-aosp-camera.arch3d', readFileSync('examples/3-systems/aosp-camera.arch3d', 'utf8'));
   const file = join(process.cwd(), 'test-results', 'vscode-export', 'aosp.html');
   mkdirSync(join(file, '..'), { recursive: true });
   writeFileSync(file, fillTemplate(readFileSync(join(dist, 'template.html'), 'utf8'), 'aosp', a.archText));
