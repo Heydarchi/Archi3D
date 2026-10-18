@@ -409,7 +409,7 @@ ImageSensor.mipi         >> V4L2Driver.mipi            : MIPI CSI-2
 CameraDeviceHal          <> Gralloc                    : gralloc buffers
 ```
 
-| The whole stack from far (one arc between two layers) | The HAL from close, `CameraDeviceHal` selected |
+| The whole stack from far: every layer is open because what is inside is readable | The HAL from close, `CameraDeviceHal` selected |
 |---|---|
 | ![AOSP far](../examples/07-aosp-camera.png) | ![AOSP HAL](../examples/07-aosp-camera-hal.png) |
 
