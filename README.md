@@ -15,7 +15,7 @@ You describe your system in a small text file: elements, their ports and the lin
 them. Archi3D shows it in 3D. Containers are drawn as levels on top of each other, so you can see
 the nesting. You can rotate, zoom in and click on things.
 
-![Every element and link kind in Archi3D](examples/09-legend.png)
+![Every element and link kind in Archi3D](examples/2-basics/legend.png)
 
 A model looks like this:
 

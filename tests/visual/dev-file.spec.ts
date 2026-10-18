@@ -33,7 +33,7 @@ test.beforeAll(() => { rmSync(dir, { recursive: true, force: true }); mkdirSync(
 test('edit a model file and save it back; follow changes made on disk', async ({ page }) => {
   test.setTimeout(180_000);
   const file = join(dir, 'shop.arch3d');
-  writeFileSync(file, readFileSync('examples/03-containers.arch3d', 'utf8'));
+  writeFileSync(file, readFileSync('examples/2-basics/containers.arch3d', 'utf8'));
   const server = await open(page, file);
   try {
     await expect(page.locator('#file-name')).toHaveText('shop.arch3d');
@@ -99,7 +99,7 @@ test('a new file starts from a small example and is created on first save', asyn
 test('a Mermaid file opens converted and saves to a sibling .arch3d, untouched itself', async ({ page }) => {
   test.setTimeout(120_000);
   const file = join(dir, 'flow.mmd');
-  const original = readFileSync('examples/05-mermaid.mmd', 'utf8');
+  const original = readFileSync('examples/2-basics/mermaid.mmd', 'utf8');
   writeFileSync(file, original);
   const server = await open(page, file);
   try {

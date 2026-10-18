@@ -15,7 +15,7 @@ describe('analyze', () => {
     expect(a.locations.A).toEqual({ line: 1, col: 11, endCol: 12 });
   });
   it('Mermaid: converted to .arch3d for the preview, locations point into the Mermaid file', () => {
-    const src = readFileSync(join(import.meta.dirname, '..', '..', 'examples', '05-mermaid.mmd'), 'utf8');
+    const src = readFileSync(join(import.meta.dirname, '..', '..', 'examples', '2-basics', 'mermaid.mmd'), 'utf8');
     const a = analyze('/w/x.mmd', src);
     expect(a.format).toBe('mermaid');
     expect(a.archText).toContain('group shop "Shop" {'); // the [Title] is kept

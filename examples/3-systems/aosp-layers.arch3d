@@ -1,4 +1,4 @@
-# The AOSP camera stack on five layers (floors), top layer first: the same model as 07, with layers.
+# The AOSP camera stack on five layers (floors), top layer first: the same model as aosp-camera.arch3d, with layers.
 
 user User "Phone user"           out: tap
 

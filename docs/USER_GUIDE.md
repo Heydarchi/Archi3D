@@ -4,7 +4,7 @@ Archi3D shows your software architecture in 3D. You write a small text file: the
 system, how they are grouped and how they talk to each other. Archi3D draws it, and you can
 rotate, zoom in and click on things.
 
-![The AOSP camera stack on layers](../examples/10-aosp-layers.png)
+![The AOSP camera stack on layers](../examples/3-systems/aosp-layers.png)
 
 This guide takes you from nothing to your own model:
 
@@ -54,7 +54,7 @@ after about 0.3 seconds. That is all you need. The next section builds a real mo
 ## 2. Your first model
 
 We build a small photo app in five steps. Each step adds one idea. All five files are in
-[`examples/tutorial/`](../examples/tutorial), so you can open them and compare.
+[`examples/1-tutorial/`](../examples/1-tutorial), so you can open them and compare.
 
 ### Step 1: elements and links
 
@@ -177,7 +177,7 @@ Upload.send -> Cloud.upload [color: #e8871e] : HTTPS
 ![Step 5](images/tutorial-5-colours.png)
 
 That's the whole language: elements, containers, links, layers and colours. The full file is
-[`examples/tutorial/5-colours.arch3d`](../examples/tutorial/5-colours.arch3d).
+[`examples/1-tutorial/5-colours.arch3d`](../examples/1-tutorial/5-colours.arch3d).
 
 ---
 
@@ -200,7 +200,7 @@ In VS Code, a click also takes the editor to the line where the element is writt
 
 ### What you see
 
-![Every element and link kind](../examples/09-legend.png)
+![Every element and link kind](../examples/2-basics/legend.png)
 
 - **Plates** are containers, **blocks** are elements. The shape comes from the kind.
 - **Ports**: teal is `in`, red is `out`.
@@ -297,30 +297,39 @@ All messages, with how to fix each one, are in [GRAMMAR.md](GRAMMAR.md#messages)
 
 ## 5. Examples
 
-All examples are in [`examples/`](../examples). Open one in VS Code and open the preview.
+All examples are in [`examples/`](../examples), in three folders. Open one in VS Code and open
+the preview.
+
+**[`1-tutorial/`](../examples/1-tutorial)**: the five steps of [section 2](#2-your-first-model).
+
+**[`2-basics/`](../examples/2-basics)**: one idea each.
 
 | Example | Shows |
 |---|---|
-| [`01-hello`](../examples/01-hello.arch3d) | the smallest model: three elements, two links |
-| [`02-ports`](../examples/02-ports.arch3d) | ports with types, messages |
-| [`03-containers`](../examples/03-containers.arch3d) | nesting |
-| [`04-container-links`](../examples/04-container-links.arch3d) | links to containers, `<-` |
-| [`05-mermaid.mmd`](../examples/05-mermaid.mmd) | a Mermaid file, shown like a model |
-| [`06-android-app`](../examples/06-android-app.arch3d) | an Android app: UI, domain and data layer |
-| [`07-aosp-camera`](../examples/07-aosp-camera.arch3d) | the AOSP camera stack, from the app to the sensor |
-| [`08-linux-desktop`](../examples/08-linux-desktop.arch3d) | a USB webcam in a video call: udev, D-Bus, PipeWire |
-| [`09-legend`](../examples/09-legend.arch3d) | every keyword and every link kind once |
-| [`10-aosp-layers`](../examples/10-aosp-layers.arch3d) | the AOSP camera stack on five layers |
-| [`11-colours`](../examples/11-colours.arch3d) | own colours and style lines |
-| [`tutorial/`](../examples/tutorial) | the five steps of section 2 |
+| [`hello`](../examples/2-basics/hello.arch3d) | the smallest model: three elements, two links |
+| [`ports`](../examples/2-basics/ports.arch3d) | ports with types, messages |
+| [`containers`](../examples/2-basics/containers.arch3d) | nesting |
+| [`container-links`](../examples/2-basics/container-links.arch3d) | links to containers, `<-` |
+| [`mermaid.mmd`](../examples/2-basics/mermaid.mmd) | a Mermaid file, shown like a model |
+| [`legend`](../examples/2-basics/legend.arch3d) | every keyword and every link kind once |
+| [`colours`](../examples/2-basics/colours.arch3d) | own colours and style lines |
+
+**[`3-systems/`](../examples/3-systems)**: real systems.
+
+| Example | Shows |
+|---|---|
+| [`android-app`](../examples/3-systems/android-app.arch3d) | an Android app: UI, domain and data layer |
+| [`aosp-camera`](../examples/3-systems/aosp-camera.arch3d) | the AOSP camera stack, from the app to the sensor |
+| [`aosp-layers`](../examples/3-systems/aosp-layers.arch3d) | the same stack on five layers |
+| [`linux-desktop`](../examples/3-systems/linux-desktop.arch3d) | a USB webcam in a video call: udev, D-Bus, PipeWire |
 
 | Android app | AOSP camera, HAL selected |
 |---|---|
-| ![Android app](../examples/06-android-app.png) | ![AOSP HAL](../examples/07-aosp-camera-hal.png) |
+| ![Android app](../examples/3-systems/android-app.png) | ![AOSP HAL](../examples/3-systems/aosp-camera-hal.png) |
 
 | Linux desktop, PipeWire selected | Colours |
 |---|---|
-| ![Linux desktop](../examples/08-linux-desktop.png) | ![Colours](../examples/11-colours.png) |
+| ![Linux desktop](../examples/3-systems/linux-desktop.png) | ![Colours](../examples/2-basics/colours.png) |
 
 ---
 

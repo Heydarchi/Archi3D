@@ -13,8 +13,8 @@ test('npm run render: .arch3d, Mermaid (2D) and D2 to PNG', async ({ page }) => 
   test.setTimeout(240_000);
   rmSync(out, { recursive: true, force: true });
   const run = (...args: string[]) => execFileSync('node', ['scripts/render.mjs', ...args], { encoding: 'utf8', env: process.env });
-  expect(run('examples/03-containers.arch3d', '--out', join(out, 'shop.png'))).toContain('wrote');
-  run('examples/05-mermaid.mmd', '--view', 'svg2d', '--out', join(out, 'mermaid.png'), '--width', '800', '--height', '500');
+  expect(run('examples/2-basics/containers.arch3d', '--out', join(out, 'shop.png'))).toContain('wrote');
+  run('examples/2-basics/mermaid.mmd', '--view', 'svg2d', '--out', join(out, 'mermaid.png'), '--width', '800', '--height', '500');
   run('fixtures/adapters/northwind.d2', '--out', join(out, 'd2.png'), '--cam', 'far', '--scale', '2', '--width', '600', '--height', '400');
   expect(size(join(out, 'shop.png'))).toEqual([1600, 1000]);
   expect(size(join(out, 'mermaid.png'))).toEqual([800, 500]);

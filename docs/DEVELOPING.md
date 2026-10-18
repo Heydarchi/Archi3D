@@ -97,23 +97,23 @@ The example pictures and the tutorial pictures are made with the render command.
 after a change to the view:
 
 ```sh
-npm run render -- examples/06-android-app.arch3d
-npm run render -- examples/06-android-app.arch3d --view svg2d --out examples/06-android-app-2d.png --width 1800 --height 1100
-npm run render -- examples/07-aosp-camera.arch3d --cam far --lod on
-npm run render -- examples/07-aosp-camera.arch3d --out examples/07-aosp-camera-hal.png --focus HAL --k 1.8 --select CameraDeviceHal --panel
-npm run render -- examples/07-aosp-camera.arch3d --view svg2d --out examples/07-aosp-camera-2d.png --width 1800 --height 1100
-npm run render -- examples/08-linux-desktop.arch3d --focus UserSpace --k 0.75 --select PipeWire --panel
-npm run render -- examples/09-legend.arch3d --focus Device --k 1.35
-npm run render -- examples/10-aosp-layers.arch3d --cam far --lod on
-npm run render -- examples/10-aosp-layers.arch3d --focus NativeLayer --k 1.1 --lod on --select CameraService --panel --out examples/10-aosp-layers-native.png
-npm run render -- examples/11-colours.arch3d --cam iso
-npm run render -- examples/11-colours.arch3d --cam iso --theme dark --out examples/11-colours-dark.png
-npm run render -- examples/tutorial/1-elements.arch3d --cam iso --width 1200 --height 720 --out docs/images/tutorial-1-elements.png
-npm run render -- examples/tutorial/2-containers.arch3d --cam iso --width 1200 --height 720 --out docs/images/tutorial-2-containers.png
-npm run render -- examples/tutorial/3-ports-and-kinds.arch3d --cam iso --lod on --width 1200 --height 720 --out docs/images/tutorial-3-ports-and-kinds.png
-npm run render -- examples/tutorial/4-layers.arch3d --cam far --lod on --width 1200 --height 720 --out docs/images/tutorial-4-layers.png
-npm run render -- examples/tutorial/5-colours.arch3d --cam far --lod on --width 1200 --height 720 --out docs/images/tutorial-5-colours.png
+npm run render -- examples/3-systems/android-app.arch3d
+npm run render -- examples/3-systems/android-app.arch3d --view svg2d --out examples/3-systems/android-app-2d.png --width 1800 --height 1100
+npm run render -- examples/3-systems/aosp-camera.arch3d --cam far --lod on
+npm run render -- examples/3-systems/aosp-camera.arch3d --out examples/3-systems/aosp-camera-hal.png --focus HAL --k 1.8 --select CameraDeviceHal --panel
+npm run render -- examples/3-systems/aosp-camera.arch3d --view svg2d --out examples/3-systems/aosp-camera-2d.png --width 1800 --height 1100
+npm run render -- examples/3-systems/linux-desktop.arch3d --focus UserSpace --k 0.75 --select PipeWire --panel
+npm run render -- examples/2-basics/legend.arch3d --focus Device --k 1.35
+npm run render -- examples/3-systems/aosp-layers.arch3d --cam far --lod on
+npm run render -- examples/3-systems/aosp-layers.arch3d --focus NativeLayer --k 1.1 --lod on --select CameraService --panel --out examples/3-systems/aosp-layers-native.png
+npm run render -- examples/2-basics/colours.arch3d --cam iso
+npm run render -- examples/2-basics/colours.arch3d --cam iso --theme dark --out examples/2-basics/colours-dark.png
+npm run render -- examples/1-tutorial/1-elements.arch3d --cam iso --width 1200 --height 720 --out docs/images/tutorial-1-elements.png
+npm run render -- examples/1-tutorial/2-containers.arch3d --cam iso --width 1200 --height 720 --out docs/images/tutorial-2-containers.png
+npm run render -- examples/1-tutorial/3-ports-and-kinds.arch3d --cam iso --lod on --width 1200 --height 720 --out docs/images/tutorial-3-ports-and-kinds.png
+npm run render -- examples/1-tutorial/4-layers.arch3d --cam far --lod on --width 1200 --height 720 --out docs/images/tutorial-4-layers.png
+npm run render -- examples/1-tutorial/5-colours.arch3d --cam far --lod on --width 1200 --height 720 --out docs/images/tutorial-5-colours.png
 ```
 
-The models in `examples/` and `examples/tutorial/` are checked by the unit tests: no errors, no
+The models in `examples/` and `examples/1-tutorial/` are checked by the unit tests: no errors, no
 warnings.
