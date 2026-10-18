@@ -1,0 +1,11 @@
+# Step 1: elements and links
+user     User    "Phone user"
+app      Photos  "Photo app"
+service  Upload  "Upload service"
+database Library "Photo library"
+external Cloud   "Photo cloud"
+
+User -> Photos : take a photo
+Photos -> Library : save
+Photos -> Upload : new photo
+Upload -> Cloud : upload

@@ -1,0 +1,15 @@
+# Step 2: group things in a container
+user User "Phone user"
+
+system Phone {
+  app      Photos  "Photo app"
+  service  Upload  "Upload service"
+  database Library "Photo library"
+}
+
+external Cloud "Photo cloud"
+
+User -> Photos : take a photo
+Photos -> Library : save
+Photos -> Upload : new photo
+Upload -> Cloud : upload

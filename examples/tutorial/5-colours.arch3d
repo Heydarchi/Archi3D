@@ -1,0 +1,25 @@
+# Step 5: colours
+style kind database [color: teal]
+style link event    [color: purple]
+
+user User "Phone user"
+
+layer Apps "Apps" {
+  app      Photos  "Photo app"       in: done   out: save, queue
+}
+layer Services "Services" {
+  service  Upload  "Upload service" [color: #3a7bd5]   in: job    out: send, status
+  database Library "Photo library"   in: save
+}
+layer Hardware "Hardware" {
+  device   Camera  "Camera sensor"   out: frames
+}
+
+external Cloud "Photo cloud"   in: upload
+
+User -> Photos : take a photo
+Camera.frames >> Photos : preview frames
+Photos.save -> Library.save : insert
+Photos.queue => Upload.job : new photo
+Upload.send -> Cloud.upload [color: #e8871e] : HTTPS
+Upload.status ~> Photos.done : uploaded

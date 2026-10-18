@@ -1,0 +1,18 @@
+# Step 3: ports, and the kind of each link
+user User "Phone user"
+
+system Phone {
+  app      Photos  "Photo app"       in: done   out: save, queue
+  service  Upload  "Upload service"  in: job    out: send, status
+  database Library "Photo library"   in: save
+  device   Camera  "Camera sensor"   out: frames
+}
+
+external Cloud "Photo cloud"   in: upload
+
+User -> Photos : take a photo
+Camera.frames >> Photos : preview frames
+Photos.save -> Library.save : insert
+Photos.queue => Upload.job : new photo
+Upload.send -> Cloud.upload : HTTPS
+Upload.status ~> Photos.done : uploaded
