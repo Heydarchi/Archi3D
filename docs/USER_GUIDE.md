@@ -631,8 +631,8 @@ On WSL, run VS Code on Windows with the WSL extension and install Archi3D on the
 To try your own build of the extension:
 
 ```sh
-npm run vscode:package                       # makes vscode/archi3d-0.2.0.vsix
-code --install-extension vscode/archi3d-0.2.0.vsix
+npm run vscode:package                       # makes vscode/archi3d-0.3.0.vsix
+code --install-extension vscode/archi3d-0.3.0.vsix
 ```
 
 Use:

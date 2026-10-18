@@ -79,9 +79,9 @@ of VS Code, or run:
 code --install-extension M-H-H.archi3d
 ```
 
-You can also take the `.vsix` (version 0.2.0) from
+You can also take the `.vsix` (version 0.3.0) from
 [Releases](https://github.com/Heydarchi/Archi3D/releases) and run
-`code --install-extension archi3d-0.2.0.vsix`. More in [vscode/README.md](vscode/README.md).
+`code --install-extension archi3d-0.3.0.vsix`. More in [vscode/README.md](vscode/README.md).
 
 ## Docs
 
