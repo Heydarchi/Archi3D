@@ -61,6 +61,32 @@ A short list on purpose. The same words work for Android apps, AOSP and plain Li
 | `topic` | a pipe | broadcast, Flow | broadcast Intents, event log | D-Bus signals, MQTT topic |
 | `external` | a see-through box | your backend server | a vendor part outside AOSP | a remote host |
 
+## Layers
+
+A top-level container with the kind `layer` is a floor. Each layer gets its own height, in the
+order you write them: the first layer is on top. Everything inside a layer stands on its floor,
+and links between two floors go straight up or down.
+
+```
+layer Apps "Applications" {        # top floor
+  system Apps { ... }
+}
+layer Framework "Java framework" {
+  system Framework { ... }
+  system SystemServer { ... }      # a floor can hold several systems
+}
+layer Kernel "Linux kernel" {      # bottom floor
+  system Kernel { ... }
+}
+```
+
+- To change the order, move the blocks in the file.
+- A layer holds systems, containers and elements like any container. Keep your systems; the layer
+  only says where they stand.
+- An element outside every layer (a `user`, a `device`) stands next to the floor it links to most.
+- A `layer` inside a container, or without `{ }`, gets the warning W203 and is drawn as a normal
+  container or element.
+
 ## Link kinds
 
 Six kinds. Pick by how the two sides talk, not by the technology.
@@ -112,6 +138,7 @@ comment    = ("#" | "//") { any character except newline } ;
 | E103 | error | Link from a component to itself |
 | W201 | warning | Both ends of a link have port types and they differ |
 | W202 | warning | A port declared `in` is used as a link source, or `out` as a target |
+| W203 | warning | A `layer` is inside a container or has no `{ }`; it is drawn as a normal container or element |
 | W301 | warning | Import adapters (Mermaid): a line the adapter does not support is skipped |
 
 Every diagnostic carries `line` (1-based), `col` (1-based) and `endCol`.

@@ -31,6 +31,10 @@ function collectNodes(items: AstItem[], diagnostics: Diagnostic[]) {
       id: n.name, kind: n.kind, ...(n.title !== undefined ? { title: n.title } : {}), shape: shapeOf(n.kind), container: n.container,
       parent, depth, children: [], ports, loc: n.loc,
     };
+    if (n.kind.toLowerCase() === 'layer' && (parent !== null || !n.container)) {
+      const why = parent !== null ? 'is inside a container' : 'has no "{ }"';
+      diagnostics.push(diag('W203', `Layer "${n.name}" ${why}, so it is drawn as a normal ${n.container ? 'container' : 'element'}. A layer must be a top-level container.`, n.loc));
+    }
     if (parent === null) roots.push(n.name);
     else nodes[parent].children.push(n.name);
     return n.name;

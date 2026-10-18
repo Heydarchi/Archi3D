@@ -1,9 +1,10 @@
 // lift(model, layout) → SceneSpec: the 2D layout raised into stacked 3D levels, as plain data.
 // 2D (x, y) → 3D (x, z) centred on the origin; y is up. Level n sits at y = n × levelGap.
 import type {
-  ArchModel, BlockSpec, EdgeSpec, LabelSpec, Layout2D, ModelNode, PlateSpec, PortSpec, Pt, SceneOptions, SceneSpec, Shape, V3,
+  ArchModel, BlockSpec, EdgeSpec, FloorSpec, LabelSpec, Layout2D, ModelNode, PlateSpec, PortSpec, Pt, SceneOptions, SceneSpec, Shape, V3,
 } from '../types';
 import { arcPath, longestSegmentMid, orthoPath } from './edgePaths';
+import { floorsOf, NEST_STEP } from './floors';
 import { boundsOf, corners, v3 } from './vec';
 
 export const DEFAULT_SCENE_OPTIONS: SceneOptions = { levelGap: 60, blockHeight: 26, edgeMode: 'ortho' };
@@ -20,8 +21,16 @@ export const HEIGHT_FACTOR: Record<Shape, number> = {
 export function lift(model: ArchModel, layout: Layout2D, options: Partial<SceneOptions> = {}): SceneSpec {
   const opts = { ...DEFAULT_SCENE_OPTIONS, ...options };
   const cx = layout.bounds.x + layout.bounds.w / 2, cz = layout.bounds.y + layout.bounds.h / 2;
-  const to3 = (p: Pt, y: number): V3 => v3(p.x - cx, y, p.y - cz);
-  const base = (n: ModelNode) => n.depth * opts.levelGap;
+  const layered = floorsOf(model, layout, opts.blockHeight);
+  const floors = layered?.byNode;
+  const shiftOf = (id: string) => floors?.get(id) ?? { dx: 0, dz: 0 };
+  const floorOf = (id: string) => (floors?.get(id) ? { floor: floors.get(id)!.layer } : {});
+  /** 2D → 3D for things that belong to a node (moved onto its floor when there are layers). */
+  const at3 = (id: string) => { const f = shiftOf(id); return (p: Pt, y: number): V3 => v3(p.x - cx + f.dx, y, p.y - cz + f.dz); };
+  const base = (n: ModelNode) => {
+    const f = floors?.get(n.id);
+    return f ? f.y + (n.depth + f.extraDepth) * NEST_STEP : n.depth * opts.levelGap;
+  };
   const blockHeight = (n: ModelNode) => opts.blockHeight * HEIGHT_FACTOR[n.shape];
   /** Height where links attach: block mid-height, or a container's plate top. */
   const attachY = (n: ModelNode) => (n.container ? base(n) + PLATE_THICKNESS : base(n) + (blockHeight(n) * (PEDESTAL[n.shape] ?? 1)) / 2);
@@ -35,8 +44,9 @@ export function lift(model: ArchModel, layout: Layout2D, options: Partial<SceneO
     const b = layout.boxes[n.id];
     if (!b) continue;
     const mid = { x: b.x + b.w / 2, y: b.y + b.h / 2 };
+    const to3 = at3(n.id);
     if (n.container) {
-      plates.push({ id: n.id, depth: n.depth, center: to3(mid, base(n) + PLATE_THICKNESS / 2), size: v3(b.w, PLATE_THICKNESS, b.h) });
+      plates.push({ id: n.id, depth: n.depth, center: to3(mid, base(n) + PLATE_THICKNESS / 2), size: v3(b.w, PLATE_THICKNESS, b.h), ...floorOf(n.id) });
       // Title just in front of the front-left edge, or (alt) in the strip at the back. lod/declutter.ts picks the free one.
       labels.push({
         id: n.id, text: n.title ?? n.id, role: 'container',
@@ -44,7 +54,7 @@ export function lift(model: ArchModel, layout: Layout2D, options: Partial<SceneO
       });
     } else {
       const h = blockHeight(n);
-      blocks.push({ id: n.id, shape: n.shape, center: to3(mid, base(n) + h / 2), size: v3(b.w, h, b.h) });
+      blocks.push({ id: n.id, shape: n.shape, center: to3(mid, base(n) + h / 2), size: v3(b.w, h, b.h), ...floorOf(n.id) });
       labels.push({ id: n.id, text: n.title ?? n.id, role: 'component', anchor: to3(mid, base(n) + h + 4) });
     }
     for (const p of n.ports) {
@@ -64,9 +74,13 @@ export function lift(model: ArchModel, layout: Layout2D, options: Partial<SceneO
     const route = layout.routes[e.id];
     if (!route || route.length < 2) continue;
     const yA = attachY(model.nodes[e.from.node]), yB = attachY(model.nodes[e.to.node]);
+    const to3 = at3(e.from.node);
+    // Between two floors (or to an element moved next to a floor) the 2D route means nothing: go straight.
+    const fa = shiftOf(e.from.node), fb = shiftOf(e.to.node);
+    const crossFloor = !!floors && (floors.get(e.from.node)?.y !== floors.get(e.to.node)?.y || fa.dx !== fb.dx || fa.dz !== fb.dz);
     const start = (e.from.port && portPos.get(e.from.port)) || to3(route[0], yA);
     const end = (e.to.port && portPos.get(e.to.port)) || to3(route[route.length - 1], yB);
-    const points = opts.edgeMode === 'arc' ? arcPath(start, end) : orthoPath(route, yA, yB, to3);
+    const points = opts.edgeMode === 'arc' ? arcPath(start, end) : crossFloor ? [start, end] : orthoPath(route, yA, yB, to3);
     points[0] = start;
     points[points.length - 1] = end;
     if (e.label === undefined) {
@@ -86,5 +100,9 @@ export function lift(model: ArchModel, layout: Layout2D, options: Partial<SceneO
     ...edges.flatMap((e) => e.points),
     ...labels.map((l) => l.anchor),
   ]);
-  return { plates, blocks, ports, edges, labels, bounds };
+  const floorSpecs: FloorSpec[] | undefined = layered?.bands.map((f) => {
+    const p = plates.find((x) => x.id === f.layer)!;
+    return { id: f.layer, index: f.index, y: f.y, top: f.top, center: p.center, size: p.size };
+  });
+  return { plates, blocks, ports, edges, labels, bounds, ...(floorSpecs ? { floors: floorSpecs } : {}) };
 }

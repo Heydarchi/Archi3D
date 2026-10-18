@@ -1,0 +1,22 @@
+# Three layers (floors), top first, and one element outside them.
+user Person "User"
+
+layer Top "Apps" {
+  app Phone        out: call
+  system Shelf {
+    ui Screen      in: show
+  }
+}
+layer Middle "Services" {
+  service Api      in: call   out: read, show
+  service Worker   in: job
+}
+layer Bottom "Kernel" {
+  driver Disk      in: read
+}
+
+Person -> Phone : tap
+Phone.call -> Api.call
+Api.read -> Disk.read
+Api.show -> Screen.show
+Api => Worker.job

@@ -218,6 +218,30 @@ The full table with the Android, AOSP and Linux mapping is in [GRAMMAR.md](GRAMM
 - Links can go to containers too: `Frontend -> Backend : REST`.
 - Links use names, not paths: `OrderDB`, not `Shop.Backend.OrderDB`.
 
+### Layers
+
+Put your systems on floors with `layer` blocks. The first layer you write is the top floor:
+
+```
+layer Apps "Applications" {
+  system Apps { ... }
+}
+layer Framework "Java framework" {
+  system Framework { ... }
+  system SystemServer { ... }
+}
+layer Kernel "Linux kernel" {
+  system Kernel { ... }
+}
+```
+
+- Change the order by moving the blocks. Your systems stay as they are, a layer just holds them.
+- Links between floors go straight up or down.
+- Elements outside every layer (a `user`, a `device`) stand next to the floor they link to most.
+- A model with layers opens with a low camera from the side, so you see the whole stack.
+- When you come close to one floor, the floors above it turn into faint outlines so they don't
+  cover it, and only the labels of that floor are shown.
+
 ### Messages
 
 | Code | Meaning |
@@ -230,6 +254,7 @@ The full table with the Android, AOSP and Linux mapping is in [GRAMMAR.md](GRAMM
 | E103 | A component links to itself |
 | W201 | Both ports have a type and the types are different |
 | W202 | An `in` port is used as link source, or an `out` port as target |
+| W203 | A `layer` is inside a container or has no `{ }`, so it is not a floor |
 | W301 | (Import) a Mermaid line that is not supported was skipped |
 
 ---
@@ -377,6 +402,16 @@ PipeWire            <> UVC : dmabuf
 
 ![Linux desktop, PipeWire selected](../examples/08-linux-desktop.png)
 
+### AOSP camera stack on layers
+
+[`examples/10-aosp-layers.arch3d`](../examples/10-aosp-layers.arch3d) is the same model as the AOSP
+example, with its systems on five layers: applications, Java framework, native, HAL and the Linux
+kernel.
+
+| The stack | Close to the native floor, CameraService selected |
+|---|---|
+| ![AOSP on layers](../examples/10-aosp-layers.png) | ![Native floor](../examples/10-aosp-layers-native.png) |
+
 ### Legend
 
 [`examples/09-legend.arch3d`](../examples/09-legend.arch3d) has every keyword and every link kind
@@ -393,6 +428,8 @@ npm run render -- examples/07-aosp-camera.arch3d --out examples/07-aosp-camera-h
 npm run render -- examples/07-aosp-camera.arch3d --view svg2d --out examples/07-aosp-camera-2d.png --width 1800 --height 1100
 npm run render -- examples/08-linux-desktop.arch3d --focus UserSpace --k 0.75 --select PipeWire --panel
 npm run render -- examples/09-legend.arch3d --focus Device --k 1.35
+npm run render -- examples/10-aosp-layers.arch3d --cam far --lod on
+npm run render -- examples/10-aosp-layers.arch3d --focus NativeLayer --k 1.1 --lod on --select CameraService --panel --out examples/10-aosp-layers-native.png
 ```
 
 Bigger models: [`fixtures/northwind.arch3d`](../fixtures/northwind.arch3d) (a web shop),

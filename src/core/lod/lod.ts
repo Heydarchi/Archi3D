@@ -4,6 +4,7 @@ import type { ArchModel, CameraState, ContainerState, Id, LodResult, SceneSpec, 
 import { standIn } from './aggregate';
 import { footprintDiagonal } from './focus';
 import { declutterTitles } from './declutter';
+import { fadedFloors, focusFloor } from './floorFade';
 import { readableContainers } from './readable';
 
 export const CLOSE_RATIO = 3.0;
@@ -115,9 +116,23 @@ export function lod(scene: SceneSpec, model: ArchModel, cam: CameraState, prev?:
       if (px(len, l.anchor) > MIN_PX.edgeLabelLength) visibleLabels.add(l.id);
     }
   }
+  // While floors above fade, only the floor you look at keeps its labels: labels are drawn on top of
+  // everything, so those of other floors would show through it. A link label stays if one end is there.
+  const faded = fadedFloors(scene, cam);
+  if (faded.size) {
+    const focus = focusFloor(scene, cam);
+    const floorOf = new Map<string, Id | undefined>([...scene.plates, ...scene.blocks].map((x) => [x.id, x.floor]));
+    const onFocus = (id: Id) => floorOf.get(id) === focus;
+    for (const l of [...visibleLabels]) {
+      if (l.startsWith('edge:')) {
+        const e = edgeById.get(l.slice(5));
+        if (e && !onFocus(e.from.node) && !onFocus(e.to.node)) visibleLabels.delete(l);
+      } else if (!onFocus(ownerOf.get(l as `${string}.${string}`) ?? l)) visibleLabels.delete(l);
+    }
+  }
   const kept = nearest(scene, visibleLabels, cam, opts.maxLabels ?? LABEL_BUDGET);
   const titles = declutterTitles(scene.labels, kept, containers, cam, (id) => model.nodes[id]?.depth ?? 0);
-  return { containers, visibleLabels: titles.visible, visibleEdges, movedLabels: titles.moved };
+  return { containers, visibleLabels: titles.visible, visibleEdges, movedLabels: titles.moved, ...(faded.size ? { fadedFloors: faded } : {}) };
 }
 
 /** Whether a node is drawn at all (no closed/hidden ancestor) for a lod result. */

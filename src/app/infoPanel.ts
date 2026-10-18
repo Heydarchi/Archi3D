@@ -54,11 +54,14 @@ export function createInfoPanel(host: HTMLElement, onCrumb: (id: Id | null) => v
       const crumbs = document.createElement('div');
       crumbs.className = 'crumbs';
       crumbs.append(crumbButton('All', null));
-      for (const c of breadcrumb(model, n.id)) crumbs.append(' › ', crumbButton(c, c));
+      // Titles where there are any; the name is what links use, so it stays in the tooltip.
+      const label = (id: Id) => model.nodes[id]?.title ?? id;
+      for (const c of breadcrumb(model, n.id)) crumbs.append(' › ', crumbButton(label(c), c));
       const h = document.createElement('h3');
       const kind = document.createElement('small');
       kind.textContent = n.kind;
-      h.append(n.id, kind);
+      h.append(label(n.id), kind);
+      if (n.title) h.title = n.id;
       const dl = document.createElement('dl');
       const row = (label: string, value: Node | string) => {
         const dt = document.createElement('dt');
@@ -80,8 +83,8 @@ export function createInfoPanel(host: HTMLElement, onCrumb: (id: Id | null) => v
       }
       if (n.container) row('Holds', `${n.children.length} item${n.children.length === 1 ? '' : 's'}`);
       const { dependsOn, usedBy } = neighbours(model, n.id);
-      row('Depends on', dependsOn.join(', ') || '—');
-      row('Used by', usedBy.join(', ') || '—');
+      row('Depends on', dependsOn.map(label).join(', ') || '—');
+      row('Used by', usedBy.map(label).join(', ') || '—');
       el.append(crumbs, h, dl);
     },
   };
