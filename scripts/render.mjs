@@ -45,6 +45,7 @@ export function harnessQuery(opts) {
     if (opts.focus) { q.set('focus', opts.focus); q.set('k', String(opts.k ?? 1.5)); }
     q.set('edges', opts.edges);
     if (opts.lod === 'off') q.set('lod', 'off');
+    if (opts.zoom) q.set('zoom', opts.zoom);
     if (opts.bundle) q.set('bundle', 'on');
     if (opts.select) q.set('select', opts.select);
     if (opts.theme === 'dark') q.set('theme', 'dark');

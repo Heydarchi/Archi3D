@@ -3,6 +3,7 @@ import type { SceneSpec } from '../core/types';
 import { createView } from '../render/view';
 import { createEditor } from './editor';
 import { setupEditorToggle } from './editorToggle';
+import { setupDetailKeys } from './keys';
 import { defaultFixture, getFixture } from './fixtures';
 import { createInfoPanel } from './infoPanel';
 import { createLayoutClient } from './layoutClient';
@@ -19,6 +20,7 @@ async function main(): Promise<void> {
   const canvas = document.createElement('canvas');
   host.prepend(canvas);
   const view = createView(canvas, { test: isTestMode() });
+  setupDetailKeys(view);
   const client = createLayoutClient();
   const store = createStore({ layout: (model, previous) => client.layout(model, {}, previous) });
 

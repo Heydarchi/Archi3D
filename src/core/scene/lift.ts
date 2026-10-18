@@ -37,7 +37,11 @@ export function lift(model: ArchModel, layout: Layout2D, options: Partial<SceneO
     const mid = { x: b.x + b.w / 2, y: b.y + b.h / 2 };
     if (n.container) {
       plates.push({ id: n.id, depth: n.depth, center: to3(mid, base(n) + PLATE_THICKNESS / 2), size: v3(b.w, PLATE_THICKNESS, b.h) });
-      labels.push({ id: n.id, text: n.title ?? n.id, role: 'container', anchor: to3({ x: b.x + 10, y: b.y + 16 }, base(n) + PLATE_THICKNESS + 2) });
+      // Title just in front of the front-left edge, or (alt) in the strip at the back. lod/declutter.ts picks the free one.
+      labels.push({
+        id: n.id, text: n.title ?? n.id, role: 'container',
+        anchor: to3({ x: b.x + 10, y: b.y + b.h + 9 }, base(n) + PLATE_THICKNESS), alt: to3({ x: b.x + 10, y: b.y + 18 }, base(n) + PLATE_THICKNESS + 2),
+      });
     } else {
       const h = blockHeight(n);
       blocks.push({ id: n.id, shape: n.shape, center: to3(mid, base(n) + h / 2), size: v3(b.w, h, b.h) });

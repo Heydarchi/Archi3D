@@ -61,6 +61,8 @@ const views: Record<string, ViewFn> = {
     });
     view.setScene(built.scene, built.model);
     if (p.get('lod') === 'off') view.setSemanticZoom(false);
+    if (p.get('zoom') === 'size') view.setZoomRule('size');
+    if (p.get('detail')) view.setDetail(Number(p.get('detail')));
     if (p.get('bundle') === 'on') view.setBundling(true);
     const cam = p.get('cam') ?? 'far';
     if (cam === 'focus') view.setCamera(focusCamera(built.scene, p.get('focus') ?? '', Number(p.get('k') ?? 1.5), root.clientHeight));

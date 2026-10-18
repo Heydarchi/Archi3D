@@ -3,6 +3,8 @@
 import type { ArchModel, CameraState, ContainerState, Id, LodResult, SceneSpec, V3 } from '../types';
 import { standIn } from './aggregate';
 import { footprintDiagonal } from './focus';
+import { declutterTitles } from './declutter';
+import { readableContainers } from './readable';
 
 export const CLOSE_RATIO = 3.0;
 export const OPEN_RATIO = 2.6;
@@ -20,7 +22,13 @@ export interface LodOptions {
   enabled?: boolean;
   /** Label budget, nearest to the camera first (default LABEL_BUDGET). */
   maxLabels?: number;
+  /** 'readable' (default): open a container when its inside is readable (readable.ts). 'size': when it fills about half the view. */
+  rule?: ZoomRule;
+  /** More (above 1) or less (below 1) detail at the same distance. Only for the 'readable' rule. */
+  detail?: number;
 }
+
+export type ZoomRule = 'size' | 'readable';
 
 function nearest(scene: SceneSpec, ids: Set<string>, cam: CameraState, max: number): Set<string> {
   if (ids.size <= max) return ids;
@@ -66,6 +74,7 @@ export function lod(scene: SceneSpec, model: ArchModel, cam: CameraState, prev?:
     for (const c of n.children) visit(c, state === 'open');
   };
   for (const r of model.roots) visit(r, true);
+  if (opts.rule !== 'size') Object.assign(containers, readableContainers(scene, model, cam, prev, opts.selected, opts.detail));
 
   const shown = (id: Id): boolean => {
     for (let p = model.nodes[id]?.parent ?? null; p !== null; p = model.nodes[p].parent) {
@@ -106,7 +115,9 @@ export function lod(scene: SceneSpec, model: ArchModel, cam: CameraState, prev?:
       if (px(len, l.anchor) > MIN_PX.edgeLabelLength) visibleLabels.add(l.id);
     }
   }
-  return { containers, visibleLabels: nearest(scene, visibleLabels, cam, opts.maxLabels ?? LABEL_BUDGET), visibleEdges };
+  const kept = nearest(scene, visibleLabels, cam, opts.maxLabels ?? LABEL_BUDGET);
+  const titles = declutterTitles(scene.labels, kept, containers, cam, (id) => model.nodes[id]?.depth ?? 0);
+  return { containers, visibleLabels: titles.visible, visibleEdges, movedLabels: titles.moved };
 }
 
 /** Whether a node is drawn at all (no closed/hidden ancestor) for a lod result. */

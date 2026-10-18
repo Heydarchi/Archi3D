@@ -93,7 +93,8 @@ export interface PlateSpec { id: Id; depth: number; center: V3; size: V3 }
 export interface BlockSpec { id: Id; shape: Shape; center: V3; size: V3 }
 export interface PortSpec  { id: PortId; owner: Id; dir: 'in' | 'out'; pos: V3 }
 export interface EdgeSpec  { id: string; points: V3[]; kind: LinkKind; async: boolean; label?: string; labelAt?: V3 }
-export interface LabelSpec { id: string; text: string; anchor: V3; role: 'container' | 'component' | 'port' | 'edge' }
+// alt: a second place for a container title, used when the first would cover an element label.
+export interface LabelSpec { id: string; text: string; anchor: V3; alt?: V3; role: 'container' | 'component' | 'port' | 'edge' }
 export interface SceneOptions { levelGap: number; blockHeight: number; edgeMode: 'ortho' | 'arc' }
 export interface SceneSpec {
   plates: PlateSpec[]; blocks: BlockSpec[]; ports: PortSpec[]; edges: EdgeSpec[]; labels: LabelSpec[];
@@ -108,8 +109,13 @@ export interface LodResult {
   containers: Record<Id, ContainerState>;
   visibleLabels: Set<string>;
   visibleEdges: Set<string>;
+  movedLabels?: Record<string, V3>;   // container titles moved to LabelSpec.alt (lod/declutter.ts)
 }
-export interface LodOptions { selected?: Id | null; enabled?: boolean; maxLabels?: number }   // enabled=false: "all open"
+// rule 'readable' (default, lod/readable.ts): a container opens when its smallest child would be at least
+// 45 px wide (closes below 38 px), biggest first, at most 150 things on screen; a selected container is
+// always open. rule 'size' (the first version): opens when the camera is within 2.6 footprint diagonals.
+export interface LodOptions { selected?: Id | null; enabled?: boolean; maxLabels?: number; rule?: 'readable' | 'size'; detail?: number }
+// enabled=false: "all open"; detail scales the 45/38 px and the budget (keys + and -)
 export declare function lod(scene: SceneSpec, model: ArchModel, cam: CameraState, prev?: LodResult, opts?: LodOptions): LodResult;
 ```
 
@@ -134,6 +140,8 @@ interface View {
   ready(): Promise<void>;                               // labels synced, frame drawn
   labelMode(): 'troika' | 'css2d';
   setSemanticZoom(enabled: boolean): void;              // false = "all open"
+  setZoomRule(rule: 'readable' | 'size'): void;         // see lod; harness ?zoom=size
+  setDetail(detail: number): number;                    // 0.4 … 2.5, keys + - 0; harness ?detail=1.5
   lodState(): LodResult | null;
 }
 ```

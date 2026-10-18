@@ -1,9 +1,12 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 import { splitEdges } from '../../src/core/lod/aggregate';
 import { focusCamera } from '../../src/core/lod/focus';
-import { lod } from '../../src/core/lod/lod';
+import { lod as anyRule, type LodOptions } from '../../src/core/lod/lod';
 import { lift } from '../../src/core/scene/lift';
 import type { ArchModel, SceneSpec } from '../../src/core/types';
+
+/** The tables in this file were written for the 'size' rule (still available as ?zoom=size). */
+const lod = (...a: Parameters<typeof anyRule>) => anyRule(a[0], a[1], a[2], a[3], { rule: 'size', ...a[4] } as LodOptions);
 import { laidOut } from './pipeline';
 
 let m: ArchModel, s: SceneSpec;

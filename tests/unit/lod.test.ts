@@ -1,8 +1,12 @@
 import { beforeAll, describe, expect, it } from 'vitest';
-import { lod } from '../../src/core/lod/lod';
+import { lod as anyRule, type LodOptions } from '../../src/core/lod/lod';
+import { ELEMENT_BUDGET } from '../../src/core/lod/readable';
 import { focusCamera } from '../../src/core/lod/focus';
 import { lift } from '../../src/core/scene/lift';
 import type { ArchModel, CameraState, SceneSpec } from '../../src/core/types';
+
+/** The tables in this file were written for the 'size' rule (still available as ?zoom=size). */
+const lod = (...a: Parameters<typeof anyRule>) => anyRule(a[0], a[1], a[2], a[3], { rule: 'size', ...a[4] } as LodOptions);
 import { laidOut } from './pipeline';
 
 let m: ArchModel, s: SceneSpec;
@@ -131,5 +135,55 @@ describe('narrow views', () => {
     expect(lod(s, m, { ...cam, aspect: 1.6 }).containers.Platform).toBe('closed');
     // In a half-width pane the camera has to stand twice as far back to fit the width.
     expect(lod(s, m, { ...cam, aspect: 0.4 }).containers.Platform).toBe('open');
+  });
+});
+
+describe('zoom rule "readable"', () => {
+  const open = (r: ReturnType<typeof lod>) => Object.entries(r.containers).filter(([, v]) => v === 'open').map(([k]) => k).sort();
+
+  it('opens containers from further away than the size rule', () => {
+    expect(open(lod(s, m, at('Platform', 3)))).toEqual([]);
+    expect(open(lod(s, m, at('Platform', 3), undefined, { rule: 'readable' }))).toEqual(['Platform']);
+    expect(open(lod(s, m, at('Platform', 2)))).toEqual(['Platform']);
+    expect(open(lod(s, m, at('Platform', 2), undefined, { rule: 'readable' }))).toEqual(['Billing', 'Messaging', 'Payments', 'Platform', 'Risk']);
+  });
+
+  it('never puts more than the budget on screen', async () => {
+    const { model, layout } = await laidOut('gen-1000');
+    const big = lift(model, layout);
+    const r = lod(big, model, focusCamera(big, model.roots[0], 3, 800), undefined, { rule: 'readable' });
+    const onScreen = Object.values(model.nodes).filter((n) => !n.container || r.containers[n.id] === 'closed')
+      .filter((n) => n.parent === null || r.containers[n.parent] === 'open').length;
+    expect(onScreen).toBeLessThanOrEqual(ELEMENT_BUDGET);
+  }, 60_000);
+});
+
+describe('zoom rule "readable" (the default)', () => {
+  const state = (k: number, prev?: ReturnType<typeof anyRule>, opts: LodOptions = {}) => anyRule(s, m, at('Platform', k), prev, opts);
+
+  it('is the default', () => {
+    expect(state(3).containers.Platform).toBe(anyRule(s, m, at('Platform', 3), undefined, { rule: 'readable' }).containers.Platform);
+    expect(state(3).containers.Platform).toBe('open');
+  });
+
+  it('hysteresis: zooming out closes further away than zooming in opened', () => {
+    let r = state(6), kOpen = 0, kClose = 0;
+    for (let k = 6; k >= 1.5; k -= 0.05) { r = state(k, r); if (r.containers.Platform === 'open') { kOpen = k; break; } }
+    for (let k = kOpen; k <= 8; k += 0.05) { r = state(k, r); if (r.containers.Platform === 'closed') { kClose = k; break; } }
+    expect(kOpen).toBeGreaterThan(0);
+    expect(kClose / kOpen).toBeGreaterThan(1.1); // 45 px to open, 38 px to close
+  });
+
+  it('a selected container is open at any distance, and so are its parents', () => {
+    expect(state(12).containers.Platform).toBe('closed');
+    expect(state(12, undefined, { selected: 'Platform' }).containers.Platform).toBe('open');
+    const deep = anyRule(s, m, at('Platform', 12), undefined, { selected: 'Billing' }).containers;
+    expect([deep.Platform, deep.Payments, deep.Billing]).toEqual(['open', 'open', 'open']);
+  });
+
+  it('detail above 1 opens more at the same distance, below 1 less', () => {
+    const open = (opts: LodOptions) => Object.values(state(2.5, undefined, opts).containers).filter((v) => v === 'open').length;
+    expect(open({ detail: 2 })).toBeGreaterThan(open({}));
+    expect(open({ detail: 0.5 })).toBeLessThan(open({}));
   });
 });

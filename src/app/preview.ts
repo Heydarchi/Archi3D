@@ -3,6 +3,7 @@
 // Outside VS Code (tests, a plain browser) messages go through window.postMessage and the
 // outgoing ones are collected in window.__archiOutbox.
 import { createView } from '../render/view';
+import { setupDetailKeys } from './keys';
 import { createInfoPanel } from './infoPanel';
 import { createLayoutClient } from './layoutClient';
 import type { HostMessage, PreviewMessage } from './previewProtocol';
@@ -52,6 +53,7 @@ function main(): void {
   host.append(canvas);
   const dark = document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast');
   const view = createView(canvas, { test: isTestMode(), theme: dark ? 'dark' : 'light' });
+  setupDetailKeys(view);
   const client = createLayoutClient();
   const store = createStore({ layout: (model, previous) => client.layout(model, {}, previous) });
 

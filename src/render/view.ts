@@ -2,7 +2,7 @@
 import CameraControls from 'camera-controls';
 import * as THREE from 'three';
 import { lidSpecs, lidTitleAnchor } from '../core/lod/lids';
-import { LABEL_BUDGET, lod } from '../core/lod/lod';
+import { LABEL_BUDGET, lod, type ZoomRule } from '../core/lod/lod';
 import type { ArchModel, CameraState, Id, LodResult, Pt, SceneSpec, V3 } from '../core/types';
 import defaultFontUrl from '../../vendor/fonts/inter-latin-400-normal.woff?url';
 import { SceneRoot } from './build';
@@ -27,6 +27,8 @@ export interface ViewOptions {
 export type ViewEvent = 'pick' | 'dblpick';
 
 export const TEST_LABEL_TIMEOUT_MS = 15_000;
+/** Smallest and largest detail factor (keys - and +). */
+export const DETAIL_RANGE = [0.4, 2.5] as const;
 
 export interface View {
   setScene(scene: SceneSpec, model: ArchModel): void;
@@ -45,6 +47,11 @@ export interface View {
   labelMode(): LabelMode;
   /** Semantic zoom on (default) or off ("all open"). */
   setSemanticZoom(enabled: boolean): void;
+  /** Which rule opens containers (see core/lod). */
+  setZoomRule(rule: ZoomRule): void;
+  /** Detail factor for the zoom (1 = default); returns the new value. */
+  setDetail(detail: number): number;
+  detail(): number;
   /** Hierarchical edge bundling for links between closed containers (off by default). */
   setBundling(enabled: boolean): void;
   lodState(): LodResult | null;
@@ -93,6 +100,8 @@ export function createView(canvas: HTMLCanvasElement, opts: ViewOptions = {}): V
   let presenter: Presenter | null = null;
   let lodResult: LodResult | null = null;
   let semantic = true;
+  let zoomRule: ZoomRule = 'readable';
+  let detail = 1;
   let bundling = false;
   let lastDraw = 0;
   let lidTitles = new Map<Id, V3>();
@@ -117,9 +126,9 @@ export function createView(canvas: HTMLCanvasElement, opts: ViewOptions = {}): V
     const now = performance.now();
     const dt = lastDraw ? now - lastDraw : 0;
     lastDraw = now;
-    lodResult = lod(current.scene, current.model, cameraState(), lodResult ?? undefined, { selected, enabled: semantic, maxLabels: LABEL_BUDGET });
+    lodResult = lod(current.scene, current.model, cameraState(), lodResult ?? undefined, { selected, enabled: semantic, maxLabels: LABEL_BUDGET, rule: zoomRule, detail });
     labels.setVisible(lodResult.visibleLabels);
-    for (const [id, at] of lidTitles) labels.setAnchor(id, lodResult.containers[id] === 'closed' ? at : null);
+    for (const [id, at] of lidTitles) labels.setAnchor(id, lodResult.containers[id] === 'closed' ? at : lodResult.movedLabels?.[id] ?? null);
     const shown = presenter.apply(lodResult, selected, dt, test, bundling);
     if (shown.changed) labels.setDimmed(shown.dimLabels);
     return shown.animating;
@@ -234,6 +243,9 @@ export function createView(canvas: HTMLCanvasElement, opts: ViewOptions = {}): V
     select(id) { selected = id && current?.model.nodes[id] ? id : null; render(); },
     selected: () => selected,
     setSemanticZoom(enabled) { semantic = enabled; render(); },
+    setZoomRule(rule) { zoomRule = rule; lodResult = null; render(); },
+    setDetail(d) { detail = Math.min(DETAIL_RANGE[1], Math.max(DETAIL_RANGE[0], d)); render(); return detail; },
+    detail: () => detail,
     setBundling(enabled) { bundling = enabled; render(); },
     lodState: () => lodResult,
     snapshot() {
