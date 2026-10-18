@@ -41,7 +41,7 @@ interface Anchor { x: 'left' | 'center' | 'right'; y: 'bottom' | 'middle'; cx: n
 let warned = false;
 
 function anchorOf(s: LabelSpec, portDir: Map<string, 'in' | 'out'>): Anchor {
-  if (s.role === 'container') return { x: 'left', y: 'bottom', cx: 0, cy: 1 };
+  if (s.role === 'container') return { x: 'left', y: 'middle', cx: 0, cy: 0.5 };
   if (s.role === 'port') {
     return portDir.get(s.id) === 'in' ? { x: 'right', y: 'middle', cx: 1, cy: 0.5 } : { x: 'left', y: 'middle', cx: 0, cy: 0.5 };
   }

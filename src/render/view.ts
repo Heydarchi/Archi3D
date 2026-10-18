@@ -128,7 +128,7 @@ export function createView(canvas: HTMLCanvasElement, opts: ViewOptions = {}): V
     lastDraw = now;
     lodResult = lod(current.scene, current.model, cameraState(), lodResult ?? undefined, { selected, enabled: semantic, maxLabels: LABEL_BUDGET, rule: zoomRule, detail });
     labels.setVisible(lodResult.visibleLabels);
-    for (const [id, at] of lidTitles) labels.setAnchor(id, lodResult.containers[id] === 'closed' ? at : null);
+    for (const [id, at] of lidTitles) labels.setAnchor(id, lodResult.containers[id] === 'closed' ? at : lodResult.movedLabels?.[id] ?? null);
     const shown = presenter.apply(lodResult, selected, dt, test, bundling);
     if (shown.changed) labels.setDimmed(shown.dimLabels);
     return shown.animating;

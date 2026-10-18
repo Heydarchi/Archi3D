@@ -117,13 +117,15 @@ describe('lift(nested-deep)', () => {
     }
   });
 
-  it('labels: container title at its top-left corner, component name above its block, edge label set', () => {
+  it('labels: container title at its front-left edge (alt: back-left), component name above its block, edge label set', () => {
     const s = lift(m, l);
     const plate = s.plates.find((p) => p.id === 'Billing')!;
     const title = s.labels.find((x) => x.id === 'Billing')!;
     expect(title.role).toBe('container');
     expect(title.anchor.x).toBeLessThan(plate.center.x - plate.size.x / 4);
-    expect(title.anchor.z).toBeLessThan(plate.center.z - plate.size.z / 4);
+    expect(title.anchor.z).toBeGreaterThan(plate.center.z + plate.size.z / 2); // just in front of the plate
+    expect(title.alt!.x).toBe(title.anchor.x);
+    expect(title.alt!.z).toBeLessThan(plate.center.z - plate.size.z / 4); // in the strip at the back
     const block = s.blocks.find((b) => b.id === 'Ledger')!;
     const name = s.labels.find((x) => x.id === 'Ledger')!;
     expect(name.role).toBe('component');
