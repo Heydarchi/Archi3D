@@ -10,7 +10,9 @@ export default defineConfig({
   timeout: 60_000,
   snapshotPathTemplate: '{testDir}/__screenshots__/{platform}/{testFilePath}/{arg}{ext}',
   expect: {
-    toHaveScreenshot: { maxDiffPixelRatio: 0.01, animations: 'disabled' },
+    // threshold: how different a pixel's colour may be before it counts (Playwright's default 0.2 hid
+    // real changes between light greys). maxDiffPixelRatio: how many pixels may differ.
+    toHaveScreenshot: { maxDiffPixelRatio: 0.01, threshold: 0.08, animations: 'disabled' },
   },
   use: {
     baseURL: `http://localhost:${PORT}`,
