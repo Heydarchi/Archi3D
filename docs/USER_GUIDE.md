@@ -137,7 +137,8 @@ Buttons on the top right:
 
 ## 3. The language
 
-One statement per line. `#` or `//` starts a comment. The full grammar is in [GRAMMAR.md](GRAMMAR.md).
+One statement per line. `#` or `//` starts a comment. The full reference is in
+[GRAMMAR.md](GRAMMAR.md), all keywords on one page are in [KEYWORDS.md](KEYWORDS.md).
 
 The files use the extension `.arch3d`. I picked this name because no other tool uses it, so editors
 don't confuse it with something else. Old files with `.arch` still work in the app and the command
@@ -408,7 +409,7 @@ ImageSensor.mipi         >> V4L2Driver.mipi            : MIPI CSI-2
 CameraDeviceHal          <> Gralloc                    : gralloc buffers
 ```
 
-| The whole stack from far (one arc between two layers) | The HAL from close, `CameraDeviceHal` selected |
+| The whole stack from far: every layer is open because what is inside is readable | The HAL from close, `CameraDeviceHal` selected |
 |---|---|
 | ![AOSP far](../examples/07-aosp-camera.png) | ![AOSP HAL](../examples/07-aosp-camera-hal.png) |
 
@@ -630,8 +631,8 @@ On WSL, run VS Code on Windows with the WSL extension and install Archi3D on the
 To try your own build of the extension:
 
 ```sh
-npm run vscode:package                       # makes vscode/archi3d-0.2.0.vsix
-code --install-extension vscode/archi3d-0.2.0.vsix
+npm run vscode:package                       # makes vscode/archi3d-0.3.0.vsix
+code --install-extension vscode/archi3d-0.3.0.vsix
 ```
 
 Use:

@@ -1,48 +1,77 @@
 # Archi3D keywords
 
-All keywords of the `.arch3d` language. The full grammar is in [GRAMMAR.md](GRAMMAR.md).
+All keywords of the `.arch3d` language on one page. How they fit together is in
+[GRAMMAR.md](GRAMMAR.md).
 
-| Keyword | Function | Category |
+## Elements
+
+The first word of a line is the kind. It only decides the shape.
+
+| Keyword | Example | Drawn as | Use it for |
+|---|---|---|---|
+| `user` (or `actor`) | `user User "Phone user"` | a person on a base | the phone user, a user at the shell |
+| `ui` | `ui Settings` | a monitor on a base | Activity, SystemUI, a GTK window |
+| `app` | `app Camera "Camera app"` | a phone on a base | an APK, a system app, a desktop app |
+| `service` | `service CameraService` | a box | a Service, a daemon, a systemd unit |
+| `library` | `library Hal "Camera HAL"` | stacked layers | an AAR, a HAL implementation, a `.so` |
+| `driver` | `driver V4L2 "V4L2 driver"` | a chip | a kernel driver or module |
+| `kernel` | `kernel Linux` | a flat octagon | the kernel, a kernel subsystem |
+| `device` | `device Sensor "Image sensor"` | a box on feet | a sensor, a modem, a USB device |
+| `database` (or `db`) | `database Orders` | a cylinder | Room, SQLite, PostgreSQL |
+| `cache` | `cache Thumbs` | a hexagon | LruCache, Redis |
+| `storage` | `storage Sdcard "/sdcard"` | stacked disks | files, a file system, a block device |
+| `queue` | `queue Jobs` | a low box | a message queue, a Handler queue |
+| `topic` | `topic Broadcasts` | a pipe | broadcasts, D-Bus signals, an MQTT topic |
+| `external` | `external Cloud` | a see-through box | something outside your system |
+| any other word | `component Parser`, `daemon Logd` | a plain box | anything else |
+
+## Containers and layers
+
+| Keyword | Example | Means |
 |---|---|---|
-| `user` | A person (phone user, user at the shell). Drawn as a person on a base. | Element |
-| `actor` | Same as `user`. | Element |
-| `ui` | A screen: Activity, SystemUI, GTK window. Drawn as a monitor on a base. | Element |
-| `app` | An app: APK, system app, desktop app. Drawn as a phone on a base. | Element |
-| `service` | A service or daemon. Drawn as a box. | Element |
-| `library` | A library: AAR, HAL implementation, `.so`. Drawn as stacked layers. | Element |
-| `driver` | A kernel driver. Drawn as a chip. | Element |
-| `kernel` | The kernel or a kernel subsystem. Drawn as a flat octagon. | Element |
-| `device` | Hardware: sensor, modem, USB device. Drawn as a box on feet. | Element |
-| `database` | A database: Room, SQLite, PostgreSQL. Drawn as a cylinder. | Element |
-| `db` | Same as `database`. | Element |
-| `cache` | A cache: LruCache, Redis. Drawn as a hexagon. | Element |
-| `storage` | Files or a file system: `/sdcard`, block device. Drawn as stacked disks. | Element |
-| `queue` | A message queue, Handler queue. Drawn as a low box. | Element |
-| `topic` | Broadcasts, D-Bus signals, MQTT topic. Drawn as a pipe. | Element |
-| `external` | Something outside your system: backend, remote host. Drawn as a see-through box. | Element |
-| any other word (`component`, `system`, `container`, `group`, `domain`…) | A plain box, or a container when followed by `{`. | Element / container |
-| `layer` | A top-level container drawn as its own floor. The first layer written is on top. | Container |
-| `{` … `}` | Opens and closes a container. | Structure |
-| `in:` | Ports the element provides (west side). | Ports |
-| `out:` | Ports the element needs (east side). | Ports |
-| `"Title"` | Label shown instead of the name. | Element attribute |
-| `->` / `-->` / `call` | Call: ask and wait for the answer. Solid line. | Link kind |
-| `=>` / `message` | Message: send and don't wait, one receiver. Dashed line. | Link kind |
-| `~>` / `event` | Event: tell anyone who listens. Dotted line. | Link kind |
-| `<=>` / `session` | Session: connection kept open both ways. Two lines, arrows at both ends. | Link kind |
-| `>>` / `stream` | Stream: data that keeps flowing. Thick line with flow marks. | Link kind |
-| `<>` / `shared` | Shared: both use the same memory or data. Wide band, squares at the ends. | Link kind |
-| `<-` | A call written right to left: `A <- B` is `B -> A`. | Link kind |
-| `,` (after a target) | Several targets: `A ~> B, C` is two links. | Link |
-| `: label` | Text on a link. | Link |
-| `[color: …]` | Colour of an element, container or link: `#rrggbb`, `#rgb` or a name. | Attribute |
-| `[dark: …]` | Colour for the dark theme (otherwise the same as `color`). | Attribute |
-| `[tag: …]` | A tag, can repeat. Used by `style tag` and "Colour by: tag". | Attribute |
-| `style kind <kind> [...]` | Colour for every element of one kind. | Style |
-| `style tag <tag> [...]` | Colour for every element with this tag. | Style |
-| `style link <kind> [...]` | Colour for every link of one kind. | Style |
-| `red`, `orange`, `amber`, `green`, `teal`, `blue`, `indigo`, `purple`, `pink`, `brown`, `slate`, `gray` | Named colours, tuned for light and dark themes. | Colour name |
-| `#` / `//` | Comment to the end of the line (not inside quotes or `[ ]`). | Comment |
+| `{` … `}` | `system Shop {` … `}` | a line ending with `{` opens a container, `}` closes it. Any kind works: `system`, `container`, `group`, `domain`… |
+| `layer` | `layer Kernel "Linux kernel" {` … `}` | a top-level container drawn as its own floor. The first layer in the file is on top |
 
+## On an element
 
-Note: the `[color: …]`, `[dark: …]`, `[tag: …]` and `style` rows describe the colours work, which is still on the `feat/colours` branch and not merged yet.
+| Keyword | Example | Means |
+|---|---|---|
+| `"Title"` | `service Api "Orders API"` | the label shown instead of the name |
+| `in:` | `in: connect, query:SQL` | ports the element provides (left side); `:SQL` is a type |
+| `out:` | `out: hal, status` | ports the element needs (right side) |
+
+## Links
+
+| Keyword | Example | Means | Drawn as |
+|---|---|---|---|
+| `->` / `-->` / `call` | `App -> Api` | call: ask and wait for the answer | solid line |
+| `=>` / `message` | `Api => Mailer` | message: send and don't wait, one receiver | dashed line |
+| `~>` / `event` | `Bus ~> Mail` | event: tell anyone who listens | dotted line |
+| `<=>` / `session` | `App <=> Service` | session: a connection kept open, both ways | two lines, arrows at both ends |
+| `>>` / `stream` | `Sensor >> Driver` | stream: data that keeps flowing | thick line with flow marks |
+| `<>` / `shared` | `Hal <> Gralloc` | shared: both use the same memory or data | wide band, squares at the ends |
+| `<-` | `A <- B` | a call written right to left, the same as `B -> A` | solid line |
+| `.port` | `Camera.open -> Service.connect` | a link from or to a port | |
+| `,` | `Bus ~> Mail, Sync` | several targets, one link each | |
+| `: label` | `App -> Api : REST` | text on the link | |
+
+## Colours
+
+| Keyword | Example | Means |
+|---|---|---|
+| `[color: …]` | `service Api [color: #2e7d6b]` | colour of an element, container or link: `#rrggbb`, `#rgb` or a name |
+| `[dark: …]` | `[color: #dbe9f6, dark: #2a3d52]` | another colour for the dark theme |
+| `[tag: …]` | `[tag: vendor, tag: camera]` | a tag, used by `style tag` and "Colour by: tag" |
+| `style kind` | `style kind driver [color: slate]` | colour for every element of one kind |
+| `style tag` | `style tag vendor [color: #e8871e]` | colour for every element with this tag |
+| `style link` | `style link event [color: purple]` | colour for every link of one kind |
+| colour names | `red`, `orange`, `amber`, `green`, `teal`, `blue`, `indigo`, `purple`, `pink`, `brown`, `slate`, `gray` | shortcuts that change with the light and dark theme |
+
+On a link, `[ ]` comes after the targets and before the label: `A -> B [color: red] : alloc`.
+
+## Comments
+
+| Keyword | Example | Means |
+|---|---|---|
+| `#` | `# my notes` | a comment to the end of the line (not inside quotes or `[ ]`) |
+| `//` | `// my notes` | the same |

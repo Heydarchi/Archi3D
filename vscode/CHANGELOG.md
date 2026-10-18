@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.3.0 (2026-10-18)
+
+- Containers open as soon as what is inside them is readable, so you keep the big picture while
+  you zoom. Click a closed container to open it where it is. Keys `+` and `-` show more or less.
+- Container titles move to a free place instead of covering element labels.
+- Layers: `layer Apps "Applications" { ... }` blocks are drawn as floors, the first one on top.
+  Close to a floor, the floors above it fade to outlines. Warning W203 for a misplaced layer.
+- Colours: `[color: #2e7d6b, dark: #4fb3d9, tag: vendor]` on elements, containers and links, and
+  `style kind|tag|link name [color: ...]` lines. Warning W204 for a bad attribute or colour.
+- Colour button: colour by layer, container or tag, with a legend.
+- A selection is lighter with an orange outline, so it never clashes with your colours.
+- The info panel shows titles.
+
 ## 0.2.0 (2026-10-17)
 
 - Six link kinds: `->` call, `=>` message, `~>` event, `<=>` session, `>>` stream, `<>` shared.
