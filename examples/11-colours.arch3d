@@ -1,0 +1,26 @@
+# Colours: your own per element or link, or many at once with style lines.
+# "#2e7d6b" is used as written in light and dark; names (teal, slate, ...) change with the theme.
+
+style kind driver   [color: slate]
+style tag vendor    [color: #e8871e]
+style link event    [color: purple]
+
+user User "Phone user"
+
+system Phone [color: #dbe9f6, dark: #2a3d52] {
+  app Camera "Camera app"                         out: open
+  service CameraService [color: teal]             in: connect   out: hal, status
+  library Hal "Camera HAL" [tag: vendor]          in: session   out: ioctl
+  library Isp "ISP tuning" [tag: vendor, color: #c75d7e, dark: #e07fa0]  in: tune
+  driver V4L2 "V4L2 driver"                       in: ioctl
+  driver Csi "CSI-2 receiver"                     in: frames
+}
+device Sensor "Image sensor" [color: amber]       out: frames
+
+User -> Camera : tap
+Camera.open -> CameraService.connect [color: #3a7bd5] : openCamera()
+CameraService.hal <=> Hal.session : HAL session
+CameraService.status ~> Camera : onOpened
+Hal.ioctl -> V4L2.ioctl
+Hal -> Isp.tune
+Sensor.frames >> Csi.frames : MIPI

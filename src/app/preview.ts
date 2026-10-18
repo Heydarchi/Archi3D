@@ -4,6 +4,8 @@
 // outgoing ones are collected in window.__archiOutbox.
 import { createView } from '../render/view';
 import { setupDetailKeys } from './keys';
+import { nextColorBy, renderLegend } from './colorByControl';
+import type { ColorBy } from '../core/model/colorBy';
 import { createInfoPanel } from './infoPanel';
 import { createLayoutClient } from './layoutClient';
 import type { HostMessage, PreviewMessage } from './previewProtocol';
@@ -70,6 +72,8 @@ function main(): void {
     b.textContent = `Edges: ${edgeMode}`;
     store.setSettings({ edgeMode });
   });
+  let colorBy: ColorBy = 'kind';
+  button(bar, 'Colour: kind', (b) => { colorBy = nextColorBy(colorBy); b.textContent = `Colour: ${colorBy}`; view.setColorBy(colorBy); renderLegend(canvas.parentElement ?? document.body, view); });
   button(bar, 'Bundling: off', (b) => { bundling = !bundling; b.textContent = `Bundling: ${bundling ? 'on' : 'off'}`; view.setBundling(bundling); });
   button(bar, 'Fit', () => { void view.flyTo(null); });
 

@@ -2,6 +2,7 @@ import type { Page } from '@playwright/test';
 import { test, snap, expect, waitReady } from './fixtures';
 
 type St = { revision: number; diagnostics: string[] };
+const TYPE_DELAY_MS = 30;
 const st = (page: Page) => page.evaluate(() => window.__archi.state!() as St);
 /** Wait until a layout newer than `after` is drawn for exactly the text now in the editor. */
 const waitRevision = async (page: Page, after: number) => {
@@ -22,7 +23,9 @@ test('app: edit with an error, then add a component', async ({ page }) => {
   let rev = (await st(page)).revision;
   await page.locator('.cm-content').click();
   await page.keyboard.press('ControlOrMeta+End');
-  await page.keyboard.type('BFF -> Inventory');
+  // Type at a human speed: on a slow machine instant typing races the editor while the scene redraws.
+  await page.keyboard.type('BFF -> Inventory', { delay: TYPE_DELAY_MS });
+  await expect(page.locator('.cm-content')).toContainText('BFF -> Inventory');
   await waitRevision(page, rev);
   expect((await st(page)).diagnostics).toEqual(['E102@42']);
   await expect(page.locator('.cm-lintRange-error')).toHaveText('Inventory');
@@ -31,7 +34,8 @@ test('app: edit with an error, then add a component', async ({ page }) => {
 
   rev = (await st(page)).revision;
   for (let i = 0; i < 'BFF -> Inventory'.length; i++) await page.keyboard.press('Backspace');
-  await page.keyboard.type('external Inventory in: stock\nBFF -> Inventory.stock : stock');
+  await page.keyboard.type('external Inventory in: stock\nBFF -> Inventory.stock : stock', { delay: TYPE_DELAY_MS });
+  await expect(page.locator('.cm-content')).toContainText('BFF -> Inventory.stock : stock');
   await waitRevision(page, rev);
   expect((await st(page)).diagnostics).toEqual([]);
   await expect(page.locator('.cm-lintRange-error')).toHaveCount(0);

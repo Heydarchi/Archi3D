@@ -46,7 +46,7 @@ export function lift(model: ArchModel, layout: Layout2D, options: Partial<SceneO
     const mid = { x: b.x + b.w / 2, y: b.y + b.h / 2 };
     const to3 = at3(n.id);
     if (n.container) {
-      plates.push({ id: n.id, depth: n.depth, center: to3(mid, base(n) + PLATE_THICKNESS / 2), size: v3(b.w, PLATE_THICKNESS, b.h), ...floorOf(n.id) });
+      plates.push({ id: n.id, depth: n.depth, center: to3(mid, base(n) + PLATE_THICKNESS / 2), size: v3(b.w, PLATE_THICKNESS, b.h), ...floorOf(n.id), ...(n.color ? { color: n.color } : {}) });
       // Title just in front of the front-left edge, or (alt) in the strip at the back. lod/declutter.ts picks the free one.
       labels.push({
         id: n.id, text: n.title ?? n.id, role: 'container',
@@ -54,7 +54,7 @@ export function lift(model: ArchModel, layout: Layout2D, options: Partial<SceneO
       });
     } else {
       const h = blockHeight(n);
-      blocks.push({ id: n.id, shape: n.shape, center: to3(mid, base(n) + h / 2), size: v3(b.w, h, b.h), ...floorOf(n.id) });
+      blocks.push({ id: n.id, shape: n.shape, center: to3(mid, base(n) + h / 2), size: v3(b.w, h, b.h), ...floorOf(n.id), ...(n.color ? { color: n.color } : {}) });
       labels.push({ id: n.id, text: n.title ?? n.id, role: 'component', anchor: to3(mid, base(n) + h + 4) });
     }
     for (const p of n.ports) {
@@ -84,12 +84,12 @@ export function lift(model: ArchModel, layout: Layout2D, options: Partial<SceneO
     points[0] = start;
     points[points.length - 1] = end;
     if (e.label === undefined) {
-      edges.push({ id: e.id, points, kind: e.kind, async: e.async });
+      edges.push({ id: e.id, points, kind: e.kind, async: e.async, ...(e.color ? { color: e.color } : {}) });
       continue;
     }
     const at = longestSegmentMid(points);
     const labelAt = v3(at.x, at.y + 7, at.z);
-    edges.push({ id: e.id, points, kind: e.kind, async: e.async, label: e.label, labelAt });
+    edges.push({ id: e.id, points, kind: e.kind, async: e.async, label: e.label, labelAt, ...(e.color ? { color: e.color } : {}) });
     labels.push({ id: `edge:${e.id}`, text: e.label, role: 'edge', anchor: labelAt });
   }
 

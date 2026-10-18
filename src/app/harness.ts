@@ -14,6 +14,7 @@ import type { PoseName } from '../render/poses';
 import { renderParseView } from '../debug/parseView';
 import { getFixture } from './fixtures';
 import { afterPaint, installTestHooks, markBusy, markReady } from './testHooks';
+import { renderLegend } from './colorByControl';
 import { createInfoPanel } from './infoPanel';
 import { renderCube } from './views/cube';
 
@@ -62,6 +63,8 @@ const views: Record<string, ViewFn> = {
     view.setScene(built.scene, built.model);
     if (p.get('lod') === 'off') view.setSemanticZoom(false);
     if (p.get('zoom') === 'size') view.setZoomRule('size');
+    const colorBy = p.get('colorby');
+    if (colorBy === 'layer' || colorBy === 'container' || colorBy === 'tag') { view.setColorBy(colorBy); renderLegend(document.body, view); }
     if (p.get('detail')) view.setDetail(Number(p.get('detail')));
     if (p.get('bundle') === 'on') view.setBundling(true);
     const cam = p.get('cam') ?? 'far';

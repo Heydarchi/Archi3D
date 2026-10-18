@@ -46,14 +46,18 @@ export interface Diagnostic { code: string; severity: 'error' | 'warning'; messa
 export type PortSide = 'N' | 'E' | 'S' | 'W';           // set by adapters (Mermaid sides); unset in .arch3d
 export interface PortDecl { name: string; iface?: string; side?: PortSide; loc: Loc }
 export interface AstNode {
-  type: 'node'; kind: string; name: string; title?: string; container: boolean;
+  type: 'node'; kind: string; name: string; title?: string; container: boolean; attrs?: Attrs;
   ins: PortDecl[]; outs: PortDecl[]; children: AstItem[]; loc: Loc;
 }
+// [color: …, dark: …, tag: …] after a node or before a link's label (values as written).
+export interface Attrs { color?: string; dark?: string; tags?: string[]; loc: Loc }
 export interface AstRef { name: string; port?: string; loc: Loc }
 // How the two ends talk (see GRAMMAR.md). message, event and stream are async.
 export type LinkKind = 'call' | 'message' | 'event' | 'session' | 'stream' | 'shared';
-export interface AstEdge { type: 'edge'; from: AstRef; to: AstRef; kind: LinkKind; async: boolean; label?: string; loc: Loc }
-export type AstItem = AstNode | AstEdge;
+export interface AstEdge { type: 'edge'; from: AstRef; to: AstRef; kind: LinkKind; async: boolean; label?: string; attrs?: Attrs; loc: Loc }
+// style kind driver [color: …] / style tag vendor [...] / style link event [...]
+export interface AstStyle { type: 'style'; target: 'kind' | 'tag' | 'link'; name: string; attrs: Attrs; loc: Loc }
+export type AstItem = AstNode | AstEdge | AstStyle;
 export interface ParseResult { items: AstItem[]; diagnostics: Diagnostic[] }
 export declare function parse(src: string): ParseResult;
 
@@ -62,14 +66,17 @@ export declare function parse(src: string): ParseResult;
 export type Shape = 'box' | 'db' | 'queue' | 'ext' | 'person' | 'screen' | 'phone' | 'library' | 'chip'
   | 'kernel' | 'device' | 'cache' | 'storage' | 'topic';
 export interface Port { id: PortId; name: string; dir: 'in' | 'out'; iface?: string; side?: PortSide; implicit: boolean }
+// Resolved colour (model/colors.ts): hex as written in both themes, names tuned per theme.
+export interface ColorPair { light: string; dark: string }
 export interface ModelNode {
-  id: Id; kind: string; title?: string; shape: Shape; container: boolean;
+  id: Id; kind: string; title?: string; shape: Shape; container: boolean; color?: ColorPair; tags?: string[];   // own > style tag > style kind
   parent: Id | null; depth: number; children: Id[]; ports: Port[]; loc: Loc;
 }
 export interface ModelEdge {
   id: string;                               // "e0", "e1" in source order
   from: { node: Id; port?: PortId }; to: { node: Id; port?: PortId };
   kind: LinkKind; async: boolean; label?: string; lca: Id | null;   // lowest common container, null = top level
+  color?: ColorPair;                                                 // own > style link
 }
 export interface ArchModel { nodes: Record<Id, ModelNode>; roots: Id[]; edges: ModelEdge[]; diagnostics: Diagnostic[] }
 export declare function buildModel(parsed: ParseResult): ArchModel;
@@ -89,12 +96,12 @@ export declare function layout(model: ArchModel, opts?: Partial<LayoutOptions>, 
 
 // ---------- scene ----------
 export interface V3 { x: number; y: number; z: number }   // y is up
-export interface PlateSpec { id: Id; depth: number; center: V3; size: V3; floor?: Id }   // floor: its layer
-export interface BlockSpec { id: Id; shape: Shape; center: V3; size: V3; floor?: Id }
+export interface PlateSpec { id: Id; depth: number; center: V3; size: V3; floor?: Id; color?: ColorPair }   // floor: its layer
+export interface BlockSpec { id: Id; shape: Shape; center: V3; size: V3; floor?: Id; color?: ColorPair }
 // Layers (scene/floors.ts): a top-level container of kind "layer" is a floor from y to top, first written on top.
 export interface FloorSpec { id: Id; index: number; y: number; top: number; center: V3; size: V3 }
 export interface PortSpec  { id: PortId; owner: Id; dir: 'in' | 'out'; pos: V3 }
-export interface EdgeSpec  { id: string; points: V3[]; kind: LinkKind; async: boolean; label?: string; labelAt?: V3 }
+export interface EdgeSpec  { id: string; points: V3[]; kind: LinkKind; async: boolean; label?: string; labelAt?: V3; color?: ColorPair }
 // alt: a second place for a container title, used when the first would cover an element label.
 export interface LabelSpec { id: string; text: string; anchor: V3; alt?: V3; role: 'container' | 'component' | 'port' | 'edge' }
 export interface SceneOptions { levelGap: number; blockHeight: number; edgeMode: 'ortho' | 'arc' }
@@ -156,7 +163,10 @@ phone stand on a base drawn in the box mesh as `<id>#base`), one merged outline 
 `LineSegments2` batch per link kind (`render/edges.ts`, with instanced flow marks and end squares)
 plus one for aggregated links into closed containers, troika SDF text for labels (HTML labels as a
 fallback), and a per-frame call to `lod()` whose result `render/present.ts` applies.
-Colours come from one palette object so light and dark themes are a single swap.
+Colours come from one palette object so light and dark themes are a single swap; the palette's
+`name` picks the `light` or `dark` side of a user colour. "Colour by" (`core/model/colorBy.ts`)
+replaces element colours with group colours when the objects are built. A selection makes elements
+lighter and gives them an accent outline (no tint, so it never clashes with user colours).
 
 ## App shell (`src/app`)
 

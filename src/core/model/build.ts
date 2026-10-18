@@ -2,8 +2,9 @@
 // and reports semantic diagnostics. Invalid links are dropped; everything else is kept.
 import { byLocation, diag } from '../dsl/diagnostics';
 import type {
-  ArchModel, AstEdge, AstItem, AstNode, AstRef, Diagnostic, Id, ModelEdge, ModelNode, ParseResult, Port, PortId,
+  ArchModel, AstEdge, AstItem, AstNode, AstRef, AstStyle, Attrs, ColorPair, Diagnostic, Id, ModelEdge, ModelNode, ParseResult, Port, PortId,
 } from '../types';
+import { colorPair } from './colors';
 import { lowestCommonContainer } from './lca';
 import { shapeOf } from './shape';
 
@@ -14,6 +15,8 @@ function collectNodes(items: AstItem[], diagnostics: Diagnostic[]) {
   const nodes: Record<Id, ModelNode> = {};
   const roots: Id[] = [];
   const edges: AstEdge[] = [];
+  const styles: AstStyle[] = [];
+  const attrsOf = new Map<Id, Attrs>();
 
   const declare = (n: AstNode, parent: Id | null, depth: number): Id | null => {
     if (nodes[n.name]) {
@@ -35,6 +38,7 @@ function collectNodes(items: AstItem[], diagnostics: Diagnostic[]) {
       const why = parent !== null ? 'is inside a container' : 'has no "{ }"';
       diagnostics.push(diag('W203', `Layer "${n.name}" ${why}, so it is drawn as a normal ${n.container ? 'container' : 'element'}. A layer must be a top-level container.`, n.loc));
     }
+    if (n.attrs) attrsOf.set(n.name, n.attrs);
     if (parent === null) roots.push(n.name);
     else nodes[parent].children.push(n.name);
     return n.name;
@@ -43,13 +47,14 @@ function collectNodes(items: AstItem[], diagnostics: Diagnostic[]) {
   const walk = (list: AstItem[], parent: Id | null, depth: number): void => {
     for (const it of list) {
       if (it.type === 'edge') { edges.push(it); continue; }
+      if (it.type === 'style') { styles.push(it); continue; }
       const id = declare(it, parent, depth);
       // Children of a duplicate are kept at the duplicate's level.
       walk(it.children, id ?? parent, id ? depth + 1 : depth);
     }
   };
   walk(items, null, 0);
-  return { nodes, roots, edges };
+  return { nodes, roots, edges, styles, attrsOf };
 }
 
 /** Find or create the port an edge end attaches to. Undefined for a port-less container end. */
@@ -77,7 +82,18 @@ function resolvePort(node: ModelNode, ref: AstRef, side: Dir, diagnostics: Diagn
 
 export function buildModel(parsed: ParseResult): ArchModel {
   const diagnostics: Diagnostic[] = [];
-  const { nodes, roots, edges: astEdges } = collectNodes(parsed.items, diagnostics);
+  const { nodes, roots, edges: astEdges, styles, attrsOf } = collectNodes(parsed.items, diagnostics);
+
+  // Colours: the element's own [color: …], else a "style tag", else a "style kind". Links: own, else "style link".
+  const pairOf = (a?: Attrs): ColorPair | undefined => (a?.color ? colorPair(a.color, a.dark) : undefined);
+  const styleFor = (target: AstStyle['target'], name: string) =>
+    pairOf(styles.filter((s) => s.target === target && s.name.toLowerCase() === name.toLowerCase()).pop()?.attrs);
+  for (const n of Object.values(nodes)) {
+    const a = attrsOf.get(n.id);
+    if (a?.tags?.length) n.tags = a.tags;
+    const color = pairOf(a) ?? (a?.tags ?? []).map((t) => styleFor('tag', t)).find(Boolean) ?? styleFor('kind', n.kind);
+    if (color) n.color = color;
+  }
   const edges: ModelEdge[] = [];
 
   for (const e of astEdges) {
@@ -104,6 +120,7 @@ export function buildModel(parsed: ParseResult): ArchModel {
       kind: e.kind,
       async: e.async,
       ...(e.label !== undefined ? { label: e.label } : {}),
+      ...((pairOf(e.attrs) ?? styleFor('link', e.kind)) ? { color: pairOf(e.attrs) ?? styleFor('link', e.kind) } : {}),
       lca: lowestCommonContainer(nodes, a.id, b.id),
     });
   }

@@ -1,8 +1,17 @@
 // ArchModel → .arch3d text (used to put an imported model into the editor).
-import type { ArchModel, LinkKind, ModelEdge, ModelNode, Port } from '../types';
+import type { ArchModel, ColorPair, LinkKind, ModelEdge, ModelNode, Port } from '../types';
 
 const ARROW: Record<LinkKind, string> = { call: '->', message: '=>', event: '~>', session: '<=>', stream: '>>', shared: '<>' };
 const quote = (s: string) => `"${s.replace(/["\\]/g, (c) => `\\${c}`)}"`;
+
+/** `[color: …, dark: …, tag: …]`, or '' when there is nothing to write. Styles are already folded into each element. */
+function attrs(color?: ColorPair, tags: string[] = []): string {
+  const parts = [
+    ...(color ? [`color: ${color.light}`, ...(color.dark !== color.light ? [`dark: ${color.dark}`] : [])] : []),
+    ...tags.map((t) => `tag: ${t}`),
+  ];
+  return parts.length ? `[${parts.join(', ')}]` : '';
+}
 
 const portList = (ports: Port[]) => ports.map((p) => (p.iface ? `${p.name}:${p.iface}` : p.name)).join(', ');
 
@@ -11,7 +20,7 @@ function nodeLine(n: ModelNode): string {
   const ins = declared.filter((p) => p.dir === 'in');
   const outs = declared.filter((p) => p.dir === 'out');
   const kind = /^[A-Za-z_][A-Za-z0-9_-]*$/.test(n.kind) ? n.kind : 'component';
-  return [kind, n.id, n.title !== undefined ? quote(n.title) : '', ins.length ? `in: ${portList(ins)}` : '', outs.length ? `out: ${portList(outs)}` : '', n.container ? '{' : '']
+  return [kind, n.id, n.title !== undefined ? quote(n.title) : '', attrs(n.color, n.tags), ins.length ? `in: ${portList(ins)}` : '', outs.length ? `out: ${portList(outs)}` : '', n.container ? '{' : '']
     .filter(Boolean).join(' ');
 }
 
@@ -20,7 +29,7 @@ function edgeLine(e: ModelEdge): string {
     const name = end.port?.slice(end.node.length + 1);
     return name && !name.startsWith('_') ? `${end.node}.${name}` : end.node;
   };
-  return `${ref(e.from)} ${ARROW[e.kind]} ${ref(e.to)}${e.label ? ` : ${e.label}` : ''}`;
+  return `${ref(e.from)} ${ARROW[e.kind]} ${ref(e.to)}${e.color ? ` ${attrs(e.color)}` : ''}${e.label ? ` : ${e.label}` : ''}`;
 }
 
 export function printArch(model: ArchModel, header?: string): string {

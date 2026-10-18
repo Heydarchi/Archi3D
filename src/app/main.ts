@@ -4,6 +4,7 @@ import { createView } from '../render/view';
 import { createEditor } from './editor';
 import { setupEditorToggle } from './editorToggle';
 import { setupDetailKeys } from './keys';
+import { setupColorBy } from './colorByControl';
 import { defaultFixture, getFixture } from './fixtures';
 import { createInfoPanel } from './infoPanel';
 import { createLayoutClient } from './layoutClient';
@@ -87,6 +88,8 @@ async function main(): Promise<void> {
   });
 
   setupEditorToggle(document.querySelector('.app') as HTMLElement, document.getElementById('toggle-editor') as HTMLButtonElement);
+
+  setupColorBy(document.getElementById('color-by') as HTMLButtonElement, document.getElementById('view')!, view);
 
   const edges = document.getElementById('edge-mode') as HTMLButtonElement;
   edges.addEventListener('click', () => {

@@ -55,3 +55,16 @@ describe('arch stream language', () => {
     ]);
   });
 });
+
+describe('arch stream language: colours', () => {
+  it('attributes: # is a colour inside brackets, a comment after them', () => {
+    expect(tokens('driver V [color: #2e7d6b, tag: hw] # c')).toEqual([
+      ['driver', 'typeName'], ['V', 'variableName.definition'], ['[', 'bracket'], ['color', 'attributeName'], [':', 'punctuation'],
+      ['#2e7d6b', 'atom'], [',', 'punctuation'], ['tag', 'attributeName'], [':', 'punctuation'], ['hw', 'attributeValue'],
+      [']', 'bracket'], ['# c', 'comment'],
+    ]);
+  });
+  it('style lines', () => {
+    expect(tokens('style kind driver [color: slate]').slice(0, 3)).toEqual([['style', 'keyword'], ['kind', 'keyword'], ['driver', 'typeName']]);
+  });
+});

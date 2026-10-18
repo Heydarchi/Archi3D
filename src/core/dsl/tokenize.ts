@@ -1,6 +1,6 @@
 // Splits one line of .arch3d text into tokens with 1-based columns. Comments are stripped.
 
-export type TokenType = 'ident' | 'arrow' | 'string' | 'colon' | 'comma' | 'dot' | 'lbrace' | 'rbrace' | 'other';
+export type TokenType = 'ident' | 'arrow' | 'string' | 'hex' | 'colon' | 'comma' | 'dot' | 'lbrace' | 'rbrace' | 'lbracket' | 'rbracket' | 'other';
 /** For a string token, `text` is the value without quotes and escapes. `unclosed` is set when the line ends first. */
 export interface Token { type: TokenType; text: string; col: number; endCol: number; unclosed?: boolean }
 export interface LineTokens { line: number; text: string; tokens: Token[] }
@@ -9,7 +9,7 @@ const IDENT_START = /[A-Za-z_]/;
 const IDENT_PART = /[A-Za-z0-9_-]/;
 /** Longest first, so "<=>" is not read as "<" and "=>". */
 export const ARROWS = ['<=>', '-->', '->', '=>', '~>', '>>', '<>', '<-'];
-const SINGLE: Record<string, TokenType> = { ':': 'colon', ',': 'comma', '.': 'dot', '{': 'lbrace', '}': 'rbrace' };
+const SINGLE: Record<string, TokenType> = { ':': 'colon', ',': 'comma', '.': 'dot', '{': 'lbrace', '}': 'rbrace', '[': 'lbracket', ']': 'rbracket' };
 
 /** End of the string that starts with the quote at `i`: the index after it, and whether the quote was closed. */
 function scanString(line: string, i: number): { end: number; closed: boolean } {
@@ -18,11 +18,15 @@ function scanString(line: string, i: number): { end: number; closed: boolean } {
   return j < line.length ? { end: j + 1, closed: true } : { end: line.length, closed: false };
 }
 
-/** The line without its comment (`#` or `//` to end of line). Quoted text is not a comment. */
+/** The line without its comment (`#` or `//` to end of line). Quoted text is not a comment, and
+ * inside `[ ]` a `#` starts a colour (`[color: #2e7d6b]`). */
 export function stripComment(line: string): string {
+  let inBrackets = false;
   for (let i = 0; i < line.length; i++) {
     if (line[i] === '"') i = scanString(line, i).end - 1;
-    else if (line[i] === '#' || line.startsWith('//', i)) return line.slice(0, i);
+    else if (line[i] === '[') inBrackets = true;
+    else if (line[i] === ']') inBrackets = false;
+    else if ((line[i] === '#' && !inBrackets) || line.startsWith('//', i)) return line.slice(0, i);
   }
   return line;
 }
@@ -40,6 +44,14 @@ export function tokenizeLine(raw: string, line: number): LineTokens {
   while (i < text.length) {
     const ch = text[i];
     if (ch === ' ' || ch === '\t') { i++; continue; }
+    if (ch === '#') {
+      // Only reached inside [ ] (elsewhere # starts a comment): a colour like #2e7d6b.
+      let j = i + 1;
+      while (j < text.length && /[0-9a-zA-Z]/.test(text[j])) j++;
+      tokens.push({ type: 'hex', text: text.slice(i, j), col: i + 1, endCol: j + 1 });
+      i = j;
+      continue;
+    }
     if (ch === '"') {
       const t = readString(text, i);
       tokens.push(t);

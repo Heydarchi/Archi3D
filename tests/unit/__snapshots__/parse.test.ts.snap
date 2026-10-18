@@ -1,5 +1,539 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`valid fixtures > colours.arch3d parses with no errors 1`] = `
+[
+  {
+    "attrs": {
+      "color": "slate",
+      "loc": {
+        "col": 21,
+        "endCol": 35,
+        "line": 4,
+      },
+    },
+    "loc": {
+      "col": 12,
+      "endCol": 18,
+      "line": 4,
+    },
+    "name": "driver",
+    "target": "kind",
+    "type": "style",
+  },
+  {
+    "attrs": {
+      "color": "#e8871e",
+      "loc": {
+        "col": 21,
+        "endCol": 37,
+        "line": 5,
+      },
+    },
+    "loc": {
+      "col": 11,
+      "endCol": 17,
+      "line": 5,
+    },
+    "name": "vendor",
+    "target": "tag",
+    "type": "style",
+  },
+  {
+    "attrs": {
+      "color": "purple",
+      "loc": {
+        "col": 21,
+        "endCol": 36,
+        "line": 6,
+      },
+    },
+    "loc": {
+      "col": 12,
+      "endCol": 17,
+      "line": 6,
+    },
+    "name": "event",
+    "target": "link",
+    "type": "style",
+  },
+  {
+    "children": [],
+    "container": false,
+    "ins": [],
+    "kind": "user",
+    "loc": {
+      "col": 6,
+      "endCol": 10,
+      "line": 8,
+    },
+    "name": "User",
+    "outs": [],
+    "title": "Phone user",
+    "type": "node",
+  },
+  {
+    "attrs": {
+      "color": "#dbe9f6",
+      "dark": "#2a3d52",
+      "loc": {
+        "col": 14,
+        "endCol": 45,
+        "line": 10,
+      },
+    },
+    "children": [
+      {
+        "children": [],
+        "container": false,
+        "ins": [],
+        "kind": "app",
+        "loc": {
+          "col": 7,
+          "endCol": 13,
+          "line": 11,
+        },
+        "name": "Camera",
+        "outs": [
+          {
+            "loc": {
+              "col": 56,
+              "endCol": 60,
+              "line": 11,
+            },
+            "name": "open",
+          },
+        ],
+        "title": "Camera app",
+        "type": "node",
+      },
+      {
+        "attrs": {
+          "color": "teal",
+          "loc": {
+            "col": 25,
+            "endCol": 38,
+            "line": 12,
+          },
+        },
+        "children": [],
+        "container": false,
+        "ins": [
+          {
+            "loc": {
+              "col": 55,
+              "endCol": 62,
+              "line": 12,
+            },
+            "name": "connect",
+          },
+        ],
+        "kind": "service",
+        "loc": {
+          "col": 11,
+          "endCol": 24,
+          "line": 12,
+        },
+        "name": "CameraService",
+        "outs": [
+          {
+            "loc": {
+              "col": 70,
+              "endCol": 73,
+              "line": 12,
+            },
+            "name": "hal",
+          },
+          {
+            "loc": {
+              "col": 75,
+              "endCol": 81,
+              "line": 12,
+            },
+            "name": "status",
+          },
+        ],
+        "type": "node",
+      },
+      {
+        "attrs": {
+          "loc": {
+            "col": 28,
+            "endCol": 41,
+            "line": 13,
+          },
+          "tags": [
+            "vendor",
+          ],
+        },
+        "children": [],
+        "container": false,
+        "ins": [
+          {
+            "loc": {
+              "col": 55,
+              "endCol": 62,
+              "line": 13,
+            },
+            "name": "session",
+          },
+        ],
+        "kind": "library",
+        "loc": {
+          "col": 11,
+          "endCol": 14,
+          "line": 13,
+        },
+        "name": "Hal",
+        "outs": [
+          {
+            "loc": {
+              "col": 70,
+              "endCol": 75,
+              "line": 13,
+            },
+            "name": "ioctl",
+          },
+        ],
+        "title": "Camera HAL",
+        "type": "node",
+      },
+      {
+        "attrs": {
+          "color": "#c75d7e",
+          "dark": "#e07fa0",
+          "loc": {
+            "col": 28,
+            "endCol": 72,
+            "line": 14,
+          },
+          "tags": [
+            "vendor",
+          ],
+        },
+        "children": [],
+        "container": false,
+        "ins": [
+          {
+            "loc": {
+              "col": 78,
+              "endCol": 82,
+              "line": 14,
+            },
+            "name": "tune",
+          },
+        ],
+        "kind": "library",
+        "loc": {
+          "col": 11,
+          "endCol": 14,
+          "line": 14,
+        },
+        "name": "Isp",
+        "outs": [],
+        "title": "ISP tuning",
+        "type": "node",
+      },
+      {
+        "children": [],
+        "container": false,
+        "ins": [
+          {
+            "loc": {
+              "col": 55,
+              "endCol": 60,
+              "line": 15,
+            },
+            "name": "ioctl",
+          },
+        ],
+        "kind": "driver",
+        "loc": {
+          "col": 10,
+          "endCol": 14,
+          "line": 15,
+        },
+        "name": "V4L2",
+        "outs": [],
+        "title": "V4L2 driver",
+        "type": "node",
+      },
+      {
+        "children": [],
+        "container": false,
+        "ins": [
+          {
+            "loc": {
+              "col": 55,
+              "endCol": 61,
+              "line": 16,
+            },
+            "name": "frames",
+          },
+        ],
+        "kind": "driver",
+        "loc": {
+          "col": 10,
+          "endCol": 13,
+          "line": 16,
+        },
+        "name": "Csi",
+        "outs": [],
+        "title": "CSI-2 receiver",
+        "type": "node",
+      },
+    ],
+    "container": true,
+    "ins": [],
+    "kind": "system",
+    "loc": {
+      "col": 8,
+      "endCol": 13,
+      "line": 10,
+    },
+    "name": "Phone",
+    "outs": [],
+    "type": "node",
+  },
+  {
+    "attrs": {
+      "color": "amber",
+      "loc": {
+        "col": 30,
+        "endCol": 44,
+        "line": 18,
+      },
+    },
+    "children": [],
+    "container": false,
+    "ins": [],
+    "kind": "device",
+    "loc": {
+      "col": 8,
+      "endCol": 14,
+      "line": 18,
+    },
+    "name": "Sensor",
+    "outs": [
+      {
+        "loc": {
+          "col": 56,
+          "endCol": 62,
+          "line": 18,
+        },
+        "name": "frames",
+      },
+    ],
+    "title": "Image sensor",
+    "type": "node",
+  },
+  {
+    "async": false,
+    "from": {
+      "loc": {
+        "col": 1,
+        "endCol": 5,
+        "line": 20,
+      },
+      "name": "User",
+    },
+    "kind": "call",
+    "label": "tap",
+    "loc": {
+      "col": 1,
+      "endCol": 21,
+      "line": 20,
+    },
+    "to": {
+      "loc": {
+        "col": 9,
+        "endCol": 15,
+        "line": 20,
+      },
+      "name": "Camera",
+    },
+    "type": "edge",
+  },
+  {
+    "async": false,
+    "attrs": {
+      "color": "#3a7bd5",
+      "loc": {
+        "col": 38,
+        "endCol": 54,
+        "line": 21,
+      },
+    },
+    "from": {
+      "loc": {
+        "col": 1,
+        "endCol": 12,
+        "line": 21,
+      },
+      "name": "Camera",
+      "port": "open",
+    },
+    "kind": "call",
+    "label": "openCamera()",
+    "loc": {
+      "col": 1,
+      "endCol": 69,
+      "line": 21,
+    },
+    "to": {
+      "loc": {
+        "col": 16,
+        "endCol": 37,
+        "line": 21,
+      },
+      "name": "CameraService",
+      "port": "connect",
+    },
+    "type": "edge",
+  },
+  {
+    "async": false,
+    "from": {
+      "loc": {
+        "col": 1,
+        "endCol": 18,
+        "line": 22,
+      },
+      "name": "CameraService",
+      "port": "hal",
+    },
+    "kind": "session",
+    "label": "HAL session",
+    "loc": {
+      "col": 1,
+      "endCol": 48,
+      "line": 22,
+    },
+    "to": {
+      "loc": {
+        "col": 23,
+        "endCol": 34,
+        "line": 22,
+      },
+      "name": "Hal",
+      "port": "session",
+    },
+    "type": "edge",
+  },
+  {
+    "async": true,
+    "from": {
+      "loc": {
+        "col": 1,
+        "endCol": 21,
+        "line": 23,
+      },
+      "name": "CameraService",
+      "port": "status",
+    },
+    "kind": "event",
+    "label": "onOpened",
+    "loc": {
+      "col": 1,
+      "endCol": 42,
+      "line": 23,
+    },
+    "to": {
+      "loc": {
+        "col": 25,
+        "endCol": 31,
+        "line": 23,
+      },
+      "name": "Camera",
+    },
+    "type": "edge",
+  },
+  {
+    "async": false,
+    "from": {
+      "loc": {
+        "col": 1,
+        "endCol": 10,
+        "line": 24,
+      },
+      "name": "Hal",
+      "port": "ioctl",
+    },
+    "kind": "call",
+    "loc": {
+      "col": 1,
+      "endCol": 24,
+      "line": 24,
+    },
+    "to": {
+      "loc": {
+        "col": 14,
+        "endCol": 24,
+        "line": 24,
+      },
+      "name": "V4L2",
+      "port": "ioctl",
+    },
+    "type": "edge",
+  },
+  {
+    "async": false,
+    "from": {
+      "loc": {
+        "col": 1,
+        "endCol": 4,
+        "line": 25,
+      },
+      "name": "Hal",
+    },
+    "kind": "call",
+    "loc": {
+      "col": 1,
+      "endCol": 16,
+      "line": 25,
+    },
+    "to": {
+      "loc": {
+        "col": 8,
+        "endCol": 16,
+        "line": 25,
+      },
+      "name": "Isp",
+      "port": "tune",
+    },
+    "type": "edge",
+  },
+  {
+    "async": true,
+    "from": {
+      "loc": {
+        "col": 1,
+        "endCol": 14,
+        "line": 26,
+      },
+      "name": "Sensor",
+      "port": "frames",
+    },
+    "kind": "stream",
+    "label": "MIPI",
+    "loc": {
+      "col": 1,
+      "endCol": 35,
+      "line": 26,
+    },
+    "to": {
+      "loc": {
+        "col": 18,
+        "endCol": 28,
+        "line": 26,
+      },
+      "name": "Csi",
+      "port": "frames",
+    },
+    "type": "edge",
+  },
+]
+`;
+
 exports[`valid fixtures > container-links.arch3d parses with no errors 1`] = `
 [
   {

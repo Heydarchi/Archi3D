@@ -3,6 +3,7 @@ import CameraControls from 'camera-controls';
 import * as THREE from 'three';
 import { lidSpecs, lidTitleAnchor } from '../core/lod/lids';
 import { LABEL_BUDGET, lod, type ZoomRule } from '../core/lod/lod';
+import type { ColorBy } from '../core/model/colorBy';
 import type { ArchModel, CameraState, Id, LodResult, Pt, SceneSpec, V3 } from '../core/types';
 import defaultFontUrl from '../../vendor/fonts/inter-latin-400-normal.woff?url';
 import { SceneRoot } from './build';
@@ -49,6 +50,10 @@ export interface View {
   setSemanticZoom(enabled: boolean): void;
   /** Which rule opens containers (see core/lod). */
   setZoomRule(rule: ZoomRule): void;
+  /** Colour by kind (normal), layer, container or tag; rebuilds the objects. */
+  setColorBy(by: ColorBy): void;
+  /** The groups and colours for the current "colour by", or null for the normal look. */
+  legend(): { name: string; color: string }[] | null;
   /** Detail factor for the zoom (1 = default); returns the new value. */
   setDetail(detail: number): number;
   detail(): number;
@@ -101,6 +106,7 @@ export function createView(canvas: HTMLCanvasElement, opts: ViewOptions = {}): V
   let lodResult: LodResult | null = null;
   let semantic = true;
   let zoomRule: ZoomRule = 'readable';
+  let colorBy: ColorBy = 'kind';
   let detail = 1;
   let bundling = false;
   let lastDraw = 0;
@@ -217,7 +223,7 @@ export function createView(canvas: HTMLCanvasElement, opts: ViewOptions = {}): V
 
   return {
     setScene(scene, model) {
-      const objects = root.setScene(scene, model);
+      const objects = root.setScene(scene, model, colorBy);
       presenter = new Presenter(objects, model, palette, scene);
       lidTitles = new Map(lidSpecs(scene, model).map((l) => [l.id, lidTitleAnchor(l)]));
       lodResult = null;
@@ -244,6 +250,11 @@ export function createView(canvas: HTMLCanvasElement, opts: ViewOptions = {}): V
     selected: () => selected,
     setSemanticZoom(enabled) { semantic = enabled; render(); },
     setZoomRule(rule) { zoomRule = rule; lodResult = null; render(); },
+    setColorBy(by) {
+      colorBy = by;
+      if (current) this.setScene(current.scene, current.model);
+    },
+    legend: () => root.objects?.legend?.map((g) => ({ name: g.name, color: g.color[palette.name] })) ?? null,
     setDetail(d) { detail = Math.min(DETAIL_RANGE[1], Math.max(DETAIL_RANGE[0], d)); render(); return detail; },
     detail: () => detail,
     setBundling(enabled) { bundling = enabled; render(); },

@@ -45,7 +45,7 @@ test('edit a model file and save it back; follow changes made on disk', async ({
     let rev = (await state(page)).revision;
     await page.locator('.cm-content').click();
     await page.keyboard.press('ControlOrMeta+End');
-    await page.keyboard.type('\nexternal Audit in: log\nOrders -> Audit.log : audit');
+    await page.keyboard.type('\nexternal Audit in: log\nOrders -> Audit.log : audit', { delay: 30 }); // human speed, see step10.spec.ts
     await waitLayout(page, rev);
     await expect(page.locator('#file-name')).toHaveText('● shop.arch3d');
     expect((await state(page)).file!.dirty).toBe(true);
@@ -66,7 +66,7 @@ test('edit a model file and save it back; follow changes made on disk', async ({
     // A change on disk while there are unsaved edits → ask, never overwrite silently.
     await page.locator('.cm-content').click();
     await page.keyboard.press('ControlOrMeta+End');
-    await page.keyboard.type('\n# my unsaved note');
+    await page.keyboard.type('\n# my unsaved note', { delay: 30 });
     writeFileSync(file, `${readFileSync(file, 'utf8')}\n# their change\n`);
     await expect(page.locator('#file-banner')).toContainText('changed on disk and you have unsaved edits');
     await page.screenshot({ path: 'artifacts/dev-file/conflict.png' });

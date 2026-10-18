@@ -7,6 +7,9 @@
       "include": "#comment"
     },
     {
+      "include": "#style"
+    },
+    {
       "include": "#edge"
     },
     {
@@ -48,6 +51,9 @@
       "begin": "^\\s*(?=[A-Za-z_][A-Za-z0-9_-]*(?:\\.[A-Za-z_][A-Za-z0-9_-]*)?\\s*(?:<=>|-->|->|=>|~>|>>|<>|<-|(?:call|message|event|session|stream|shared)\\s+(?!(?:in|out)\\s*:)[A-Za-z_]))",
       "end": "$",
       "patterns": [
+        {
+          "include": "#attrs"
+        },
         {
           "include": "#comment"
         },
@@ -95,6 +101,9 @@
           "include": "#string"
         },
         {
+          "include": "#attrs"
+        },
+        {
           "include": "#comment"
         },
         {
@@ -131,6 +140,68 @@
     "string": {
       "match": "\"(?:[^\"\\\\]|\\\\.)*\"?",
       "name": "string.quoted.double.title.arch3d"
+    },
+    "attrs": {
+      "begin": "\\[",
+      "end": "\\]",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.section.brackets.begin.arch3d"
+        }
+      },
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.section.brackets.end.arch3d"
+        }
+      },
+      "patterns": [
+        {
+          "match": "#[0-9a-fA-F]{3}(?:[0-9a-fA-F]{3})?\\b",
+          "name": "constant.other.color.rgb-value.arch3d"
+        },
+        {
+          "match": "\\b(color|dark|tag)\\s*(:)",
+          "captures": {
+            "1": {
+              "name": "support.type.property-name.arch3d"
+            },
+            "2": {
+              "name": "punctuation.separator.arch3d"
+            }
+          }
+        },
+        {
+          "match": "[A-Za-z_][A-Za-z0-9_-]*",
+          "name": "support.constant.arch3d"
+        },
+        {
+          "match": ",",
+          "name": "punctuation.separator.arch3d"
+        }
+      ]
+    },
+    "style": {
+      "begin": "^\\s*(style)\\s+(kind|tag|link)\\s+([A-Za-z_][A-Za-z0-9_-]*)",
+      "end": "$",
+      "beginCaptures": {
+        "1": {
+          "name": "keyword.other.style.arch3d"
+        },
+        "2": {
+          "name": "keyword.other.style.arch3d"
+        },
+        "3": {
+          "name": "entity.name.type.arch3d"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#attrs"
+        },
+        {
+          "include": "#comment"
+        }
+      ]
     }
   }
 }
